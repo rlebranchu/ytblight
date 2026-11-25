@@ -7,10 +7,10 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import fr.rlebranchu.ytblight.presentation.signin.SignInViewModel
+import fr.rlebranchu.ytblight.testing.fakeDependencies
 import fr.rlebranchu.ytblight.ui.YtblightApp
 import fr.rlebranchu.ytblight.ui.YtblightTheme
 import fr.rlebranchu.ytblight.ui.signin.SignInStarter
-import fr.rlebranchu.ytblight.umbrella.SharedDependencies
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -41,7 +41,7 @@ class YtblightAppTest {
             YtblightTheme {
                 YtblightApp(
                     dependencies =
-                        SharedDependencies.fake(
+                        fakeDependencies(
                             signedIn = signedIn,
                         ),
                     signInStarter = { viewModel ->

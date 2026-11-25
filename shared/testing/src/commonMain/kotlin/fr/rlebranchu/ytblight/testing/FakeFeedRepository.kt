@@ -1,4 +1,4 @@
-package fr.rlebranchu.ytblight.umbrella
+package fr.rlebranchu.ytblight.testing
 
 import fr.rlebranchu.ytblight.domain.error.DomainResult
 import fr.rlebranchu.ytblight.domain.feed.FeedRepository

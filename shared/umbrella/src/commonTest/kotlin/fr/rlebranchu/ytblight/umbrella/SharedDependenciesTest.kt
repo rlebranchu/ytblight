@@ -3,6 +3,7 @@ package fr.rlebranchu.ytblight.umbrella
 import fr.rlebranchu.ytblight.external.auth.PlatformAuth
 import fr.rlebranchu.ytblight.presentation.feed.FeedUiState
 import fr.rlebranchu.ytblight.presentation.splash.SplashDestination
+import fr.rlebranchu.ytblight.testing.fakeDependencies
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -31,8 +32,7 @@ class SharedDependenciesTest {
     fun fakeFeedIsWiredEndToEndAndHidesShortsInNewestFirstOrder() =
         runTest {
             val state: FeedUiState =
-                SharedDependencies
-                    .fake()
+                fakeDependencies()
                     .feedViewModel()
                     .state.value
 
@@ -43,7 +43,7 @@ class SharedDependenciesTest {
 
     @Test
     fun eachViewModelIsANewInstance() {
-        val dependencies = SharedDependencies.fake()
+        val dependencies = fakeDependencies()
 
         assertEquals(false, dependencies.feedViewModel() === dependencies.feedViewModel())
     }
@@ -52,15 +52,13 @@ class SharedDependenciesTest {
     fun fakeSessionStartsOnTheFeedOrOnSignIn() =
         runTest {
             val signedIn =
-                SharedDependencies
-                    .fake(
-                        signedIn = true,
-                    ).splashViewModel()
+                fakeDependencies(
+                    signedIn = true,
+                ).splashViewModel()
             val signedOut =
-                SharedDependencies
-                    .fake(
-                        signedIn = false,
-                    ).splashViewModel()
+                fakeDependencies(
+                    signedIn = false,
+                ).splashViewModel()
 
             assertEquals(SplashDestination.FEED, signedIn.state.value.destination)
             assertEquals(SplashDestination.SIGN_IN, signedOut.state.value.destination)
@@ -70,10 +68,9 @@ class SharedDependenciesTest {
     fun fakeSignOutFromTheFeedAsksToReturnToSignIn() =
         runTest {
             val feed =
-                SharedDependencies
-                    .fake(
-                        signedIn = true,
-                    ).feedViewModel()
+                fakeDependencies(
+                    signedIn = true,
+                ).feedViewModel()
 
             feed.signOut()
 
@@ -83,8 +80,7 @@ class SharedDependenciesTest {
     @Test
     fun playerViewModelReceivesTheVideoId() {
         val player =
-            SharedDependencies
-                .fake()
+            fakeDependencies()
                 .playerViewModel(
                     videoId = "abc",
                 )

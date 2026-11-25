@@ -9,7 +9,6 @@ import fr.rlebranchu.ytblight.domain.auth.SignOutUseCase
 import fr.rlebranchu.ytblight.domain.feed.FeedPolicy
 import fr.rlebranchu.ytblight.domain.feed.FeedRepository
 import fr.rlebranchu.ytblight.domain.feed.GetFeedUseCase
-import fr.rlebranchu.ytblight.external.YouTubeApi
 import fr.rlebranchu.ytblight.external.auth.PlatformAuth
 import fr.rlebranchu.ytblight.external.createYouTubeApi
 import fr.rlebranchu.ytblight.presentation.feed.FeedViewModel
@@ -53,41 +52,32 @@ class SharedDependencies private constructor(
         fun create(
             platformAuth: PlatformAuth,
         ): SharedDependencies =
-            build(
-                module {
-                    single<YouTubeApi> {
-                        createYouTubeApi(
-                            tokens = platformAuth,
-                        )
-                    }
-                    single<FeedRepository> {
-                        FeedRepositoryImpl(
-                            api = get(),
-                        )
-                    }
-                    single<AuthRepository> {
-                        AuthRepositoryImpl(
-                            platformAuth = platformAuth,
-                        )
-                    }
-                },
+            createWith(
+                feedRepository =
+                    FeedRepositoryImpl(
+                        api =
+                            createYouTubeApi(
+                                tokens = platformAuth,
+                            ),
+                    ),
+                authRepository =
+                    AuthRepositoryImpl(
+                        platformAuth = platformAuth,
+                    ),
             )
 
         /**
-         * Données factices : tests d'interface et développement sans connexion Google.
-         * @param signedIn `false` pour démarrer sur l'écran de connexion.
+         * Assemble l'application autour de deux sources de données. Sert à la production (via [create])
+         * et aux tests, qui y fournissent leurs propres données (module `shared:testing`).
          */
-        fun fake(
-            signedIn: Boolean = true,
+        fun createWith(
+            feedRepository: FeedRepository,
+            authRepository: AuthRepository,
         ): SharedDependencies =
             build(
                 module {
-                    single<FeedRepository> { FakeFeedRepository() }
-                    single<AuthRepository> {
-                        FakeAuthRepository(
-                            signedIn = signedIn,
-                        )
-                    }
+                    single<FeedRepository> { feedRepository }
+                    single<AuthRepository> { authRepository }
                 },
             )
 
