@@ -11,8 +11,9 @@ class YtblightApplication : Application() {
         )
     }
     val dependencies: SharedDependencies by lazy {
-        SharedDependencies.create(
-            platformAuth = platformAuth,
-        )
+        SharedDependencies
+            .create(
+                platformAuth = platformAuth,
+            )
     }
 }

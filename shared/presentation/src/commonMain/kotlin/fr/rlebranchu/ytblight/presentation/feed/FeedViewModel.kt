@@ -2,6 +2,7 @@ package fr.rlebranchu.ytblight.presentation.feed
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import fr.rlebranchu.ytblight.domain.auth.SignOutUseCase
 import fr.rlebranchu.ytblight.domain.error.DomainError
 import fr.rlebranchu.ytblight.domain.error.DomainResult
 import fr.rlebranchu.ytblight.domain.feed.GetFeedUseCase
@@ -15,6 +16,7 @@ import kotlin.time.Clock
 
 class FeedViewModel(
     private val getFeed: GetFeedUseCase,
+    private val signOutUseCase: SignOutUseCase,
     private val clock: Clock = Clock.System,
 ) : ViewModel() {
     private val mutableState =
@@ -44,6 +46,18 @@ class FeedViewModel(
         load(
             forceRefresh = false,
         )
+
+    /** Déconnecte, efface le fil en mémoire, puis demande à l'interface de revenir à la connexion. */
+    fun signOut() {
+        loadJob?.cancel()
+        viewModelScope.launch {
+            signOutUseCase()
+            mutableState.value =
+                FeedUiState(
+                    isSignedOut = true,
+                )
+        }
+    }
 
     private fun load(
         forceRefresh: Boolean,

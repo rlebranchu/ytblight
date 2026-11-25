@@ -11,9 +11,13 @@ import fr.rlebranchu.ytblight.external.YouTubeApi
 import fr.rlebranchu.ytblight.external.auth.PlatformAuth
 import fr.rlebranchu.ytblight.external.createYouTubeApi
 import fr.rlebranchu.ytblight.presentation.feed.FeedViewModel
-import fr.rlebranchu.ytblight.presentation.session.SessionViewModel
-import org.koin.core.Koin
+import fr.rlebranchu.ytblight.presentation.player.PlayerViewModel
+import fr.rlebranchu.ytblight.presentation.signin.SignInViewModel
+import fr.rlebranchu.ytblight.presentation.splash.SplashViewModel
+import org.koin.core.KoinApplication
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModel
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 
@@ -25,11 +29,22 @@ import org.koin.dsl.module
  * entre les tests.
  */
 class SharedDependencies private constructor(
-    private val koin: Koin,
+    internal val koinApplication: KoinApplication,
 ) {
-    fun sessionViewModel(): SessionViewModel = koin.get()
+    private val koin get() = koinApplication.koin
+
+    fun splashViewModel(): SplashViewModel = koin.get()
+
+    fun signInViewModel(): SignInViewModel = koin.get()
 
     fun feedViewModel(): FeedViewModel = koin.get()
+
+    fun playerViewModel(
+        videoId: String,
+    ): PlayerViewModel =
+        koin.get {
+            parametersOf(videoId)
+        }
 
     companion object {
         /** Vraie API YouTube ; la connexion Google est fournie par la plateforme. */
@@ -92,23 +107,36 @@ class SharedDependencies private constructor(
                             feedRepository = get(),
                         )
                     }
-                    factory {
-                        FeedViewModel(
-                            getFeed = get(),
+                }
+            val presentationModule =
+                module {
+                    viewModel {
+                        SplashViewModel(
+                            authRepository = get(),
                         )
                     }
-                    factory {
-                        SessionViewModel(
+                    viewModel {
+                        SignInViewModel(
                             authRepository = get(),
+                        )
+                    }
+                    viewModel {
+                        FeedViewModel(
+                            getFeed = get(),
                             signOutUseCase = get(),
+                        )
+                    }
+                    viewModel { parameters ->
+                        PlayerViewModel(
+                            videoId = parameters.get(),
                         )
                     }
                 }
             return SharedDependencies(
-                koin =
+                koinApplication =
                     koinApplication {
-                        modules(dataModule, domainModule)
-                    }.koin,
+                        modules(dataModule, domainModule, presentationModule)
+                    },
             )
         }
     }

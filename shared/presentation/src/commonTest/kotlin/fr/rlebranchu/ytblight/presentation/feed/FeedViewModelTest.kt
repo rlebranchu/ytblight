@@ -1,6 +1,9 @@
 package fr.rlebranchu.ytblight.presentation.feed
 
 import app.cash.turbine.test
+import fr.rlebranchu.ytblight.domain.auth.AuthRepository
+import fr.rlebranchu.ytblight.domain.auth.AuthState
+import fr.rlebranchu.ytblight.domain.auth.SignOutUseCase
 import fr.rlebranchu.ytblight.domain.error.DomainError
 import fr.rlebranchu.ytblight.domain.error.DomainResult
 import fr.rlebranchu.ytblight.domain.feed.FeedRepository
@@ -9,6 +12,8 @@ import fr.rlebranchu.ytblight.domain.model.Video
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -81,7 +86,34 @@ class FeedViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel() = FeedViewModel(getFeed = GetFeedUseCase(repository = repository), clock = fixedClock)
+    private val auth =
+        object : AuthRepository {
+            override val state: StateFlow<AuthState> = MutableStateFlow(AuthState.SIGNED_IN)
+
+            override suspend fun checkSession() = Unit
+
+            override fun onSignedIn() = Unit
+
+            override suspend fun signOut() {
+                signOutCalls++
+            }
+        }
+    private var signOutCalls = 0
+
+    private fun viewModel(
+        feedRepository: FeedRepository = repository,
+    ) = FeedViewModel(
+        getFeed =
+            GetFeedUseCase(
+                repository = feedRepository,
+            ),
+        signOutUseCase =
+            SignOutUseCase(
+                authRepository = auth,
+                feedRepository = feedRepository,
+            ),
+        clock = fixedClock,
+    )
 
     @Test
     fun startsLoadingThenShowsTheVideos() =
@@ -160,12 +192,8 @@ class FeedViewModelTest {
 
                 assertEquals(
                     feedError,
-                    FeedViewModel(
-                        getFeed =
-                            GetFeedUseCase(
-                                repository = scripted,
-                            ),
-                        clock = fixedClock,
+                    viewModel(
+                        feedRepository = scripted,
                     ).state.value.error,
                 )
             }
@@ -208,7 +236,9 @@ class FeedViewModelTest {
                             video(
                                 id = "V2",
                             ),
-                            video(id = "V1"),
+                            video(
+                                id = "V1",
+                            ),
                         ),
                 ),
             )
@@ -219,7 +249,9 @@ class FeedViewModelTest {
                             item(
                                 id = "V2",
                             ),
-                            item(id = "V1"),
+                            item(
+                                id = "V1",
+                            ),
                         ),
                 ),
                 viewModel.state.value,
@@ -331,6 +363,32 @@ class FeedViewModelTest {
                 listOf("NEW"),
                 viewModel.state.value.videos
                     .map { it.id },
+            )
+        }
+
+    @Test
+    fun signOutClearsTheFeedAndAsksToLeaveThePage() =
+        runTest {
+            repository.enqueue().complete(
+                DomainResult.Success(
+                    value =
+                        listOf(
+                            video(
+                                id = "V1",
+                            ),
+                        ),
+                ),
+            )
+            val viewModel = viewModel()
+
+            viewModel.signOut()
+
+            assertEquals(1, signOutCalls)
+            assertEquals(
+                FeedUiState(
+                    isSignedOut = true,
+                ),
+                viewModel.state.value,
             )
         }
 }

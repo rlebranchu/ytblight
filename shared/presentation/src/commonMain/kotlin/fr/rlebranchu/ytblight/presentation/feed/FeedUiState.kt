@@ -8,6 +8,8 @@ data class FeedUiState(
     /** Rafraîchissement : la liste reste affichée pendant ce temps. */
     val isRefreshing: Boolean = false,
     val error: FeedError? = null,
+    /** La déconnexion est terminée : l'interface revient à la page de connexion. */
+    val isSignedOut: Boolean = false,
 )
 
 /** Une énumération simple, directement utilisable en Swift et en TypeScript. */

@@ -1,72 +1,65 @@
-package fr.rlebranchu.ytblight.ui
+package fr.rlebranchu.ytblight.ui.signin
 
 import android.app.Activity
+import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import com.google.android.gms.common.api.ApiException
 import fr.rlebranchu.ytblight.auth.GmsPlatformAuth
+import fr.rlebranchu.ytblight.presentation.signin.SignInError
+import fr.rlebranchu.ytblight.presentation.signin.SignInViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-/** Ce que l'écran de connexion sait faire. Une fausse version sert aux tests d'interface. */
-interface SignInController {
-    val inProgress: Boolean
-    val errorMessage: String?
-
+/** Ce que la page de connexion sait déclencher : ouvrir la fenêtre Google. Une fausse version sert aux tests. */
+fun interface SignInStarter {
     fun start()
 }
 
+/** Fabrique du démarreur de connexion : Play Services en production, une fausse version dans les tests. */
+typealias SignInStarterFactory = @Composable (viewModel: SignInViewModel) -> SignInStarter
+
+/** Démarreur réel. La fenêtre Google (Android) reste ici ; le résultat est transmis au [SignInViewModel]. */
 @Composable
-fun rememberGmsSignInController(
+fun rememberGmsSignInStarter(
     auth: GmsPlatformAuth,
-    onSignedIn: () -> Unit,
-): SignInController {
+    viewModel: SignInViewModel,
+): SignInStarter {
     val scope = rememberCoroutineScope()
-    val currentOnSignedIn by rememberUpdatedState(onSignedIn)
-    val controller =
-        remember(auth) {
-            GmsSignInController(
+    val starter =
+        remember(auth, viewModel) {
+            GmsSignInStarter(
                 scope = scope,
                 auth = auth,
-                onSignedIn = { currentOnSignedIn() },
+                viewModel = viewModel,
             )
         }
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
-            controller.onConsentResult(
+            starter.onConsentResult(
                 ok = result.resultCode == Activity.RESULT_OK,
                 data = result.data,
             )
         }
-    controller.launchConsent = { request -> launcher.launch(request) }
-    return controller
+    starter.launchConsent = { request -> launcher.launch(request) }
+    return starter
 }
 
-private class GmsSignInController(
+private class GmsSignInStarter(
     private val scope: CoroutineScope,
     private val auth: GmsPlatformAuth,
-    private val onSignedIn: () -> Unit,
-) : SignInController {
-    override var inProgress by mutableStateOf(false)
-        private set
-    override var errorMessage by mutableStateOf<String?>(null)
-        private set
-
+    private val viewModel: SignInViewModel,
+) : SignInStarter {
     var launchConsent: (IntentSenderRequest) -> Unit = {}
 
     override fun start() {
-        if (inProgress) return
-        inProgress = true
-        errorMessage = null
+        if (viewModel.state.value.inProgress) return
+        viewModel.onStarted()
         scope.launch {
             try {
                 val result = auth.authorize()
@@ -75,7 +68,7 @@ private class GmsSignInController(
                     launchConsent(IntentSenderRequest.Builder(pendingIntent.intentSender).build())
                 } else {
                     finish(
-                        signedIn =
+                        accepted =
                             auth.accept(
                                 result = result,
                             ) != null,
@@ -87,7 +80,7 @@ private class GmsSignInController(
                 @Suppress("TooGenericExceptionCaught") e: Exception,
             ) {
                 fail(
-                    message = e.toMessage(),
+                    exception = e,
                 )
             }
         }
@@ -95,11 +88,11 @@ private class GmsSignInController(
 
     fun onConsentResult(
         ok: Boolean,
-        data: android.content.Intent?,
+        data: Intent?,
     ) {
         if (!ok) {
-            fail(
-                message = "Connexion annulée.",
+            viewModel.onFailed(
+                error = SignInError.CANCELLED,
             )
             return
         }
@@ -115,36 +108,47 @@ private class GmsSignInController(
                 @Suppress("TooGenericExceptionCaught") e: Exception,
             ) {
                 fail(
-                    message = e.toMessage(),
+                    exception = e,
                 )
                 return
             }
         finish(
-            signedIn = accepted,
+            accepted = accepted,
         )
     }
 
     private fun finish(
-        signedIn: Boolean,
+        accepted: Boolean,
     ) {
-        inProgress = false
-        if (signedIn) onSignedIn() else errorMessage = "La connexion a échoué."
+        if (accepted) {
+            viewModel.onSucceeded()
+        } else {
+            viewModel.onFailed(
+                error = SignInError.FAILED,
+            )
+        }
     }
 
     private fun fail(
-        message: String,
+        exception: Exception,
     ) {
-        inProgress = false
-        errorMessage = message
-    }
-
-    private fun Exception.toMessage(): String =
         when {
-            this is ApiException && statusCode == DEVELOPER_ERROR ->
-                "Configuration Google incorrecte (code 10) : vérifie le package et l'empreinte SHA-1 du client Android."
-            this is ApiException -> "Connexion impossible (code $statusCode)."
-            else -> "Connexion impossible : ${message ?: javaClass.simpleName}."
+            exception is ApiException && exception.statusCode == DEVELOPER_ERROR ->
+                viewModel.onFailed(
+                    error = SignInError.CONFIGURATION,
+                )
+            exception is ApiException ->
+                viewModel.onFailed(
+                    error = SignInError.UNAVAILABLE,
+                    detail = "code ${exception.statusCode}",
+                )
+            else ->
+                viewModel.onFailed(
+                    error = SignInError.UNAVAILABLE,
+                    detail = exception.message ?: exception.javaClass.simpleName,
+                )
         }
+    }
 
     private companion object {
         const val DEVELOPER_ERROR = 10

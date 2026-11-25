@@ -1,8 +1,8 @@
 package fr.rlebranchu.ytblight.umbrella
 
-import fr.rlebranchu.ytblight.domain.auth.AuthState
 import fr.rlebranchu.ytblight.external.auth.PlatformAuth
 import fr.rlebranchu.ytblight.presentation.feed.FeedUiState
+import fr.rlebranchu.ytblight.presentation.splash.SplashDestination
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -49,39 +49,48 @@ class SharedDependenciesTest {
     }
 
     @Test
-    fun fakeSessionStartsSignedInOrSignedOut() =
+    fun fakeSessionStartsOnTheFeedOrOnSignIn() =
         runTest {
-            assertEquals(
-                AuthState.SIGNED_IN,
+            val signedIn =
                 SharedDependencies
                     .fake(
                         signedIn = true,
-                    ).sessionViewModel()
-                    .state.value,
-            )
-            assertEquals(
-                AuthState.SIGNED_OUT,
+                    ).splashViewModel()
+            val signedOut =
                 SharedDependencies
                     .fake(
                         signedIn = false,
-                    ).sessionViewModel()
-                    .state.value,
-            )
+                    ).splashViewModel()
+
+            assertEquals(SplashDestination.FEED, signedIn.state.value.destination)
+            assertEquals(SplashDestination.SIGN_IN, signedOut.state.value.destination)
         }
 
     @Test
-    fun fakeSignOutReturnsToTheSignInState() =
+    fun fakeSignOutFromTheFeedAsksToReturnToSignIn() =
         runTest {
-            val session =
+            val feed =
                 SharedDependencies
                     .fake(
                         signedIn = true,
-                    ).sessionViewModel()
+                    ).feedViewModel()
 
-            session.signOut()
+            feed.signOut()
 
-            assertEquals(AuthState.SIGNED_OUT, session.state.value)
+            assertEquals(true, feed.state.value.isSignedOut)
         }
+
+    @Test
+    fun playerViewModelReceivesTheVideoId() {
+        val player =
+            SharedDependencies
+                .fake()
+                .playerViewModel(
+                    videoId = "abc",
+                )
+
+        assertEquals("abc", player.state.value.videoId)
+    }
 
     @Test
     fun realWiringReadsTheSessionFromThePlatform() =
@@ -95,12 +104,12 @@ class SharedDependenciesTest {
                     override suspend fun signOut() = Unit
                 }
 
-            val session =
+            val splash =
                 SharedDependencies
                     .create(
                         platformAuth = platform,
-                    ).sessionViewModel()
+                    ).splashViewModel()
 
-            assertEquals(AuthState.SIGNED_IN, session.state.value)
+            assertEquals(SplashDestination.FEED, splash.state.value.destination)
         }
 }

@@ -6,9 +6,10 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import fr.rlebranchu.ytblight.ui.SignInController
+import fr.rlebranchu.ytblight.presentation.signin.SignInViewModel
 import fr.rlebranchu.ytblight.ui.YtblightApp
 import fr.rlebranchu.ytblight.ui.YtblightTheme
+import fr.rlebranchu.ytblight.ui.signin.SignInStarter
 import fr.rlebranchu.ytblight.umbrella.SharedDependencies
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -21,23 +22,21 @@ class YtblightAppTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    private class FakeSignInController(
-        private val onSignedIn: () -> Unit,
-    ) : SignInController {
+    private class FakeSignInStarter(
+        private val viewModel: SignInViewModel,
+    ) : SignInStarter {
         var starts = 0
-        override val inProgress = false
-        override val errorMessage: String? = null
 
         override fun start() {
             starts++
-            onSignedIn()
+            viewModel.onSucceeded()
         }
     }
 
     private fun launch(
         signedIn: Boolean,
-    ): List<FakeSignInController> {
-        val controllers = mutableListOf<FakeSignInController>()
+    ): List<FakeSignInStarter> {
+        val starters = mutableListOf<FakeSignInStarter>()
         composeRule.setContent {
             YtblightTheme {
                 YtblightApp(
@@ -45,17 +44,17 @@ class YtblightAppTest {
                         SharedDependencies.fake(
                             signedIn = signedIn,
                         ),
-                    signInController = { onSignedIn ->
+                    signInStarter = { viewModel ->
                         remember {
-                            FakeSignInController(
-                                onSignedIn = onSignedIn,
-                            ).also(controllers::add)
+                            FakeSignInStarter(
+                                viewModel = viewModel,
+                            ).also(starters::add)
                         }
                     },
                 )
             }
         }
-        return controllers
+        return starters
     }
 
     @Test
@@ -91,7 +90,7 @@ class YtblightAppTest {
 
     @Test
     fun signedOutUserSeesTheSignInScreenThenTheFeed() {
-        val controllers =
+        val starters =
             launch(
                 signedIn = false,
             )
@@ -102,7 +101,7 @@ class YtblightAppTest {
         composeRule.onNodeWithText("Se connecter avec Google").performClick()
 
         composeRule.onNodeWithText("Un long format sur Kotlin Multiplatform").assertIsDisplayed()
-        assertEquals(1, controllers.sumOf { it.starts })
+        assertEquals(1, starters.sumOf { it.starts })
     }
 
     @Test

@@ -1,4 +1,4 @@
-package fr.rlebranchu.ytblight.ui
+package fr.rlebranchu.ytblight.ui.feed
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +23,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,14 +32,39 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import fr.rlebranchu.ytblight.presentation.feed.FeedError
 import fr.rlebranchu.ytblight.presentation.feed.FeedItemUi
 import fr.rlebranchu.ytblight.presentation.feed.FeedUiState
+import fr.rlebranchu.ytblight.presentation.feed.FeedViewModel
+import org.koin.compose.viewmodel.koinViewModel
+
+@Composable
+fun FeedRoute(
+    onOpenVideo: (String) -> Unit,
+    onSignedOut: () -> Unit,
+) {
+    val viewModel: FeedViewModel = koinViewModel()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(state.isSignedOut) {
+        if (state.isSignedOut) onSignedOut()
+    }
+
+    FeedScreen(
+        state = state,
+        onRefresh = viewModel::refresh,
+        onRetry = viewModel::retry,
+        onOpenVideo = onOpenVideo,
+        onSignOut = viewModel::signOut,
+        onReconnect = viewModel::signOut,
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FeedScreen(
+private fun FeedScreen(
     state: FeedUiState,
     onRefresh: () -> Unit,
     onRetry: () -> Unit,
@@ -192,8 +219,12 @@ private fun VideoRow(
                     Modifier
                         .align(Alignment.BottomEnd)
                         .padding(8.dp)
-                        .background(Color.Black.copy(alpha = 0.8f), RoundedCornerShape(4.dp))
-                        .padding(horizontal = 6.dp, vertical = 2.dp),
+                        .background(
+                            Color.Black.copy(
+                                alpha = 0.8f,
+                            ),
+                            RoundedCornerShape(4.dp),
+                        ).padding(horizontal = 6.dp, vertical = 2.dp),
             )
         }
         Text(

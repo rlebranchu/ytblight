@@ -1,4 +1,4 @@
-package fr.rlebranchu.ytblight.ui
+package fr.rlebranchu.ytblight.ui.player
 
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
@@ -25,26 +26,53 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+import fr.rlebranchu.ytblight.presentation.player.PlayerViewModel
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 /**
  * Lecteur officiel YouTube (iframe). Seul écran où le paysage est autorisé.
- * Pas de lecture suivante : le lecteur se ferme à la fin de la vidéo.
+ * Pas de lecture suivante : le lecteur se ferme à la fin de la vidéo (voir `PlayerViewModel`).
  */
 @Composable
-fun PlayerScreen(
+fun PlayerRoute(
     videoId: String,
+    onClose: () -> Unit,
+) {
+    val viewModel: PlayerViewModel =
+        koinViewModel(
+            parameters = { parametersOf(videoId) },
+        )
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(state.isEnded) {
+        if (state.isEnded) onClose()
+    }
+
+    PlayerScreen(
+        videoId = state.videoId,
+        onVideoEnded = viewModel::onVideoEnded,
+        onClose = onClose,
+    )
+}
+
+@Composable
+private fun PlayerScreen(
+    videoId: String,
+    onVideoEnded: () -> Unit,
     onClose: () -> Unit,
 ) {
     val activity = LocalActivity.current
     val view = LocalView.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-    val currentOnClose by rememberUpdatedState(onClose)
+    val currentOnVideoEnded by rememberUpdatedState(onVideoEnded)
 
     DisposableEffect(activity) {
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR
@@ -91,7 +119,7 @@ fun PlayerScreen(
                                 youTubePlayer: YouTubePlayer,
                                 state: PlayerConstants.PlayerState,
                             ) {
-                                if (state == PlayerConstants.PlayerState.ENDED) currentOnClose()
+                                if (state == PlayerConstants.PlayerState.ENDED) currentOnVideoEnded()
                             }
                         },
                         options,
