@@ -5,8 +5,8 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.shared.domain)
-            implementation(projects.shared.external)
+            api(projects.shared.domain)
+            api(projects.shared.external)
             implementation(projects.shared.local)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)

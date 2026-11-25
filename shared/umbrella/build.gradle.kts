@@ -34,5 +34,8 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.kermit)
         }
+        commonTest.dependencies {
+            implementation(libs.kotlinx.coroutines.test)
+        }
     }
 }
