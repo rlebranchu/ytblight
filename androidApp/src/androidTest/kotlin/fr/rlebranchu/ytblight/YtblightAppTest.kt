@@ -7,7 +7,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import fr.rlebranchu.ytblight.presentation.signin.SignInViewModel
-import fr.rlebranchu.ytblight.testing.fakeDependencies
 import fr.rlebranchu.ytblight.ui.YtblightApp
 import fr.rlebranchu.ytblight.ui.YtblightTheme
 import fr.rlebranchu.ytblight.ui.signin.SignInStarter

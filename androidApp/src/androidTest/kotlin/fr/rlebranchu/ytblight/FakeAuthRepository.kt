@@ -1,4 +1,4 @@
-package fr.rlebranchu.ytblight.testing
+package fr.rlebranchu.ytblight
 
 import fr.rlebranchu.ytblight.domain.auth.AuthRepository
 import fr.rlebranchu.ytblight.domain.auth.AuthState

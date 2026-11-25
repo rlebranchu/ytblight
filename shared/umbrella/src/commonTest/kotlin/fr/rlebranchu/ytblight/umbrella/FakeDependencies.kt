@@ -1,11 +1,5 @@
-package fr.rlebranchu.ytblight.testing
+package fr.rlebranchu.ytblight.umbrella
 
-import fr.rlebranchu.ytblight.umbrella.SharedDependencies
-
-/**
- * Application entière sur données factices : aucun appel à Google, aucun quota consommé.
- * @param signedIn `false` pour démarrer sur l'écran de connexion.
- */
 fun fakeDependencies(
     signedIn: Boolean = true,
 ): SharedDependencies =

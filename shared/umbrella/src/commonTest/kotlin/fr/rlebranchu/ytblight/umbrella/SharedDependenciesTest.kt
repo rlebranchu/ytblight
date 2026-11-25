@@ -3,7 +3,6 @@ package fr.rlebranchu.ytblight.umbrella
 import fr.rlebranchu.ytblight.external.auth.PlatformAuth
 import fr.rlebranchu.ytblight.presentation.feed.FeedUiState
 import fr.rlebranchu.ytblight.presentation.splash.SplashDestination
-import fr.rlebranchu.ytblight.testing.fakeDependencies
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -36,7 +35,7 @@ class SharedDependenciesTest {
                     .feedViewModel()
                     .state.value
 
-            assertEquals(listOf("fake-4", "fake-3", "fake-1"), state.videos.map { it.id })
+            assertEquals(listOf("new", "old"), state.videos.map { it.id })
             assertNull(state.error)
             assertEquals(false, state.isLoading)
         }

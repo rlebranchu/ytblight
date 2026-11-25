@@ -41,7 +41,6 @@ kotlin {
             api(libs.koin.core)
         }
         commonTest.dependencies {
-            implementation(projects.shared.testing)
             implementation(libs.kotlinx.coroutines.test)
         }
     }
