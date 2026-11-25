@@ -49,8 +49,8 @@ Seul `umbrella` connaît tous les modules.
 ## Avancement
 
 1. [x] Socle du monorepo (modules, build-logic, catalogue de versions, ktlint, CI)
-2. [ ] Fil d'abonnements en code partagé
-3. [ ] Android de bout en bout
+2. [x] Fil d'abonnements en code partagé
+3. [ ] Android de bout en bout (code et tests d'interface prêts, connexion à valider sur un appareil avec un compte Google)
 4. [ ] Prototype web
 5. [ ] iOS de bout en bout
 6. [ ] Web complet et déployé sur GitHub Pages

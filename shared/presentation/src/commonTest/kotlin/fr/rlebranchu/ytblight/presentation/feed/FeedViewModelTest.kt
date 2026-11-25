@@ -17,6 +17,8 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
@@ -39,6 +41,14 @@ class FeedViewModelTest {
 
     private val repository = ScriptedRepository()
 
+    private val fixedClock =
+        object : Clock {
+            override fun now(): Instant = Instant.fromEpochMilliseconds(0) + 3.days
+        }
+
+    private fun item(id: String) =
+        FeedItemUi(id, "Titre $id", "Chaîne", null, durationLabel = "10:00", publishedLabel = "il y a 3 jours")
+
     private fun video(id: String) =
         Video(id, "Titre $id", "UC1", "Chaîne", null, Instant.fromEpochMilliseconds(0), 10.minutes)
 
@@ -52,7 +62,7 @@ class FeedViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel() = FeedViewModel(GetFeedUseCase(repository))
+    private fun viewModel() = FeedViewModel(GetFeedUseCase(repository), fixedClock)
 
     @Test
     fun startsLoadingThenShowsTheVideos() =
@@ -63,7 +73,7 @@ class FeedViewModelTest {
             viewModel.state.test {
                 assertEquals(FeedUiState(isLoading = true), awaitItem())
                 response.complete(DomainResult.Success(listOf(video("V1"))))
-                assertEquals(FeedUiState(videos = listOf(video("V1"))), awaitItem())
+                assertEquals(FeedUiState(videos = listOf(item("V1"))), awaitItem())
             }
         }
 
@@ -90,7 +100,7 @@ class FeedViewModelTest {
                 val scripted = ScriptedRepository()
                 scripted.enqueue().complete(DomainResult.Failure(domainError))
 
-                assertEquals(feedError, FeedViewModel(GetFeedUseCase(scripted)).state.value.error)
+                assertEquals(feedError, FeedViewModel(GetFeedUseCase(scripted), fixedClock).state.value.error)
             }
         }
 
@@ -104,11 +114,11 @@ class FeedViewModelTest {
             viewModel.refresh()
 
             assertEquals(
-                FeedUiState(videos = listOf(video("V1")), isRefreshing = true),
+                FeedUiState(videos = listOf(item("V1")), isRefreshing = true),
                 viewModel.state.value,
             )
             refreshed.complete(DomainResult.Success(listOf(video("V2"), video("V1"))))
-            assertEquals(FeedUiState(videos = listOf(video("V2"), video("V1"))), viewModel.state.value)
+            assertEquals(FeedUiState(videos = listOf(item("V2"), item("V1"))), viewModel.state.value)
             assertEquals(listOf(false, true), repository.requests)
         }
 
@@ -122,7 +132,7 @@ class FeedViewModelTest {
             viewModel.refresh()
 
             assertEquals(
-                FeedUiState(videos = listOf(video("V1")), error = FeedError.NETWORK),
+                FeedUiState(videos = listOf(item("V1")), error = FeedError.NETWORK),
                 viewModel.state.value,
             )
         }
@@ -137,7 +147,7 @@ class FeedViewModelTest {
             viewModel.retry()
 
             assertEquals(listOf(false, false), repository.requests)
-            assertEquals(FeedUiState(videos = listOf(video("V1"))), viewModel.state.value)
+            assertEquals(FeedUiState(videos = listOf(item("V1"))), viewModel.state.value)
         }
 
     @Test
