@@ -29,3 +29,6 @@ fun HttpClientConfig<*>.configureYouTube(tokens: AccessTokenProvider) {
 
 /** Client de production : le moteur (OkHttp, Darwin ou Js) est choisi par la plateforme. */
 fun createYouTubeHttpClient(tokens: AccessTokenProvider): HttpClient = HttpClient { configureYouTube(tokens) }
+
+/** L'API prête à l'emploi : les autres modules n'ont pas besoin de connaître Ktor. */
+fun createYouTubeApi(tokens: AccessTokenProvider): YouTubeApi = KtorYouTubeApi(createYouTubeHttpClient(tokens))

@@ -15,6 +15,8 @@ import kotlin.time.Instant
 class FakeFeedRepository : FeedRepository {
     override suspend fun loadFeed(forceRefresh: Boolean): DomainResult<List<Video>> = DomainResult.Success(VIDEOS)
 
+    override suspend fun clear() = Unit
+
     private companion object {
         val VIDEOS =
             listOf(

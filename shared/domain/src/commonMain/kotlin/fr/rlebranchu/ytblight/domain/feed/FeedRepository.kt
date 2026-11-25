@@ -10,4 +10,7 @@ interface FeedRepository {
      * `true` interroge à nouveau l'API (action explicite de l'utilisateur).
      */
     suspend fun loadFeed(forceRefresh: Boolean): DomainResult<List<Video>>
+
+    /** Oublie le fil en mémoire (déconnexion). */
+    suspend fun clear()
 }

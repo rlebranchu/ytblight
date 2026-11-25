@@ -33,6 +33,8 @@ class FeedViewModelTest {
             requests += forceRefresh
             return responses.removeFirst().await()
         }
+
+        override suspend fun clear() = Unit
     }
 
     private val repository = ScriptedRepository()
