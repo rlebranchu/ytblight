@@ -38,9 +38,21 @@ class SharedDependencies private constructor(
         ): SharedDependencies =
             build(
                 module {
-                    single<YouTubeApi> { createYouTubeApi(platformAuth) }
-                    single<FeedRepository> { FeedRepositoryImpl(get()) }
-                    single<AuthRepository> { AuthRepositoryImpl(platformAuth) }
+                    single<YouTubeApi> {
+                        createYouTubeApi(
+                            tokens = platformAuth,
+                        )
+                    }
+                    single<FeedRepository> {
+                        FeedRepositoryImpl(
+                            api = get(),
+                        )
+                    }
+                    single<AuthRepository> {
+                        AuthRepositoryImpl(
+                            platformAuth = platformAuth,
+                        )
+                    }
                 },
             )
 
@@ -54,7 +66,11 @@ class SharedDependencies private constructor(
             build(
                 module {
                     single<FeedRepository> { FakeFeedRepository() }
-                    single<AuthRepository> { FakeAuthRepository(signedIn) }
+                    single<AuthRepository> {
+                        FakeAuthRepository(
+                            signedIn = signedIn,
+                        )
+                    }
                 },
             )
 
@@ -64,12 +80,36 @@ class SharedDependencies private constructor(
             val domainModule =
                 module {
                     factory { FeedPolicy() }
-                    factory { GetFeedUseCase(get(), get()) }
-                    factory { SignOutUseCase(get(), get()) }
-                    factory { FeedViewModel(get()) }
-                    factory { SessionViewModel(get(), get()) }
+                    factory {
+                        GetFeedUseCase(
+                            repository = get(),
+                            policy = get(),
+                        )
+                    }
+                    factory {
+                        SignOutUseCase(
+                            authRepository = get(),
+                            feedRepository = get(),
+                        )
+                    }
+                    factory {
+                        FeedViewModel(
+                            getFeed = get(),
+                        )
+                    }
+                    factory {
+                        SessionViewModel(
+                            authRepository = get(),
+                            signOutUseCase = get(),
+                        )
+                    }
                 }
-            return SharedDependencies(koinApplication { modules(dataModule, domainModule) }.koin)
+            return SharedDependencies(
+                koin =
+                    koinApplication {
+                        modules(dataModule, domainModule)
+                    }.koin,
+            )
         }
     }
 }

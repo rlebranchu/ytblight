@@ -54,15 +54,17 @@ class SharedDependenciesTest {
             assertEquals(
                 AuthState.SIGNED_IN,
                 SharedDependencies
-                    .fake(signedIn = true)
-                    .sessionViewModel()
+                    .fake(
+                        signedIn = true,
+                    ).sessionViewModel()
                     .state.value,
             )
             assertEquals(
                 AuthState.SIGNED_OUT,
                 SharedDependencies
-                    .fake(signedIn = false)
-                    .sessionViewModel()
+                    .fake(
+                        signedIn = false,
+                    ).sessionViewModel()
                     .state.value,
             )
         }
@@ -70,7 +72,11 @@ class SharedDependenciesTest {
     @Test
     fun fakeSignOutReturnsToTheSignInState() =
         runTest {
-            val session = SharedDependencies.fake(signedIn = true).sessionViewModel()
+            val session =
+                SharedDependencies
+                    .fake(
+                        signedIn = true,
+                    ).sessionViewModel()
 
             session.signOut()
 
@@ -89,7 +95,11 @@ class SharedDependenciesTest {
                     override suspend fun signOut() = Unit
                 }
 
-            val session = SharedDependencies.create(platform).sessionViewModel()
+            val session =
+                SharedDependencies
+                    .create(
+                        platformAuth = platform,
+                    ).sessionViewModel()
 
             assertEquals(AuthState.SIGNED_IN, session.state.value)
         }

@@ -50,11 +50,26 @@ class FeedViewModelTest {
 
     private fun item(
         id: String,
-    ) = FeedItemUi(id, "Titre $id", "Chaîne", null, durationLabel = "10:00", publishedLabel = "il y a 3 jours")
+    ) = FeedItemUi(
+        id = id,
+        title = "Titre $id",
+        channelTitle = "Chaîne",
+        thumbnailUrl = null,
+        durationLabel = "10:00",
+        publishedLabel = "il y a 3 jours",
+    )
 
     private fun video(
         id: String,
-    ) = Video(id, "Titre $id", "UC1", "Chaîne", null, Instant.fromEpochMilliseconds(0), 10.minutes)
+    ) = Video(
+        id = id,
+        title = "Titre $id",
+        channelId = "UC1",
+        channelTitle = "Chaîne",
+        thumbnailUrl = null,
+        publishedAt = Instant.fromEpochMilliseconds(0),
+        duration = 10.minutes,
+    )
 
     @BeforeTest
     fun setUp() {
@@ -66,7 +81,7 @@ class FeedViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel() = FeedViewModel(GetFeedUseCase(repository), fixedClock)
+    private fun viewModel() = FeedViewModel(getFeed = GetFeedUseCase(repository = repository), clock = fixedClock)
 
     @Test
     fun startsLoadingThenShowsTheVideos() =
@@ -75,20 +90,53 @@ class FeedViewModelTest {
             val viewModel = viewModel()
 
             viewModel.state.test {
-                assertEquals(FeedUiState(isLoading = true), awaitItem())
-                response.complete(DomainResult.Success(listOf(video("V1"))))
-                assertEquals(FeedUiState(videos = listOf(item("V1"))), awaitItem())
+                assertEquals(
+                    FeedUiState(
+                        isLoading = true,
+                    ),
+                    awaitItem(),
+                )
+                response.complete(
+                    DomainResult.Success(
+                        value =
+                            listOf(
+                                video(
+                                    id = "V1",
+                                ),
+                            ),
+                    ),
+                )
+                assertEquals(
+                    FeedUiState(
+                        videos =
+                            listOf(
+                                item(
+                                    id = "V1",
+                                ),
+                            ),
+                    ),
+                    awaitItem(),
+                )
             }
         }
 
     @Test
     fun showsAnErrorWhenTheFirstLoadFails() =
         runTest {
-            repository.enqueue().complete(DomainResult.Failure(DomainError.QuotaExceeded))
+            repository.enqueue().complete(
+                DomainResult.Failure(
+                    error = DomainError.QuotaExceeded,
+                ),
+            )
 
             val state = viewModel().state.value
 
-            assertEquals(FeedUiState(error = FeedError.QUOTA_EXCEEDED), state)
+            assertEquals(
+                FeedUiState(
+                    error = FeedError.QUOTA_EXCEEDED,
+                ),
+                state,
+            )
         }
 
     @Test
@@ -98,45 +146,119 @@ class FeedViewModelTest {
                 mapOf(
                     DomainError.NotSignedIn to FeedError.NOT_SIGNED_IN,
                     DomainError.Network to FeedError.NETWORK,
-                    DomainError.Unknown("x") to FeedError.UNKNOWN,
+                    DomainError.Unknown(
+                        message = "x",
+                    ) to FeedError.UNKNOWN,
                 )
             expected.forEach { (domainError, feedError) ->
                 val scripted = ScriptedRepository()
-                scripted.enqueue().complete(DomainResult.Failure(domainError))
+                scripted.enqueue().complete(
+                    DomainResult.Failure(
+                        error = domainError,
+                    ),
+                )
 
-                assertEquals(feedError, FeedViewModel(GetFeedUseCase(scripted), fixedClock).state.value.error)
+                assertEquals(
+                    feedError,
+                    FeedViewModel(
+                        getFeed =
+                            GetFeedUseCase(
+                                repository = scripted,
+                            ),
+                        clock = fixedClock,
+                    ).state.value.error,
+                )
             }
         }
 
     @Test
     fun keepsTheListVisibleWhileRefreshing() =
         runTest {
-            repository.enqueue().complete(DomainResult.Success(listOf(video("V1"))))
+            repository.enqueue().complete(
+                DomainResult.Success(
+                    value =
+                        listOf(
+                            video(
+                                id = "V1",
+                            ),
+                        ),
+                ),
+            )
             val viewModel = viewModel()
             val refreshed = repository.enqueue()
 
             viewModel.refresh()
 
             assertEquals(
-                FeedUiState(videos = listOf(item("V1")), isRefreshing = true),
+                FeedUiState(
+                    videos =
+                        listOf(
+                            item(
+                                id = "V1",
+                            ),
+                        ),
+                    isRefreshing = true,
+                ),
                 viewModel.state.value,
             )
-            refreshed.complete(DomainResult.Success(listOf(video("V2"), video("V1"))))
-            assertEquals(FeedUiState(videos = listOf(item("V2"), item("V1"))), viewModel.state.value)
+            refreshed.complete(
+                DomainResult.Success(
+                    value =
+                        listOf(
+                            video(
+                                id = "V2",
+                            ),
+                            video(id = "V1"),
+                        ),
+                ),
+            )
+            assertEquals(
+                FeedUiState(
+                    videos =
+                        listOf(
+                            item(
+                                id = "V2",
+                            ),
+                            item(id = "V1"),
+                        ),
+                ),
+                viewModel.state.value,
+            )
             assertEquals(listOf(false, true), repository.requests)
         }
 
     @Test
     fun keepsTheListWhenARefreshFails() =
         runTest {
-            repository.enqueue().complete(DomainResult.Success(listOf(video("V1"))))
+            repository.enqueue().complete(
+                DomainResult.Success(
+                    value =
+                        listOf(
+                            video(
+                                id = "V1",
+                            ),
+                        ),
+                ),
+            )
             val viewModel = viewModel()
-            repository.enqueue().complete(DomainResult.Failure(DomainError.Network))
+            repository.enqueue().complete(
+                DomainResult.Failure(
+                    error = DomainError.Network,
+                ),
+            )
 
             viewModel.refresh()
 
             assertEquals(
-                FeedUiState(videos = listOf(item("V1")), error = FeedError.NETWORK),
+                FeedUiState(
+                    videos =
+                        listOf(
+                            item(
+                                id = "V1",
+                            ),
+                        ),
+                    error = FeedError.NETWORK,
+                ),
                 viewModel.state.value,
             )
         }
@@ -144,14 +266,37 @@ class FeedViewModelTest {
     @Test
     fun retryAsksTheRepositoryWithoutForcingARefresh() =
         runTest {
-            repository.enqueue().complete(DomainResult.Failure(DomainError.Network))
+            repository.enqueue().complete(
+                DomainResult.Failure(
+                    error = DomainError.Network,
+                ),
+            )
             val viewModel = viewModel()
-            repository.enqueue().complete(DomainResult.Success(listOf(video("V1"))))
+            repository.enqueue().complete(
+                DomainResult.Success(
+                    value =
+                        listOf(
+                            video(
+                                id = "V1",
+                            ),
+                        ),
+                ),
+            )
 
             viewModel.retry()
 
             assertEquals(listOf(false, false), repository.requests)
-            assertEquals(FeedUiState(videos = listOf(item("V1"))), viewModel.state.value)
+            assertEquals(
+                FeedUiState(
+                    videos =
+                        listOf(
+                            item(
+                                id = "V1",
+                            ),
+                        ),
+                ),
+                viewModel.state.value,
+            )
         }
 
     @Test
@@ -159,10 +304,28 @@ class FeedViewModelTest {
         runTest {
             val slow = repository.enqueue()
             val viewModel = viewModel()
-            repository.enqueue().complete(DomainResult.Success(listOf(video("NEW"))))
+            repository.enqueue().complete(
+                DomainResult.Success(
+                    value =
+                        listOf(
+                            video(
+                                id = "NEW",
+                            ),
+                        ),
+                ),
+            )
 
             viewModel.refresh()
-            slow.complete(DomainResult.Success(listOf(video("OLD"))))
+            slow.complete(
+                DomainResult.Success(
+                    value =
+                        listOf(
+                            video(
+                                id = "OLD",
+                            ),
+                        ),
+                ),
+            )
 
             assertEquals(
                 listOf("NEW"),

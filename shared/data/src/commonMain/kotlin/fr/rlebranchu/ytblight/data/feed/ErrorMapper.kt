@@ -16,8 +16,14 @@ internal fun Throwable.toDomainError(): DomainError =
             when {
                 statusCode == HTTP_UNAUTHORIZED -> DomainError.NotSignedIn
                 statusCode == HTTP_FORBIDDEN && reason in QUOTA_REASONS -> DomainError.QuotaExceeded
-                else -> DomainError.Unknown(message)
+                else ->
+                    DomainError.Unknown(
+                        message = message,
+                    )
             }
         is YouTubeNetworkException -> DomainError.Network
-        else -> DomainError.Unknown(message)
+        else ->
+            DomainError.Unknown(
+                message = message,
+            )
     }

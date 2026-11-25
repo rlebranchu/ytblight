@@ -17,20 +17,33 @@ class FeedViewModel(
     private val getFeed: GetFeedUseCase,
     private val clock: Clock = Clock.System,
 ) : ViewModel() {
-    private val mutableState = MutableStateFlow(FeedUiState(isLoading = true))
+    private val mutableState =
+        MutableStateFlow(
+            FeedUiState(
+                isLoading = true,
+            ),
+        )
     val state: StateFlow<FeedUiState> = mutableState.asStateFlow()
 
     private var loadJob: Job? = null
 
     init {
-        load(forceRefresh = false)
+        load(
+            forceRefresh = false,
+        )
     }
 
     /** Action de l'utilisateur (tirer pour rafraîchir) : interroge à nouveau l'API. */
-    fun refresh() = load(forceRefresh = true)
+    fun refresh() =
+        load(
+            forceRefresh = true,
+        )
 
     /** Ré-essaie après une erreur, en repartant du cache s'il existe. */
-    fun retry() = load(forceRefresh = false)
+    fun retry() =
+        load(
+            forceRefresh = false,
+        )
 
     private fun load(
         forceRefresh: Boolean,
@@ -45,14 +58,30 @@ class FeedViewModel(
                         error = null,
                     )
                 }
-                when (val result = getFeed(forceRefresh)) {
+                when (
+                    val result =
+                        getFeed(
+                            forceRefresh = forceRefresh,
+                        )
+                ) {
                     is DomainResult.Success ->
                         mutableState.value =
-                            FeedUiState(videos = result.value.map { it.toItemUi(clock.now()) })
+                            FeedUiState(
+                                videos =
+                                    result.value.map {
+                                        it.toItemUi(
+                                            now = clock.now(),
+                                        )
+                                    },
+                            )
                     // On garde la liste déjà affichée : une erreur ne doit pas vider l'écran.
                     is DomainResult.Failure ->
                         mutableState.update {
-                            it.copy(isLoading = false, isRefreshing = false, error = result.error.toFeedError())
+                            it.copy(
+                                isLoading = false,
+                                isRefreshing = false,
+                                error = result.error.toFeedError(),
+                            )
                         }
                 }
             }

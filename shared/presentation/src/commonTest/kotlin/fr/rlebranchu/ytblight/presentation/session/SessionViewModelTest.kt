@@ -45,7 +45,10 @@ class SessionViewModelTest {
 
         override suspend fun loadFeed(
             forceRefresh: Boolean,
-        ): DomainResult<List<Video>> = DomainResult.Success(emptyList())
+        ): DomainResult<List<Video>> =
+            DomainResult.Success(
+                value = emptyList(),
+            )
 
         override suspend fun clear() {
             cleared = true
@@ -67,26 +70,49 @@ class SessionViewModelTest {
     private fun viewModel(
         sessionIsValid: Boolean,
     ): SessionViewModel {
-        val auth = FakeAuthRepository(sessionIsValid)
-        return SessionViewModel(auth, SignOutUseCase(auth, feed))
+        val auth =
+            FakeAuthRepository(
+                sessionIsValid = sessionIsValid,
+            )
+        return SessionViewModel(
+            authRepository = auth,
+            signOutUseCase =
+                SignOutUseCase(
+                    authRepository = auth,
+                    feedRepository = feed,
+                ),
+        )
     }
 
     @Test
     fun isSignedInWhenASessionAlreadyExists() =
         runTest {
-            assertEquals(AuthState.SIGNED_IN, viewModel(sessionIsValid = true).state.value)
+            assertEquals(
+                AuthState.SIGNED_IN,
+                viewModel(
+                    sessionIsValid = true,
+                ).state.value,
+            )
         }
 
     @Test
     fun isSignedOutWhenThereIsNoSession() =
         runTest {
-            assertEquals(AuthState.SIGNED_OUT, viewModel(sessionIsValid = false).state.value)
+            assertEquals(
+                AuthState.SIGNED_OUT,
+                viewModel(
+                    sessionIsValid = false,
+                ).state.value,
+            )
         }
 
     @Test
     fun becomesSignedInAfterTheNativeSignIn() =
         runTest {
-            val viewModel = viewModel(sessionIsValid = false)
+            val viewModel =
+                viewModel(
+                    sessionIsValid = false,
+                )
 
             viewModel.onSignedIn()
 
@@ -96,7 +122,10 @@ class SessionViewModelTest {
     @Test
     fun signOutEndsTheSessionAndClearsTheFeed() =
         runTest {
-            val viewModel = viewModel(sessionIsValid = true)
+            val viewModel =
+                viewModel(
+                    sessionIsValid = true,
+                )
 
             viewModel.signOut()
 

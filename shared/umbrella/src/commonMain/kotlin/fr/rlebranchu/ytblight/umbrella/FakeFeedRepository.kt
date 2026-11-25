@@ -24,20 +24,49 @@ class FakeFeedRepository(
     ): DomainResult<List<Video>> {
         val now = clock.now()
         return DomainResult.Success(
-            listOf(
-                video(
-                    "fake-1",
-                    "Un long format sur Kotlin Multiplatform",
-                    "Chaîne Kotlin",
-                    24.minutes + 10.seconds,
-                    now,
-                    5,
+            value =
+                listOf(
+                    video(
+                        id = "fake-1",
+                        title = "Un long format sur Kotlin Multiplatform",
+                        channel = "Chaîne Kotlin",
+                        duration = 24.minutes + 10.seconds,
+                        now = now,
+                        daysAgo = 5,
+                    ),
+                    video(
+                        id = "fake-2",
+                        title = "Un court extrait",
+                        channel = "Chaîne Kotlin",
+                        duration = 45.seconds,
+                        now = now,
+                        daysAgo = 4,
+                    ),
+                    video(
+                        id = "fake-3",
+                        title = "Visite guidée d'un atelier",
+                        channel = "Atelier",
+                        duration = 12.minutes + 3.seconds,
+                        now = now,
+                        daysAgo = 3,
+                    ),
+                    video(
+                        id = "fake-4",
+                        title = "Conférence d'une heure",
+                        channel = "Conférences",
+                        duration = 62.minutes,
+                        now = now,
+                        daysAgo = 2,
+                    ),
+                    video(
+                        id = "fake-5",
+                        title = "Un autre Short",
+                        channel = "Atelier",
+                        duration = 30.seconds,
+                        now = now,
+                        daysAgo = 1,
+                    ),
                 ),
-                video("fake-2", "Un court extrait", "Chaîne Kotlin", 45.seconds, now, 4),
-                video("fake-3", "Visite guidée d'un atelier", "Atelier", 12.minutes + 3.seconds, now, 3),
-                video("fake-4", "Conférence d'une heure", "Conférences", 62.minutes, now, 2),
-                video("fake-5", "Un autre Short", "Atelier", 30.seconds, now, 1),
-            ),
         )
     }
 

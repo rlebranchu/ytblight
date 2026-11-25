@@ -32,10 +32,20 @@ fun rememberGmsSignInController(
 ): SignInController {
     val scope = rememberCoroutineScope()
     val currentOnSignedIn by rememberUpdatedState(onSignedIn)
-    val controller = remember(auth) { GmsSignInController(scope, auth) { currentOnSignedIn() } }
+    val controller =
+        remember(auth) {
+            GmsSignInController(
+                scope = scope,
+                auth = auth,
+                onSignedIn = { currentOnSignedIn() },
+            )
+        }
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
-            controller.onConsentResult(result.resultCode == Activity.RESULT_OK, result.data)
+            controller.onConsentResult(
+                ok = result.resultCode == Activity.RESULT_OK,
+                data = result.data,
+            )
         }
     controller.launchConsent = { request -> launcher.launch(request) }
     return controller
@@ -64,14 +74,21 @@ private class GmsSignInController(
                 if (result.hasResolution() && pendingIntent != null) {
                     launchConsent(IntentSenderRequest.Builder(pendingIntent.intentSender).build())
                 } else {
-                    finish(auth.accept(result) != null)
+                    finish(
+                        signedIn =
+                            auth.accept(
+                                result = result,
+                            ) != null,
+                    )
                 }
             } catch (e: CancellationException) {
                 throw e
             } catch (
                 @Suppress("TooGenericExceptionCaught") e: Exception,
             ) {
-                fail(e.toMessage())
+                fail(
+                    message = e.toMessage(),
+                )
             }
         }
     }
@@ -81,19 +98,30 @@ private class GmsSignInController(
         data: android.content.Intent?,
     ) {
         if (!ok) {
-            fail("Connexion annulée.")
+            fail(
+                message = "Connexion annulée.",
+            )
             return
         }
         val accepted =
             try {
-                auth.accept(auth.resultFromIntent(data)) != null
+                auth.accept(
+                    result =
+                        auth.resultFromIntent(
+                            data = data,
+                        ),
+                ) != null
             } catch (
                 @Suppress("TooGenericExceptionCaught") e: Exception,
             ) {
-                fail(e.toMessage())
+                fail(
+                    message = e.toMessage(),
+                )
                 return
             }
-        finish(accepted)
+        finish(
+            signedIn = accepted,
+        )
     }
 
     private fun finish(

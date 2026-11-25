@@ -44,7 +44,18 @@ class FakeYouTubeApi(
         val index = pageToken?.removePrefix("page-")?.toInt() ?: 0
         val items = subscriptionPages.getOrElse(index) { emptyList() }
         return SubscriptionListResponseDto(
-            items = items.map { SubscriptionDto(SubscriptionSnippetDto(ResourceIdDto(it))) },
+            items =
+                items.map {
+                    SubscriptionDto(
+                        snippet =
+                            SubscriptionSnippetDto(
+                                resourceId =
+                                    ResourceIdDto(
+                                        channelId = it,
+                                    ),
+                            ),
+                    )
+                },
             nextPageToken = if (index + 1 < subscriptionPages.size) "page-${index + 1}" else null,
         )
     }
@@ -56,7 +67,16 @@ class FakeYouTubeApi(
         return ChannelListResponseDto(
             items =
                 channelIds.map { id ->
-                    ChannelDto(id, ChannelContentDetailsDto(RelatedPlaylistsDto(uploadsByChannel[id])))
+                    ChannelDto(
+                        id = id,
+                        contentDetails =
+                            ChannelContentDetailsDto(
+                                relatedPlaylists =
+                                    RelatedPlaylistsDto(
+                                        uploads = uploadsByChannel[id],
+                                    ),
+                            ),
+                    )
                 },
         )
     }
@@ -68,7 +88,17 @@ class FakeYouTubeApi(
         playlistItemCalls++
         onPlaylistItems(playlistId)
         val ids = videoIdsByPlaylist.getValue(playlistId).take(maxResults)
-        return PlaylistItemListResponseDto(ids.map { PlaylistItemDto(PlaylistItemContentDetailsDto(it)) })
+        return PlaylistItemListResponseDto(
+            items =
+                ids.map {
+                    PlaylistItemDto(
+                        contentDetails =
+                            PlaylistItemContentDetailsDto(
+                                videoId = it,
+                            ),
+                    )
+                },
+        )
     }
 
     override suspend fun videos(
@@ -76,7 +106,9 @@ class FakeYouTubeApi(
     ): VideoListResponseDto {
         videoCalls++
         requestedVideoBatches += videoIds
-        return VideoListResponseDto(videoIds.mapNotNull { videos[it] })
+        return VideoListResponseDto(
+            items = videoIds.mapNotNull { videos[it] },
+        )
     }
 
     companion object {
@@ -93,9 +125,18 @@ class FakeYouTubeApi(
                     channelId = channelId,
                     channelTitle = "Chaîne $channelId",
                     publishedAt = publishedAt,
-                    thumbnails = ThumbnailsDto(medium = ThumbnailDto("https://img/$id.jpg")),
+                    thumbnails =
+                        ThumbnailsDto(
+                            medium =
+                                ThumbnailDto(
+                                    url = "https://img/$id.jpg",
+                                ),
+                        ),
                 ),
-            contentDetails = VideoContentDetailsDto(duration),
+            contentDetails =
+                VideoContentDetailsDto(
+                    duration = duration,
+                ),
         )
     }
 }

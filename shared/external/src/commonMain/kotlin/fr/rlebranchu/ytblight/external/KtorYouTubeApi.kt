@@ -64,7 +64,9 @@ class KtorYouTubeApi(
             try {
                 client.get(path, block)
             } catch (e: IOException) {
-                throw YouTubeNetworkException(e)
+                throw YouTubeNetworkException(
+                    cause = e,
+                )
             }
         if (!response.status.isSuccess()) throw response.toException()
         return response.body()

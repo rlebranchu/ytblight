@@ -40,9 +40,19 @@ class YtblightAppTest {
         val controllers = mutableListOf<FakeSignInController>()
         composeRule.setContent {
             YtblightTheme {
-                YtblightApp(SharedDependencies.fake(signedIn)) { onSignedIn ->
-                    remember { FakeSignInController(onSignedIn).also(controllers::add) }
-                }
+                YtblightApp(
+                    dependencies =
+                        SharedDependencies.fake(
+                            signedIn = signedIn,
+                        ),
+                    signInController = { onSignedIn ->
+                        remember {
+                            FakeSignInController(
+                                onSignedIn = onSignedIn,
+                            ).also(controllers::add)
+                        }
+                    },
+                )
             }
         }
         return controllers
@@ -50,7 +60,9 @@ class YtblightAppTest {
 
     @Test
     fun signedInUserSeesTheFeedWithoutShorts() {
-        launch(signedIn = true)
+        launch(
+            signedIn = true,
+        )
 
         composeRule.onNodeWithText("Un long format sur Kotlin Multiplatform").assertIsDisplayed()
         composeRule.onNodeWithText("24:10").assertIsDisplayed()
@@ -61,7 +73,9 @@ class YtblightAppTest {
 
     @Test
     fun feedIsSortedFromNewestToOldest() {
-        launch(signedIn = true)
+        launch(
+            signedIn = true,
+        )
 
         val titles =
             listOf("Conférence d'une heure", "Visite guidée d'un atelier", "Un long format sur Kotlin Multiplatform")
@@ -77,7 +91,10 @@ class YtblightAppTest {
 
     @Test
     fun signedOutUserSeesTheSignInScreenThenTheFeed() {
-        val controllers = launch(signedIn = false)
+        val controllers =
+            launch(
+                signedIn = false,
+            )
 
         composeRule.onNodeWithText("Connecte-toi avec ton compte Google", substring = true).assertIsDisplayed()
         composeRule.onNodeWithText("Un long format sur Kotlin Multiplatform").assertDoesNotExist()
@@ -90,7 +107,9 @@ class YtblightAppTest {
 
     @Test
     fun signingOutReturnsToTheSignInScreen() {
-        launch(signedIn = true)
+        launch(
+            signedIn = true,
+        )
 
         composeRule.onNodeWithText("Se déconnecter").performClick()
 

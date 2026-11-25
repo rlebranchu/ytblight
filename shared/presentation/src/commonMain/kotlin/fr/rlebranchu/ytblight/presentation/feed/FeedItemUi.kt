@@ -23,5 +23,9 @@ internal fun Video.toItemUi(
     channelTitle = channelTitle,
     thumbnailUrl = thumbnailUrl,
     durationLabel = duration.toClockLabel(),
-    publishedLabel = relativeTimeLabel(publishedAt, now),
+    publishedLabel =
+        relativeTimeLabel(
+            publishedAt = publishedAt,
+            now = now,
+        ),
 )

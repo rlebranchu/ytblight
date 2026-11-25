@@ -29,7 +29,10 @@ class SignOutUseCaseTest {
         object : FeedRepository {
             override suspend fun loadFeed(
                 forceRefresh: Boolean,
-            ): DomainResult<List<Video>> = DomainResult.Success(emptyList())
+            ): DomainResult<List<Video>> =
+                DomainResult.Success(
+                    value = emptyList(),
+                )
 
             override suspend fun clear() {
                 events += "feed.clear"
@@ -39,7 +42,10 @@ class SignOutUseCaseTest {
     @Test
     fun signsOutThenForgetsTheFeed() =
         runTest {
-            SignOutUseCase(auth, feed)()
+            SignOutUseCase(
+                authRepository = auth,
+                feedRepository = feed,
+            )()
 
             assertEquals(listOf("auth.signOut", "feed.clear"), events)
         }

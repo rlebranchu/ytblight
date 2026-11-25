@@ -9,7 +9,10 @@ import kotlin.time.Instant
 /** Convertit un DTO en vidéo métier, ou `null` si la date ou la durée est illisible. */
 internal fun VideoDto.toDomainOrNull(): Video? {
     val duration = Duration.parseIsoStringOrNull(contentDetails.duration) ?: return null
-    val publishedAt = runCatching { Instant.parse(snippet.publishedAt) }.getOrNull() ?: return null
+    val publishedAt =
+        runCatching {
+            Instant.parse(snippet.publishedAt)
+        }.getOrNull() ?: return null
     return Video(
         id = id,
         title = snippet.title,

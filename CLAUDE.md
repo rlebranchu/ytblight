@@ -29,6 +29,16 @@ Client YouTube perso (Android, iOS, Web). Logique métier en Kotlin Multiplatfor
   ```
 
   Appliqué par ktlint via `.editorconfig` (`./gradlew ktlintFormat`). Mêmes principes en Swift et TypeScript.
+- **Appels** de fonctions et constructeurs **du projet** : arguments nommés, un par ligne, virgule finale, y compris pour un seul argument :
+
+  ```kotlin
+  updateUserProfile(
+      userId = userId,
+      isActive = false,
+  )
+  ```
+
+  Non appliqué à la bibliothèque standard ni aux bibliothèques tierces (`assertEquals`, `listOf`, `Modifier.padding`…) ni à l'appel d'un paramètre de type fonction (`onClick()`). Non vérifié par ktlint : à respecter à la main.
 - Indentation de 4 espaces, lignes ≤ 120 caractères.
 
 ## Architecture

@@ -68,7 +68,10 @@ class GmsPlatformAuth(
         return token
     }
 
-    override suspend fun currentToken(): String? = accept(authorize())
+    override suspend fun currentToken(): String? =
+        accept(
+            result = authorize(),
+        )
 
     /** Le jeton a été refusé par l'API : on l'invalide dans le cache de Play Services, puis on en redemande un. */
     override suspend fun refreshToken(): String? {
@@ -84,7 +87,11 @@ class GmsPlatformAuth(
         lastToken?.let { token ->
             withContext(Dispatchers.IO) {
                 // Retire l'autorisation côté Google même si l'adresse du compte n'a pas pu être retenue.
-                runCatching { revokeToken(token) }
+                runCatching {
+                    revokeToken(
+                        token = token,
+                    )
+                }
                 runCatching { GoogleAuthUtil.clearToken(appContext, token) }
             }
         }
@@ -107,7 +114,8 @@ class GmsPlatformAuth(
     ) {
         val connection =
             URL(
-                "https://oauth2.googleapis.com/revoke?token=" + URLEncoder.encode(token, "UTF-8"),
+                "https://oauth2.googleapis.com/revoke?token=" +
+                    URLEncoder.encode(token, "UTF-8"),
             ).openConnection() as HttpURLConnection
         try {
             connection.requestMethod = "POST"

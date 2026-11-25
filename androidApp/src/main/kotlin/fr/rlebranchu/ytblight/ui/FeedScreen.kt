@@ -61,7 +61,12 @@ fun FeedScreen(
         ) {
             when {
                 state.isLoading -> Loading()
-                state.videos.isEmpty() && error != null -> ErrorPanel(error, onRetry, onReconnect)
+                state.videos.isEmpty() && error != null ->
+                    ErrorPanel(
+                        error = error,
+                        onRetry = onRetry,
+                        onReconnect = onReconnect,
+                    )
                 state.videos.isEmpty() -> EmptyPanel()
                 else ->
                     LazyColumn(
@@ -69,9 +74,20 @@ fun FeedScreen(
                         contentPadding = PaddingValues(bottom = 24.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
-                        error?.let { item { ErrorBanner(it, onRetry, onReconnect) } }
+                        error?.let {
+                            item {
+                                ErrorBanner(
+                                    error = it,
+                                    onRetry = onRetry,
+                                    onReconnect = onReconnect,
+                                )
+                            }
+                        }
                         items(state.videos, key = { it.id }) { video ->
-                            VideoRow(video, onClick = { onOpenVideo(video.id) })
+                            VideoRow(
+                                video = video,
+                                onClick = { onOpenVideo(video.id) },
+                            )
                         }
                     }
             }
@@ -103,7 +119,11 @@ private fun ErrorPanel(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(error.message(), textAlign = TextAlign.Center)
-        ErrorAction(error, onRetry, onReconnect)
+        ErrorAction(
+            error = error,
+            onRetry = onRetry,
+            onReconnect = onReconnect,
+        )
     }
 }
 
@@ -118,7 +138,11 @@ private fun ErrorBanner(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(error.message(), color = MaterialTheme.colorScheme.onErrorContainer)
-        ErrorAction(error, onRetry, onReconnect)
+        ErrorAction(
+            error = error,
+            onRetry = onRetry,
+            onReconnect = onReconnect,
+        )
     }
 }
 

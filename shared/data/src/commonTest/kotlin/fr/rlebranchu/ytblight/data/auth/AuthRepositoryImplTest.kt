@@ -26,13 +26,23 @@ class AuthRepositoryImplTest {
 
     @Test
     fun startsByCheckingTheSession() {
-        assertEquals(AuthState.CHECKING, AuthRepositoryImpl(FakePlatformAuth()).state.value)
+        val repository =
+            AuthRepositoryImpl(
+                platformAuth = FakePlatformAuth(),
+            )
+        assertEquals(AuthState.CHECKING, repository.state.value)
     }
 
     @Test
     fun isSignedInWhenThePlatformHasAToken() =
         runTest {
-            val repository = AuthRepositoryImpl(FakePlatformAuth(token = "jeton"))
+            val repository =
+                AuthRepositoryImpl(
+                    platformAuth =
+                        FakePlatformAuth(
+                            token = "jeton",
+                        ),
+                )
 
             repository.checkSession()
 
@@ -42,7 +52,13 @@ class AuthRepositoryImplTest {
     @Test
     fun isSignedOutWhenThereIsNoToken() =
         runTest {
-            val repository = AuthRepositoryImpl(FakePlatformAuth(token = null))
+            val repository =
+                AuthRepositoryImpl(
+                    platformAuth =
+                        FakePlatformAuth(
+                            token = null,
+                        ),
+                )
 
             repository.checkSession()
 
@@ -53,7 +69,12 @@ class AuthRepositoryImplTest {
     fun fallsBackToSignedOutWhenThePlatformFails() =
         runTest {
             val repository =
-                AuthRepositoryImpl(FakePlatformAuth(tokenError = IllegalStateException("Play Services absent")))
+                AuthRepositoryImpl(
+                    platformAuth =
+                        FakePlatformAuth(
+                            tokenError = IllegalStateException("Play Services absent"),
+                        ),
+                )
 
             repository.checkSession()
 
@@ -62,7 +83,10 @@ class AuthRepositoryImplTest {
 
     @Test
     fun becomesSignedInAfterANativeSignIn() {
-        val repository = AuthRepositoryImpl(FakePlatformAuth())
+        val repository =
+            AuthRepositoryImpl(
+                platformAuth = FakePlatformAuth(),
+            )
 
         repository.onSignedIn()
 
@@ -72,8 +96,14 @@ class AuthRepositoryImplTest {
     @Test
     fun signsOutThroughThePlatform() =
         runTest {
-            val platform = FakePlatformAuth(token = "jeton")
-            val repository = AuthRepositoryImpl(platform)
+            val platform =
+                FakePlatformAuth(
+                    token = "jeton",
+                )
+            val repository =
+                AuthRepositoryImpl(
+                    platformAuth = platform,
+                )
             repository.checkSession()
 
             repository.signOut()
@@ -87,7 +117,11 @@ class AuthRepositoryImplTest {
         runTest {
             val repository =
                 AuthRepositoryImpl(
-                    FakePlatformAuth(token = "jeton", signOutError = IllegalStateException("hors ligne")),
+                    platformAuth =
+                        FakePlatformAuth(
+                            token = "jeton",
+                            signOutError = IllegalStateException("hors ligne"),
+                        ),
                 )
             repository.onSignedIn()
 

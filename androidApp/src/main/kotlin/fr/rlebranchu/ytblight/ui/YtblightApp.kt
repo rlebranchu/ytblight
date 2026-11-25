@@ -36,17 +36,29 @@ fun YtblightApp(
     signInController: @Composable (onSignedIn: () -> Unit) -> SignInController,
 ) {
     val session: SessionViewModel =
-        viewModel(factory = viewModelFactory { initializer { dependencies.sessionViewModel() } })
+        viewModel(
+            factory = viewModelFactory { initializer { dependencies.sessionViewModel() } },
+        )
     val authState by session.state.collectAsStateWithLifecycle()
-    val signIn = signInController(session::onSignedIn)
+    val signIn =
+        signInController(
+            session::onSignedIn,
+        )
 
     when (authState) {
         AuthState.CHECKING ->
             Surface(Modifier.fillMaxSize()) {
                 Box(contentAlignment = Alignment.Center) { CircularProgressIndicator() }
             }
-        AuthState.SIGNED_OUT -> SignInScreen(signIn)
-        AuthState.SIGNED_IN -> SignedInNavigation(dependencies, onSignOut = session::signOut)
+        AuthState.SIGNED_OUT ->
+            SignInScreen(
+                controller = signIn,
+            )
+        AuthState.SIGNED_IN ->
+            SignedInNavigation(
+                dependencies = dependencies,
+                onSignOut = session::signOut,
+            )
     }
 }
 
@@ -59,7 +71,9 @@ private fun SignedInNavigation(
     NavHost(navController, startDestination = ROUTE_FEED) {
         composable(ROUTE_FEED) {
             val viewModel: FeedViewModel =
-                viewModel(factory = viewModelFactory { initializer { dependencies.feedViewModel() } })
+                viewModel(
+                    factory = viewModelFactory { initializer { dependencies.feedViewModel() } },
+                )
             val state by viewModel.state.collectAsStateWithLifecycle()
             FeedScreen(
                 state = state,

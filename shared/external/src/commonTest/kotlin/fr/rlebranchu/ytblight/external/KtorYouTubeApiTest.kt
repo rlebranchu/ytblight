@@ -44,7 +44,9 @@ class KtorYouTubeApiTest {
                 requests += request
                 handler(request)
             }
-        return KtorYouTubeApi(HttpClient(engine) { configureYouTube(tokens) })
+        return KtorYouTubeApi(
+            client = HttpClient(engine) { configureYouTube(tokens = tokens) },
+        )
     }
 
     private fun MockRequestHandleScope.json(
@@ -57,7 +59,7 @@ class KtorYouTubeApiTest {
                 HttpHeaders.ContentType to listOf("application/json"),
                 *extraHeaders.map { (name, value) -> name to listOf(value) }.toTypedArray(),
             )
-        return respond(body, status, headers)
+        return respond(content = body, status = status, headers = headers)
     }
 
     @Test
@@ -66,14 +68,18 @@ class KtorYouTubeApiTest {
             val api =
                 apiWith {
                     json(
-                        """
-                        {"items":[{"snippet":{"resourceId":{"kind":"youtube#channel","channelId":"UC1"}}}],
-                         "nextPageToken":"PAGE2","etag":"ignoré"}
-                        """.trimIndent(),
+                        body =
+                            """
+                            {"items":[{"snippet":{"resourceId":{"kind":"youtube#channel","channelId":"UC1"}}}],
+                             "nextPageToken":"PAGE2","etag":"ignoré"}
+                            """.trimIndent(),
                     )
                 }
 
-            val page = api.subscriptions(pageToken = null)
+            val page =
+                api.subscriptions(
+                    pageToken = null,
+                )
 
             assertEquals(listOf("UC1"), page.items.map { it.snippet.resourceId.channelId })
             assertEquals("PAGE2", page.nextPageToken)
@@ -88,9 +94,16 @@ class KtorYouTubeApiTest {
     @Test
     fun sendsThePageTokenWhenThereIsOne() =
         runTest {
-            val api = apiWith { json("""{"items":[]}""") }
+            val api =
+                apiWith {
+                    json(
+                        body = """{"items":[]}""",
+                    )
+                }
 
-            api.subscriptions(pageToken = "PAGE2")
+            api.subscriptions(
+                pageToken = "PAGE2",
+            )
 
             assertEquals("PAGE2", requests.single().url.parameters["pageToken"])
         }
@@ -101,11 +114,15 @@ class KtorYouTubeApiTest {
             val api =
                 apiWith {
                     json(
-                        """{"items":[{"id":"UC1","contentDetails":{"relatedPlaylists":{"uploads":"UU1","likes":""}}}]}""",
+                        body =
+                            """{"items":[{"id":"UC1","contentDetails":{"relatedPlaylists":{"uploads":"UU1","likes":""}}}]}""",
                     )
                 }
 
-            val response = api.channels(listOf("UC1", "UC2"))
+            val response =
+                api.channels(
+                    channelIds = listOf("UC1", "UC2"),
+                )
 
             assertEquals(
                 "UU1",
@@ -122,11 +139,16 @@ class KtorYouTubeApiTest {
             val api =
                 apiWith {
                     json(
-                        """{"items":[{"contentDetails":{"videoId":"V1"}},{"contentDetails":{"videoId":"V2"}}]}""",
+                        body =
+                            """{"items":[{"contentDetails":{"videoId":"V1"}},{"contentDetails":{"videoId":"V2"}}]}""",
                     )
                 }
 
-            val response = api.playlistItems("UU1", maxResults = 5)
+            val response =
+                api.playlistItems(
+                    playlistId = "UU1",
+                    maxResults = 5,
+                )
 
             assertEquals(listOf("V1", "V2"), response.items.map { it.contentDetails.videoId })
             assertEquals("UU1", requests.single().url.parameters["playlistId"])
@@ -139,17 +161,23 @@ class KtorYouTubeApiTest {
             val api =
                 apiWith {
                     json(
-                        """
-                        {"items":[{"id":"V1",
-                          "snippet":{"title":"Titre","channelId":"UC1","channelTitle":"Chaîne",
-                                     "publishedAt":"2026-11-20T18:00:07Z",
-                                     "thumbnails":{"medium":{"url":"https://i.ytimg.com/vi/V1/mqdefault.jpg","width":320}}},
-                          "contentDetails":{"duration":"PT4M13S","dimension":"2d"}}]}
-                        """.trimIndent(),
+                        body =
+                            """
+                            {"items":[{"id":"V1",
+                              "snippet":{"title":"Titre","channelId":"UC1","channelTitle":"Chaîne",
+                                         "publishedAt":"2026-11-20T18:00:07Z",
+                                         "thumbnails":{"medium":{"url":"https://i.ytimg.com/vi/V1/mqdefault.jpg","width":320}}},
+                              "contentDetails":{"duration":"PT4M13S","dimension":"2d"}}]}
+                            """.trimIndent(),
                     )
                 }
 
-            val video = api.videos(listOf("V1")).items.single()
+            val video =
+                api
+                    .videos(
+                        videoIds = listOf("V1"),
+                    ).items
+                    .single()
 
             assertEquals("Titre", video.snippet.title)
             assertEquals("PT4M13S", video.contentDetails.duration)
@@ -167,12 +195,18 @@ class KtorYouTubeApiTest {
             val api =
                 apiWith {
                     json(
-                        """{"error":{"code":403,"message":"Quota dépassé","errors":[{"reason":"quotaExceeded"}]}}""",
-                        HttpStatusCode.Forbidden,
+                        body =
+                            """{"error":{"code":403,"message":"Quota dépassé","errors":[{"reason":"quotaExceeded"}]}}""",
+                        status = HttpStatusCode.Forbidden,
                     )
                 }
 
-            val error = assertFailsWith<YouTubeHttpException> { api.subscriptions(null) }
+            val error =
+                assertFailsWith<YouTubeHttpException> {
+                    api.subscriptions(
+                        pageToken = null,
+                    )
+                }
 
             assertEquals(403, error.statusCode)
             assertEquals("quotaExceeded", error.reason)
@@ -181,9 +215,14 @@ class KtorYouTubeApiTest {
     @Test
     fun reportsErrorsWithAnUnreadableBody() =
         runTest {
-            val api = apiWith { respond("<html>Bad gateway</html>", HttpStatusCode.BadGateway) }
+            val api = apiWith { respond(content = "<html>Bad gateway</html>", status = HttpStatusCode.BadGateway) }
 
-            val error = assertFailsWith<YouTubeHttpException> { api.subscriptions(null) }
+            val error =
+                assertFailsWith<YouTubeHttpException> {
+                    api.subscriptions(
+                        pageToken = null,
+                    )
+                }
 
             assertEquals(502, error.statusCode)
             assertNull(error.reason)
@@ -196,17 +235,21 @@ class KtorYouTubeApiTest {
             val api =
                 apiWith(tokens) { request ->
                     if (request.headers[HttpHeaders.Authorization] == "Bearer jeton-2") {
-                        json("""{"items":[]}""")
+                        json(
+                            body = """{"items":[]}""",
+                        )
                     } else {
                         json(
-                            """{"error":{"code":401}}""",
-                            HttpStatusCode.Unauthorized,
+                            body = """{"error":{"code":401}}""",
+                            status = HttpStatusCode.Unauthorized,
                             HttpHeaders.WWWAuthenticate to """Bearer realm="https://accounts.google.com/"""",
                         )
                     }
                 }
 
-            api.subscriptions(null)
+            api.subscriptions(
+                pageToken = null,
+            )
 
             assertEquals(1, tokens.refreshCount)
             assertEquals(
@@ -220,6 +263,10 @@ class KtorYouTubeApiTest {
         runTest {
             val api = apiWith { throw IOException("hors ligne") }
 
-            assertFailsWith<YouTubeNetworkException> { api.subscriptions(null) }
+            assertFailsWith<YouTubeNetworkException> {
+                api.subscriptions(
+                    pageToken = null,
+                )
+            }
         }
 }

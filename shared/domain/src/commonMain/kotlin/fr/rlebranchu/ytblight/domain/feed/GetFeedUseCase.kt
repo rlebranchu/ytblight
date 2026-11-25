@@ -11,5 +11,9 @@ class GetFeedUseCase(
 ) {
     suspend operator fun invoke(
         forceRefresh: Boolean = false,
-    ): DomainResult<List<Video>> = repository.loadFeed(forceRefresh).map(policy::apply)
+    ): DomainResult<List<Video>> =
+        repository
+            .loadFeed(
+                forceRefresh = forceRefresh,
+            ).map(policy::apply)
 }

@@ -23,9 +23,15 @@ class MainActivity : ComponentActivity() {
         val app = application as YtblightApplication
         setContent {
             YtblightTheme {
-                YtblightApp(app.dependencies) { onSignedIn ->
-                    rememberGmsSignInController(app.platformAuth, onSignedIn)
-                }
+                YtblightApp(
+                    dependencies = app.dependencies,
+                    signInController = { onSignedIn ->
+                        rememberGmsSignInController(
+                            auth = app.platformAuth,
+                            onSignedIn = onSignedIn,
+                        )
+                    },
+                )
             }
         }
     }
