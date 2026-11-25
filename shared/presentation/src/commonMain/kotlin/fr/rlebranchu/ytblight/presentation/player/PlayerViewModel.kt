@@ -10,10 +10,19 @@ import kotlinx.coroutines.flow.update
 class PlayerViewModel(
     videoId: String,
 ) : ViewModel() {
-    private val mutableState = MutableStateFlow(PlayerUiState(videoId = videoId))
+    private val mutableState =
+        MutableStateFlow(
+            PlayerUiState(
+                videoId = videoId,
+            ),
+        )
     val state: StateFlow<PlayerUiState> = mutableState.asStateFlow()
 
     fun onVideoEnded() {
-        mutableState.update { it.copy(isEnded = true) }
+        mutableState.update {
+            it.copy(
+                isEnded = true,
+            )
+        }
     }
 }

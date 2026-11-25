@@ -2,6 +2,7 @@ package fr.rlebranchu.ytblight.presentation.signin
 
 import fr.rlebranchu.ytblight.domain.auth.AuthRepository
 import fr.rlebranchu.ytblight.domain.auth.AuthState
+import fr.rlebranchu.ytblight.domain.auth.CompleteSignInUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.test.Test
@@ -24,14 +25,22 @@ class SignInViewModelTest {
     private val auth = FakeAuthRepository()
     private val viewModel =
         SignInViewModel(
-            authRepository = auth,
+            completeSignIn =
+                CompleteSignInUseCase(
+                    authRepository = auth,
+                ),
         )
 
     @Test
     fun showsProgressWhileSigningIn() {
         viewModel.onStarted()
 
-        assertEquals(SignInUiState(inProgress = true), viewModel.state.value)
+        assertEquals(
+            SignInUiState(
+                inProgress = true,
+            ),
+            viewModel.state.value,
+        )
     }
 
     @Test
@@ -40,22 +49,38 @@ class SignInViewModelTest {
         viewModel.onSucceeded()
 
         assertEquals(1, auth.signedInCalls)
-        assertEquals(SignInUiState(isSignedIn = true), viewModel.state.value)
+        assertEquals(
+            SignInUiState(
+                isSignedIn = true,
+            ),
+            viewModel.state.value,
+        )
     }
 
     @Test
     fun keepsTheErrorUntilTheNextAttempt() {
         viewModel.onStarted()
-        viewModel.onFailed(error = SignInError.CONFIGURATION, detail = "10")
+        viewModel.onFailed(
+            error = SignInError.CONFIGURATION,
+            detail = "10",
+        )
 
         assertEquals(
-            SignInUiState(error = SignInError.CONFIGURATION, errorDetail = "10"),
+            SignInUiState(
+                error = SignInError.CONFIGURATION,
+                errorDetail = "10",
+            ),
             viewModel.state.value,
         )
 
         viewModel.onStarted()
 
-        assertEquals(SignInUiState(inProgress = true), viewModel.state.value)
+        assertEquals(
+            SignInUiState(
+                inProgress = true,
+            ),
+            viewModel.state.value,
+        )
         assertEquals(0, auth.signedInCalls)
     }
 }

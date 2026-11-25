@@ -3,6 +3,8 @@ package fr.rlebranchu.ytblight.umbrella
 import fr.rlebranchu.ytblight.data.auth.AuthRepositoryImpl
 import fr.rlebranchu.ytblight.data.feed.FeedRepositoryImpl
 import fr.rlebranchu.ytblight.domain.auth.AuthRepository
+import fr.rlebranchu.ytblight.domain.auth.CheckSessionUseCase
+import fr.rlebranchu.ytblight.domain.auth.CompleteSignInUseCase
 import fr.rlebranchu.ytblight.domain.auth.SignOutUseCase
 import fr.rlebranchu.ytblight.domain.feed.FeedPolicy
 import fr.rlebranchu.ytblight.domain.feed.FeedRepository
@@ -102,6 +104,16 @@ class SharedDependencies private constructor(
                         )
                     }
                     factory {
+                        CheckSessionUseCase(
+                            authRepository = get(),
+                        )
+                    }
+                    factory {
+                        CompleteSignInUseCase(
+                            authRepository = get(),
+                        )
+                    }
+                    factory {
                         SignOutUseCase(
                             authRepository = get(),
                             feedRepository = get(),
@@ -112,12 +124,12 @@ class SharedDependencies private constructor(
                 module {
                     viewModel {
                         SplashViewModel(
-                            authRepository = get(),
+                            checkSession = get(),
                         )
                     }
                     viewModel {
                         SignInViewModel(
-                            authRepository = get(),
+                            completeSignIn = get(),
                         )
                     }
                     viewModel {

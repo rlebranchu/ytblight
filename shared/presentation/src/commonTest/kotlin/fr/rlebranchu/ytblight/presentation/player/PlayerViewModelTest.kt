@@ -11,7 +11,12 @@ class PlayerViewModelTest {
                 videoId = "abc",
             )
 
-        assertEquals(PlayerUiState(videoId = "abc"), viewModel.state.value)
+        assertEquals(
+            PlayerUiState(
+                videoId = "abc",
+            ),
+            viewModel.state.value,
+        )
     }
 
     @Test
@@ -23,6 +28,12 @@ class PlayerViewModelTest {
 
         viewModel.onVideoEnded()
 
-        assertEquals(PlayerUiState(videoId = "abc", isEnded = true), viewModel.state.value)
+        assertEquals(
+            PlayerUiState(
+                videoId = "abc",
+                isEnded = true,
+            ),
+            viewModel.state.value,
+        )
     }
 }

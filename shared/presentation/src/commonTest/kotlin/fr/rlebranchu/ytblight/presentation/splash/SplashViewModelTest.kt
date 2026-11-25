@@ -2,6 +2,7 @@ package fr.rlebranchu.ytblight.presentation.splash
 
 import fr.rlebranchu.ytblight.domain.auth.AuthRepository
 import fr.rlebranchu.ytblight.domain.auth.AuthState
+import fr.rlebranchu.ytblight.domain.auth.CheckSessionUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,7 +48,13 @@ class SplashViewModelTest {
         runTest {
             val viewModel =
                 SplashViewModel(
-                    authRepository = FakeAuthRepository(sessionIsValid = true),
+                    checkSession =
+                        CheckSessionUseCase(
+                            authRepository =
+                                FakeAuthRepository(
+                                    sessionIsValid = true,
+                                ),
+                        ),
                 )
 
             assertEquals(SplashDestination.FEED, viewModel.state.value.destination)
@@ -58,7 +65,13 @@ class SplashViewModelTest {
         runTest {
             val viewModel =
                 SplashViewModel(
-                    authRepository = FakeAuthRepository(sessionIsValid = false),
+                    checkSession =
+                        CheckSessionUseCase(
+                            authRepository =
+                                FakeAuthRepository(
+                                    sessionIsValid = false,
+                                ),
+                        ),
                 )
 
             assertEquals(SplashDestination.SIGN_IN, viewModel.state.value.destination)
