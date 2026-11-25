@@ -82,6 +82,19 @@ class FeedRepositoryImplTest {
         }
 
     @Test
+    fun forgetsTheCachedFeedOnClear() =
+        runTest {
+            val api = twoChannelsApi()
+            val repository = FeedRepositoryImpl(api)
+            repository.loadFeed(forceRefresh = false)
+
+            repository.clear()
+            repository.loadFeed(forceRefresh = false)
+
+            assertEquals(2, api.videoCalls)
+        }
+
+    @Test
     fun asksForTheConfiguredNumberOfVideosPerChannel() =
         runTest {
             val api = twoChannelsApi()

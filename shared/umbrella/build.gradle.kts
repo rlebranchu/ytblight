@@ -12,6 +12,7 @@ kotlin {
             isStatic = true
             export(projects.shared.presentation)
             export(projects.shared.domain)
+            export(projects.shared.external)
         }
     }
 
@@ -29,7 +30,7 @@ kotlin {
             api(projects.shared.presentation)
             api(projects.shared.domain)
             implementation(projects.shared.data)
-            implementation(projects.shared.external)
+            api(projects.shared.external)
             implementation(projects.shared.local)
             implementation(libs.koin.core)
             implementation(libs.kermit)

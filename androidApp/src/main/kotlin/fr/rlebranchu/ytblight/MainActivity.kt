@@ -1,53 +1,30 @@
 package fr.rlebranchu.ytblight
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import fr.rlebranchu.ytblight.ui.YtblightApp
+import fr.rlebranchu.ytblight.ui.YtblightTheme
+import fr.rlebranchu.ytblight.ui.rememberGmsSignInController
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        // Thème sombre uniquement : icônes claires dans les barres système.
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+        )
+        val app = application as YtblightApplication
         setContent {
             YtblightTheme {
-                PlaceholderScreen()
+                YtblightApp(app.dependencies) { onSignedIn ->
+                    rememberGmsSignInController(app.platformAuth, onSignedIn)
+                }
             }
         }
     }
-}
-
-/** Thème sombre uniquement, sans couleurs dynamiques. */
-@Composable
-fun YtblightTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colorScheme = darkColorScheme(), content = content)
-}
-
-@Composable
-private fun PlaceholderScreen() {
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Box(contentAlignment = Alignment.Center) {
-            Text(
-                text = stringResource(R.string.placeholder),
-                style = MaterialTheme.typography.titleMedium,
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun PlaceholderScreenPreview() {
-    YtblightTheme { PlaceholderScreen() }
 }

@@ -11,9 +11,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
 
 class FeedViewModel(
     private val getFeed: GetFeedUseCase,
+    private val clock: Clock = Clock.System,
 ) : ViewModel() {
     private val mutableState = MutableStateFlow(FeedUiState(isLoading = true))
     val state: StateFlow<FeedUiState> = mutableState.asStateFlow()
@@ -42,7 +44,9 @@ class FeedViewModel(
                     )
                 }
                 when (val result = getFeed(forceRefresh)) {
-                    is DomainResult.Success -> mutableState.value = FeedUiState(videos = result.value)
+                    is DomainResult.Success ->
+                        mutableState.value =
+                            FeedUiState(videos = result.value.map { it.toItemUi(clock.now()) })
                     // On garde la liste déjà affichée : une erreur ne doit pas vider l'écran.
                     is DomainResult.Failure ->
                         mutableState.update {

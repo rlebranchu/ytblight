@@ -44,6 +44,10 @@ class FeedRepositoryImpl(
             }
         }
 
+    override suspend fun clear() {
+        mutex.withLock { cache = null }
+    }
+
     private suspend fun fetchFeed(): List<Video> {
         val channelIds = fetchSubscribedChannelIds()
         val playlistIds = fetchUploadsPlaylistIds(channelIds)

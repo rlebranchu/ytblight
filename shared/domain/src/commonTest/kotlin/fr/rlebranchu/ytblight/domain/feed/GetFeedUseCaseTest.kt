@@ -21,6 +21,8 @@ class GetFeedUseCaseTest {
             requests += forceRefresh
             return result
         }
+
+        override suspend fun clear() = Unit
     }
 
     private fun video(
