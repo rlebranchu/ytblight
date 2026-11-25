@@ -9,4 +9,5 @@ dependencies {
     implementation(libs.android.gradle.plugin)
     implementation(libs.ktlint.gradle.plugin)
     implementation(libs.kover.gradle.plugin)
+    implementation(libs.skie.gradle.plugin)
 }

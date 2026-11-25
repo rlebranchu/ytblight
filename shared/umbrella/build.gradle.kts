@@ -1,5 +1,6 @@
 plugins {
     id("ytblight.kmp-library")
+    id("ytblight.skie")
 }
 
 kotlin {
