@@ -13,6 +13,9 @@ import fr.rlebranchu.ytblight.external.auth.PlatformAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.net.HttpURLConnection
+import java.net.URL
+import java.net.URLEncoder
 
 /**
  * Connexion Google via l'API d'autorisation de Play Services.
@@ -75,7 +78,11 @@ class GmsPlatformAuth(
     override suspend fun signOut() {
         val account = savedAccount()
         lastToken?.let { token ->
-            withContext(Dispatchers.IO) { runCatching { GoogleAuthUtil.clearToken(appContext, token) } }
+            withContext(Dispatchers.IO) {
+                // Retire l'autorisation côté Google même si l'adresse du compte n'a pas pu être retenue.
+                runCatching { revokeToken(token) }
+                runCatching { GoogleAuthUtil.clearToken(appContext, token) }
+            }
         }
         lastToken = null
         preferences.edit().clear().apply()
@@ -91,7 +98,23 @@ class GmsPlatformAuth(
         }
     }
 
+    private fun revokeToken(token: String) {
+        val connection =
+            URL(
+                "https://oauth2.googleapis.com/revoke?token=" + URLEncoder.encode(token, "UTF-8"),
+            ).openConnection() as HttpURLConnection
+        try {
+            connection.requestMethod = "POST"
+            connection.connectTimeout = REVOKE_TIMEOUT_MS
+            connection.readTimeout = REVOKE_TIMEOUT_MS
+            connection.responseCode
+        } finally {
+            connection.disconnect()
+        }
+    }
+
     private companion object {
+        const val REVOKE_TIMEOUT_MS = 5_000
         const val YOUTUBE_READONLY_SCOPE = "https://www.googleapis.com/auth/youtube.readonly"
         const val GOOGLE_ACCOUNT_TYPE = "com.google"
         const val PREFERENCES_NAME = "ytblight_auth"
