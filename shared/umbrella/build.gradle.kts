@@ -1,5 +1,6 @@
 plugins {
     id("ytblight.kmp-library")
+    id("ytblight.skie")
 }
 
 kotlin {
@@ -32,6 +33,9 @@ kotlin {
             implementation(projects.shared.local)
             implementation(libs.koin.core)
             implementation(libs.kermit)
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }
