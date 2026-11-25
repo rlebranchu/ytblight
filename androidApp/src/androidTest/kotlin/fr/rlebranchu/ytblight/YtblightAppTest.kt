@@ -34,7 +34,9 @@ class YtblightAppTest {
         }
     }
 
-    private fun launch(signedIn: Boolean): List<FakeSignInController> {
+    private fun launch(
+        signedIn: Boolean,
+    ): List<FakeSignInController> {
         val controllers = mutableListOf<FakeSignInController>()
         composeRule.setContent {
             YtblightTheme {

@@ -51,10 +51,14 @@ class GmsPlatformAuth(
     }
 
     /** Résultat de l'écran de consentement affiché par Play Services. */
-    fun resultFromIntent(data: Intent?): AuthorizationResult = client.getAuthorizationResultFromIntent(data)
+    fun resultFromIntent(
+        data: Intent?,
+    ): AuthorizationResult = client.getAuthorizationResultFromIntent(data)
 
     /** Retient le compte et le jeton d'un résultat réussi. Renvoie le jeton, ou `null` s'il manque. */
-    fun accept(result: AuthorizationResult): String? {
+    fun accept(
+        result: AuthorizationResult,
+    ): String? {
         if (result.hasResolution()) return null
         val token = result.accessToken ?: return null
         lastToken = token
@@ -98,7 +102,9 @@ class GmsPlatformAuth(
         }
     }
 
-    private fun revokeToken(token: String) {
+    private fun revokeToken(
+        token: String,
+    ) {
         val connection =
             URL(
                 "https://oauth2.googleapis.com/revoke?token=" + URLEncoder.encode(token, "UTF-8"),

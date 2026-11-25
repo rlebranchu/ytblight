@@ -27,8 +27,9 @@ class SignOutUseCaseTest {
 
     private val feed =
         object : FeedRepository {
-            override suspend fun loadFeed(forceRefresh: Boolean): DomainResult<List<Video>> =
-                DomainResult.Success(emptyList())
+            override suspend fun loadFeed(
+                forceRefresh: Boolean,
+            ): DomainResult<List<Video>> = DomainResult.Success(emptyList())
 
             override suspend fun clear() {
                 events += "feed.clear"

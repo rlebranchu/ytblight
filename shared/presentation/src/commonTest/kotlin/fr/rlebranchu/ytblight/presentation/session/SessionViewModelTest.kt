@@ -43,8 +43,9 @@ class SessionViewModelTest {
     private class FakeFeedRepository : FeedRepository {
         var cleared = false
 
-        override suspend fun loadFeed(forceRefresh: Boolean): DomainResult<List<Video>> =
-            DomainResult.Success(emptyList())
+        override suspend fun loadFeed(
+            forceRefresh: Boolean,
+        ): DomainResult<List<Video>> = DomainResult.Success(emptyList())
 
         override suspend fun clear() {
             cleared = true
@@ -63,7 +64,9 @@ class SessionViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel(sessionIsValid: Boolean): SessionViewModel {
+    private fun viewModel(
+        sessionIsValid: Boolean,
+    ): SessionViewModel {
         val auth = FakeAuthRepository(sessionIsValid)
         return SessionViewModel(auth, SignOutUseCase(auth, feed))
     }

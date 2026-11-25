@@ -221,14 +221,15 @@ class FeedRepositoryImplTest {
             val healthy = twoChannelsApi()
             val api =
                 object : YouTubeApi by healthy {
-                    override suspend fun subscriptions(pageToken: String?) =
-                        if (failing) {
-                            throw YouTubeNetworkException(
-                                RuntimeException("x"),
-                            )
-                        } else {
-                            healthy.subscriptions(pageToken)
-                        }
+                    override suspend fun subscriptions(
+                        pageToken: String?,
+                    ) = if (failing) {
+                        throw YouTubeNetworkException(
+                            RuntimeException("x"),
+                        )
+                    } else {
+                        healthy.subscriptions(pageToken)
+                    }
                 }
             val repository = FeedRepositoryImpl(api)
 
@@ -264,10 +265,14 @@ class FeedRepositoryImplTest {
             assertEquals(3, peak)
         }
 
-    private suspend fun failingWith(error: Exception): DomainResult<List<Video>> {
+    private suspend fun failingWith(
+        error: Exception,
+    ): DomainResult<List<Video>> {
         val api =
             object : YouTubeApi by FakeYouTubeApi() {
-                override suspend fun subscriptions(pageToken: String?) = throw error
+                override suspend fun subscriptions(
+                    pageToken: String?,
+                ) = throw error
             }
         return FeedRepositoryImpl(api).loadFeed(false)
     }

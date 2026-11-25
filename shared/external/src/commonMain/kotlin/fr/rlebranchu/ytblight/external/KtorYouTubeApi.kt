@@ -18,7 +18,9 @@ import kotlinx.io.IOException
 class KtorYouTubeApi(
     private val client: HttpClient,
 ) : YouTubeApi {
-    override suspend fun subscriptions(pageToken: String?): SubscriptionListResponseDto =
+    override suspend fun subscriptions(
+        pageToken: String?,
+    ): SubscriptionListResponseDto =
         get("subscriptions") {
             parameter("part", "snippet")
             parameter("mine", "true")
@@ -26,7 +28,9 @@ class KtorYouTubeApi(
             parameter("pageToken", pageToken)
         }
 
-    override suspend fun channels(channelIds: List<String>): ChannelListResponseDto =
+    override suspend fun channels(
+        channelIds: List<String>,
+    ): ChannelListResponseDto =
         get("channels") {
             parameter("part", "contentDetails")
             parameter("id", channelIds.joinToString(","))
@@ -43,7 +47,9 @@ class KtorYouTubeApi(
             parameter("maxResults", maxResults)
         }
 
-    override suspend fun videos(videoIds: List<String>): VideoListResponseDto =
+    override suspend fun videos(
+        videoIds: List<String>,
+    ): VideoListResponseDto =
         get("videos") {
             parameter("part", "snippet,contentDetails")
             parameter("id", videoIds.joinToString(","))

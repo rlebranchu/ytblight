@@ -27,7 +27,9 @@ class FeedFormattingTest {
 
     @Test
     fun formatsRelativeTimesInFrench() {
-        fun label(ago: kotlin.time.Duration) = relativeTimeLabel(now - ago, now)
+        fun label(
+            ago: kotlin.time.Duration,
+        ) = relativeTimeLabel(now - ago, now)
 
         assertEquals("à l'instant", label(30.seconds))
         assertEquals("il y a 5 min", label(5.minutes))

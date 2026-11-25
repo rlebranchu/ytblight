@@ -8,10 +8,14 @@ import fr.rlebranchu.ytblight.external.dto.VideoListResponseDto
 /** Les appels à l'API YouTube Data v3 dont l'application a besoin. */
 interface YouTubeApi {
     /** Abonnements de l'utilisateur connecté, par pages de 50 (1 unité de quota). */
-    suspend fun subscriptions(pageToken: String?): SubscriptionListResponseDto
+    suspend fun subscriptions(
+        pageToken: String?,
+    ): SubscriptionListResponseDto
 
     /** Playlists « uploads » de 50 chaînes au plus (1 unité de quota). */
-    suspend fun channels(channelIds: List<String>): ChannelListResponseDto
+    suspend fun channels(
+        channelIds: List<String>,
+    ): ChannelListResponseDto
 
     /** Dernières vidéos d'une playlist (1 unité de quota). */
     suspend fun playlistItems(
@@ -20,7 +24,9 @@ interface YouTubeApi {
     ): PlaylistItemListResponseDto
 
     /** Détails et durée de 50 vidéos au plus (1 unité de quota). */
-    suspend fun videos(videoIds: List<String>): VideoListResponseDto
+    suspend fun videos(
+        videoIds: List<String>,
+    ): VideoListResponseDto
 
     companion object {
         /** Taille maximale d'une page ou d'un lot pour l'API. */

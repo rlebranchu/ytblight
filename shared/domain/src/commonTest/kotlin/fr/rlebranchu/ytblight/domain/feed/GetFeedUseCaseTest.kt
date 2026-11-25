@@ -17,7 +17,9 @@ class GetFeedUseCaseTest {
     ) : FeedRepository {
         val requests = mutableListOf<Boolean>()
 
-        override suspend fun loadFeed(forceRefresh: Boolean): DomainResult<List<Video>> {
+        override suspend fun loadFeed(
+            forceRefresh: Boolean,
+        ): DomainResult<List<Video>> {
             requests += forceRefresh
             return result
         }

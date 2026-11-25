@@ -81,7 +81,9 @@ fun PlayerScreen(
                             .build()
                     initialize(
                         object : AbstractYouTubePlayerListener() {
-                            override fun onReady(youTubePlayer: YouTubePlayer) {
+                            override fun onReady(
+                                youTubePlayer: YouTubePlayer,
+                            ) {
                                 youTubePlayer.loadVideo(videoId, 0f)
                             }
 

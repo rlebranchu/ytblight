@@ -9,6 +9,7 @@ class GetFeedUseCase(
     private val repository: FeedRepository,
     private val policy: FeedPolicy = FeedPolicy(),
 ) {
-    suspend operator fun invoke(forceRefresh: Boolean = false): DomainResult<List<Video>> =
-        repository.loadFeed(forceRefresh).map(policy::apply)
+    suspend operator fun invoke(
+        forceRefresh: Boolean = false,
+    ): DomainResult<List<Video>> = repository.loadFeed(forceRefresh).map(policy::apply)
 }

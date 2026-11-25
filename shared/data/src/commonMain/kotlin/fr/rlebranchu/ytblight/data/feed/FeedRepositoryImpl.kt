@@ -29,7 +29,9 @@ class FeedRepositoryImpl(
     private val mutex = Mutex()
     private var cache: List<Video>? = null
 
-    override suspend fun loadFeed(forceRefresh: Boolean): DomainResult<List<Video>> =
+    override suspend fun loadFeed(
+        forceRefresh: Boolean,
+    ): DomainResult<List<Video>> =
         mutex.withLock {
             val cached = cache
             if (!forceRefresh && cached != null) return DomainResult.Success(cached)
@@ -66,13 +68,17 @@ class FeedRepositoryImpl(
         return channelIds.distinct()
     }
 
-    private suspend fun fetchUploadsPlaylistIds(channelIds: List<String>): List<String> =
+    private suspend fun fetchUploadsPlaylistIds(
+        channelIds: List<String>,
+    ): List<String> =
         channelIds
             .chunked(YouTubeApi.MAX_BATCH_SIZE)
             .flatMap { batch -> api.channels(batch).items }
             .mapNotNull { it.contentDetails.relatedPlaylists.uploads }
 
-    private suspend fun fetchRecentVideoIds(playlistIds: List<String>): List<String> =
+    private suspend fun fetchRecentVideoIds(
+        playlistIds: List<String>,
+    ): List<String> =
         coroutineScope {
             val permits = Semaphore(maxParallelRequests)
             playlistIds
@@ -83,14 +89,18 @@ class FeedRepositoryImpl(
         }
 
     /** Une playlist introuvable (chaîne sans vidéo) ne doit pas faire échouer tout le fil. */
-    private suspend fun recentVideoIds(playlistId: String): List<String> =
+    private suspend fun recentVideoIds(
+        playlistId: String,
+    ): List<String> =
         try {
             api.playlistItems(playlistId, videosPerChannel).items.map { it.contentDetails.videoId }
         } catch (e: YouTubeHttpException) {
             if (e.statusCode == HTTP_NOT_FOUND) emptyList() else throw e
         }
 
-    private suspend fun fetchVideos(videoIds: List<String>): List<Video> =
+    private suspend fun fetchVideos(
+        videoIds: List<String>,
+    ): List<Video> =
         videoIds
             .chunked(YouTubeApi.MAX_BATCH_SIZE)
             .flatMap { batch -> api.videos(batch).items }

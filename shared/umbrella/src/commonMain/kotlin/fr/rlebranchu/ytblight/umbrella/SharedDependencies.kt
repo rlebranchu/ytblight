@@ -33,7 +33,9 @@ class SharedDependencies private constructor(
 
     companion object {
         /** Vraie API YouTube ; la connexion Google est fournie par la plateforme. */
-        fun create(platformAuth: PlatformAuth): SharedDependencies =
+        fun create(
+            platformAuth: PlatformAuth,
+        ): SharedDependencies =
             build(
                 module {
                     single<YouTubeApi> { createYouTubeApi(platformAuth) }
@@ -46,7 +48,9 @@ class SharedDependencies private constructor(
          * Données factices : tests d'interface et développement sans connexion Google.
          * @param signedIn `false` pour démarrer sur l'écran de connexion.
          */
-        fun fake(signedIn: Boolean = true): SharedDependencies =
+        fun fake(
+            signedIn: Boolean = true,
+        ): SharedDependencies =
             build(
                 module {
                     single<FeedRepository> { FakeFeedRepository() }
@@ -54,7 +58,9 @@ class SharedDependencies private constructor(
                 },
             )
 
-        private fun build(dataModule: Module): SharedDependencies {
+        private fun build(
+            dataModule: Module,
+        ): SharedDependencies {
             val domainModule =
                 module {
                     factory { FeedPolicy() }

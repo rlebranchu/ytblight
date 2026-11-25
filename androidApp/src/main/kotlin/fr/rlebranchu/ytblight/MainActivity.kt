@@ -11,7 +11,9 @@ import fr.rlebranchu.ytblight.ui.YtblightTheme
 import fr.rlebranchu.ytblight.ui.rememberGmsSignInController
 
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(
+        savedInstanceState: Bundle?,
+    ) {
         super.onCreate(savedInstanceState)
         // Thème sombre uniquement : icônes claires dans les barres système.
         enableEdgeToEdge(

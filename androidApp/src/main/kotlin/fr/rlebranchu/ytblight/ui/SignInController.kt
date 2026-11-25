@@ -96,12 +96,16 @@ private class GmsSignInController(
         finish(accepted)
     }
 
-    private fun finish(signedIn: Boolean) {
+    private fun finish(
+        signedIn: Boolean,
+    ) {
         inProgress = false
         if (signedIn) onSignedIn() else errorMessage = "La connexion a échoué."
     }
 
-    private fun fail(message: String) {
+    private fun fail(
+        message: String,
+    ) {
         inProgress = false
         errorMessage = message
     }

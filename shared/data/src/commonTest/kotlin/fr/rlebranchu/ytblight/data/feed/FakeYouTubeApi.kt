@@ -37,7 +37,9 @@ class FakeYouTubeApi(
         private set
     val requestedVideoBatches = mutableListOf<List<String>>()
 
-    override suspend fun subscriptions(pageToken: String?): SubscriptionListResponseDto {
+    override suspend fun subscriptions(
+        pageToken: String?,
+    ): SubscriptionListResponseDto {
         subscriptionCalls++
         val index = pageToken?.removePrefix("page-")?.toInt() ?: 0
         val items = subscriptionPages.getOrElse(index) { emptyList() }
@@ -47,7 +49,9 @@ class FakeYouTubeApi(
         )
     }
 
-    override suspend fun channels(channelIds: List<String>): ChannelListResponseDto {
+    override suspend fun channels(
+        channelIds: List<String>,
+    ): ChannelListResponseDto {
         channelCalls++
         return ChannelListResponseDto(
             items =
@@ -67,7 +71,9 @@ class FakeYouTubeApi(
         return PlaylistItemListResponseDto(ids.map { PlaylistItemDto(PlaylistItemContentDetailsDto(it)) })
     }
 
-    override suspend fun videos(videoIds: List<String>): VideoListResponseDto {
+    override suspend fun videos(
+        videoIds: List<String>,
+    ): VideoListResponseDto {
         videoCalls++
         requestedVideoBatches += videoIds
         return VideoListResponseDto(videoIds.mapNotNull { videos[it] })

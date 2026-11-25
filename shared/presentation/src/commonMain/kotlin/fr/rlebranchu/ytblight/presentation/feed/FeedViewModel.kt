@@ -32,7 +32,9 @@ class FeedViewModel(
     /** Ré-essaie après une erreur, en repartant du cache s'il existe. */
     fun retry() = load(forceRefresh = false)
 
-    private fun load(forceRefresh: Boolean) {
+    private fun load(
+        forceRefresh: Boolean,
+    ) {
         loadJob?.cancel()
         loadJob =
             viewModelScope.launch {

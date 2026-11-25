@@ -19,7 +19,9 @@ import kotlin.time.Duration.Companion.seconds
 class FakeFeedRepository(
     private val clock: Clock = Clock.System,
 ) : FeedRepository {
-    override suspend fun loadFeed(forceRefresh: Boolean): DomainResult<List<Video>> {
+    override suspend fun loadFeed(
+        forceRefresh: Boolean,
+    ): DomainResult<List<Video>> {
         val now = clock.now()
         return DomainResult.Success(
             listOf(

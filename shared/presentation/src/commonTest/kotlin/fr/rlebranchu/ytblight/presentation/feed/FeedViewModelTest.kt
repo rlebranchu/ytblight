@@ -31,7 +31,9 @@ class FeedViewModelTest {
         fun enqueue(): CompletableDeferred<DomainResult<List<Video>>> =
             CompletableDeferred<DomainResult<List<Video>>>().also { responses.addLast(it) }
 
-        override suspend fun loadFeed(forceRefresh: Boolean): DomainResult<List<Video>> {
+        override suspend fun loadFeed(
+            forceRefresh: Boolean,
+        ): DomainResult<List<Video>> {
             requests += forceRefresh
             return responses.removeFirst().await()
         }
@@ -46,11 +48,13 @@ class FeedViewModelTest {
             override fun now(): Instant = Instant.fromEpochMilliseconds(0) + 3.days
         }
 
-    private fun item(id: String) =
-        FeedItemUi(id, "Titre $id", "Chaîne", null, durationLabel = "10:00", publishedLabel = "il y a 3 jours")
+    private fun item(
+        id: String,
+    ) = FeedItemUi(id, "Titre $id", "Chaîne", null, durationLabel = "10:00", publishedLabel = "il y a 3 jours")
 
-    private fun video(id: String) =
-        Video(id, "Titre $id", "UC1", "Chaîne", null, Instant.fromEpochMilliseconds(0), 10.minutes)
+    private fun video(
+        id: String,
+    ) = Video(id, "Titre $id", "UC1", "Chaîne", null, Instant.fromEpochMilliseconds(0), 10.minutes)
 
     @BeforeTest
     fun setUp() {
