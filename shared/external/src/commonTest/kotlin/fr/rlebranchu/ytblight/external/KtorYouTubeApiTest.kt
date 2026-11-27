@@ -233,7 +233,7 @@ class KtorYouTubeApiTest {
         runTest {
             val tokens = FakeTokens()
             val api =
-                apiWith(tokens) { request ->
+                apiWith(tokens = tokens) { request ->
                     if (request.headers[HttpHeaders.Authorization] == "Bearer jeton-2") {
                         json(
                             body = """{"items":[]}""",

@@ -52,7 +52,13 @@ fun YtblightApp() {
         }
         composable<NavRoute.Feed> {
             FeedRoute(
-                onOpenVideo = { videoId -> navController.navigate(NavRoute.Player(videoId = videoId)) },
+                onOpenVideo = { videoId ->
+                    navController.navigate(
+                        NavRoute.Player(
+                            videoId = videoId,
+                        ),
+                    )
+                },
                 onSignedOut = {
                     navController.navigateClearing(
                         route = NavRoute.SignIn,

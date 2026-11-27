@@ -21,7 +21,7 @@ class KtorYouTubeApi(
     override suspend fun subscriptions(
         pageToken: String?,
     ): SubscriptionListResponseDto =
-        get("subscriptions") {
+        get(path = "subscriptions") {
             parameter("part", "snippet")
             parameter("mine", "true")
             parameter("maxResults", YouTubeApi.MAX_BATCH_SIZE)
@@ -31,7 +31,7 @@ class KtorYouTubeApi(
     override suspend fun channels(
         channelIds: List<String>,
     ): ChannelListResponseDto =
-        get("channels") {
+        get(path = "channels") {
             parameter("part", "contentDetails")
             parameter("id", channelIds.joinToString(","))
             parameter("maxResults", YouTubeApi.MAX_BATCH_SIZE)
@@ -41,7 +41,7 @@ class KtorYouTubeApi(
         playlistId: String,
         maxResults: Int,
     ): PlaylistItemListResponseDto =
-        get("playlistItems") {
+        get(path = "playlistItems") {
             parameter("part", "contentDetails")
             parameter("playlistId", playlistId)
             parameter("maxResults", maxResults)
@@ -50,7 +50,7 @@ class KtorYouTubeApi(
     override suspend fun videos(
         videoIds: List<String>,
     ): VideoListResponseDto =
-        get("videos") {
+        get(path = "videos") {
             parameter("part", "snippet,contentDetails")
             parameter("id", videoIds.joinToString(","))
             parameter("maxResults", YouTubeApi.MAX_BATCH_SIZE)

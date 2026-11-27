@@ -63,7 +63,7 @@ class FeedRepositoryImplTest {
             val api = twoChannelsApi()
 
             val videos =
-                repositoryOf(api)
+                repositoryOf(api = api)
                     .loadFeed(
                         forceRefresh = false,
                     ).videos()
@@ -79,7 +79,7 @@ class FeedRepositoryImplTest {
     fun mapsDurationsDatesAndThumbnails() =
         runTest {
             val videos =
-                repositoryOf(twoChannelsApi())
+                repositoryOf(api = twoChannelsApi())
                     .loadFeed(
                         forceRefresh = false,
                     ).videos()
@@ -104,7 +104,7 @@ class FeedRepositoryImplTest {
     fun servesTheCacheUntilARefreshIsForced() =
         runTest {
             val api = twoChannelsApi()
-            val repository = repositoryOf(api)
+            val repository = repositoryOf(api = api)
 
             repository.loadFeed(
                 forceRefresh = false,
@@ -125,7 +125,7 @@ class FeedRepositoryImplTest {
     fun forgetsTheCachedFeedOnClear() =
         runTest {
             val api = twoChannelsApi()
-            val repository = repositoryOf(api)
+            val repository = repositoryOf(api = api)
             repository.loadFeed(
                 forceRefresh = false,
             )
@@ -144,7 +144,7 @@ class FeedRepositoryImplTest {
             val api = twoChannelsApi()
 
             val videos =
-                repositoryOf(api, videosPerChannel = 1)
+                repositoryOf(api = api, videosPerChannel = 1)
                     .loadFeed(
                         forceRefresh = false,
                     ).videos()
@@ -170,7 +170,7 @@ class FeedRepositoryImplTest {
                 )
 
             val videos =
-                repositoryOf(api, videosPerChannel = 120)
+                repositoryOf(api = api, videosPerChannel = 120)
                     .loadFeed(
                         forceRefresh = false,
                     ).videos()
@@ -207,7 +207,7 @@ class FeedRepositoryImplTest {
                 )
 
             val videos =
-                repositoryOf(api)
+                repositoryOf(api = api)
                     .loadFeed(
                         forceRefresh = false,
                     ).videos()
@@ -233,7 +233,7 @@ class FeedRepositoryImplTest {
                 )
 
             val videos =
-                repositoryOf(api)
+                repositoryOf(api = api)
                     .loadFeed(
                         forceRefresh = false,
                     ).videos()
@@ -266,7 +266,7 @@ class FeedRepositoryImplTest {
                 }
 
             val videos =
-                repositoryOf(api)
+                repositoryOf(api = api)
                     .loadFeed(
                         forceRefresh = false,
                     ).videos()
@@ -367,7 +367,7 @@ class FeedRepositoryImplTest {
                         )
                     }
                 }
-            val repository = repositoryOf(api)
+            val repository = repositoryOf(api = api)
 
             assertIs<DomainResult.Failure>(
                 repository.loadFeed(
@@ -413,7 +413,7 @@ class FeedRepositoryImplTest {
                 )
 
             val videos =
-                repositoryOf(api, maxParallelRequests = 3)
+                repositoryOf(api = api, maxParallelRequests = 3)
                     .loadFeed(
                         forceRefresh = false,
                     ).videos()
@@ -431,7 +431,7 @@ class FeedRepositoryImplTest {
                     pageToken: String?,
                 ) = throw error
             }
-        return repositoryOf(api).loadFeed(
+        return repositoryOf(api = api).loadFeed(
             forceRefresh = false,
         )
     }
