@@ -79,7 +79,11 @@ class GmsPlatformAuth(
         response: Any?,
         isGranted: Boolean,
     ): PlatformSignInOutcome {
-        if (!isGranted) return PlatformSignInOutcome.Failed(reason = PlatformSignInFailure.CANCELLED)
+        if (!isGranted) {
+            return PlatformSignInOutcome.Failed(
+                reason = PlatformSignInFailure.CANCELLED,
+            )
+        }
         return guarded {
             outcomeOf(
                 result = client.getAuthorizationResultFromIntent(response as Intent?),
@@ -97,7 +101,10 @@ class GmsPlatformAuth(
                     request = pendingIntent.intentSender,
                 )
             accept(result) != null -> PlatformSignInOutcome.Authorized
-            else -> PlatformSignInOutcome.Failed(reason = PlatformSignInFailure.FAILED)
+            else ->
+                PlatformSignInOutcome.Failed(
+                    reason = PlatformSignInFailure.FAILED,
+                )
         }
     }
 
@@ -114,7 +121,9 @@ class GmsPlatformAuth(
         ) {
             when {
                 e is ApiException && e.statusCode == DEVELOPER_ERROR ->
-                    PlatformSignInOutcome.Failed(reason = PlatformSignInFailure.CONFIGURATION)
+                    PlatformSignInOutcome.Failed(
+                        reason = PlatformSignInFailure.CONFIGURATION,
+                    )
                 e is ApiException ->
                     PlatformSignInOutcome.Failed(
                         reason = PlatformSignInFailure.UNAVAILABLE,

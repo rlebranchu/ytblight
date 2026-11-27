@@ -2,25 +2,19 @@ package fr.rlebranchu.ytblight.ui
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import fr.rlebranchu.ytblight.presentation.splash.SplashDestination
 import fr.rlebranchu.ytblight.ui.feed.FeedRoute
 import fr.rlebranchu.ytblight.ui.player.PlayerRoute
 import fr.rlebranchu.ytblight.ui.signin.SignInRoute
 import fr.rlebranchu.ytblight.ui.splash.SplashRoute
 
-private const val ROUTE_SPLASH = "splash"
-private const val ROUTE_SIGN_IN = "signin"
-private const val ROUTE_FEED = "feed"
-private const val ROUTE_PLAYER = "player/{videoId}"
-private const val ARG_VIDEO_ID = "videoId"
-
 /**
- * Navigation de l'application. Chaque page a son [androidx.lifecycle.ViewModel], obtenu via Koin.
+ * Navigation de l'application (type-safe, voir [NavRoute]). Chaque page a son
+ * [androidx.lifecycle.ViewModel], obtenu via Koin.
  *
  * Koin est démarré dans `YtblightApplication`. Les tests d'interface y surchargent les repositories
  * par des données factices (`loadKoinModules`), sans jamais passer par Google.
@@ -28,60 +22,60 @@ private const val ARG_VIDEO_ID = "videoId"
 @Composable
 fun YtblightApp() {
     val navController = rememberNavController()
-    NavHost(navController, startDestination = ROUTE_SPLASH) {
-        composable(ROUTE_SPLASH) {
+    NavHost(
+        navController = navController,
+        startDestination = NavRoute.Splash,
+    ) {
+        composable<NavRoute.Splash> {
             SplashRoute(
                 onNavigate = { destination ->
                     navController.navigateClearing(
                         route = destination.route(),
-                        clearing = ROUTE_SPLASH,
+                        clearing = NavRoute.Splash,
                     )
                 },
             )
         }
-        composable(ROUTE_SIGN_IN) {
+        composable<NavRoute.SignIn> {
             SignInRoute(
                 onSignedIn = {
                     navController.navigateClearing(
-                        route = ROUTE_FEED,
-                        clearing = ROUTE_SIGN_IN,
+                        route = NavRoute.Feed,
+                        clearing = NavRoute.SignIn,
                     )
                 },
             )
         }
-        composable(ROUTE_FEED) {
+        composable<NavRoute.Feed> {
             FeedRoute(
-                onOpenVideo = { videoId -> navController.navigate("player/$videoId") },
+                onOpenVideo = { videoId -> navController.navigate(NavRoute.Player(videoId = videoId)) },
                 onSignedOut = {
                     navController.navigateClearing(
-                        route = ROUTE_SIGN_IN,
-                        clearing = ROUTE_FEED,
+                        route = NavRoute.SignIn,
+                        clearing = NavRoute.Feed,
                     )
                 },
             )
         }
-        composable(
-            route = ROUTE_PLAYER,
-            arguments = listOf(navArgument(ARG_VIDEO_ID) { type = NavType.StringType }),
-        ) { entry ->
+        composable<NavRoute.Player> { entry ->
             PlayerRoute(
-                videoId = entry.arguments?.getString(ARG_VIDEO_ID).orEmpty(),
+                videoId = entry.toRoute<NavRoute.Player>().videoId,
                 onClose = { navController.popBackStack() },
             )
         }
     }
 }
 
-private fun SplashDestination.route(): String =
+private fun SplashDestination.route(): NavRoute =
     when (this) {
-        SplashDestination.SIGN_IN -> ROUTE_SIGN_IN
-        SplashDestination.FEED -> ROUTE_FEED
+        SplashDestination.SIGN_IN -> NavRoute.SignIn
+        SplashDestination.FEED -> NavRoute.Feed
     }
 
 /** Va à [route] en retirant [clearing] de la pile : le bouton Retour ne revient pas en arrière. */
 private fun NavController.navigateClearing(
-    route: String,
-    clearing: String,
+    route: NavRoute,
+    clearing: NavRoute,
 ) {
     navigate(route) {
         popUpTo(clearing) { inclusive = true }

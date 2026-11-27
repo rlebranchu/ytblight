@@ -46,8 +46,14 @@ class SignInViewModelTest {
 
     private fun viewModel() =
         SignInViewModel(
-            signIn = SignInUseCase(authRepository = auth),
-            completeConsent = CompleteConsentUseCase(authRepository = auth),
+            signIn =
+                SignInUseCase(
+                    authRepository = auth,
+                ),
+            completeConsent =
+                CompleteConsentUseCase(
+                    authRepository = auth,
+                ),
         )
 
     @BeforeTest
@@ -76,8 +82,14 @@ class SignInViewModelTest {
 
     @Test
     fun asksTheInterfaceForTheConsentWindowThenFinishesSignIn() {
-        val request = ConsentRequest(handle = Any())
-        auth.signInResult = SignInResult.ConsentRequired(request = request)
+        val request =
+            ConsentRequest(
+                handle = Any(),
+            )
+        auth.signInResult =
+            SignInResult.ConsentRequired(
+                request = request,
+            )
         val viewModel = viewModel()
 
         viewModel.onSignInClicked()
@@ -92,7 +104,11 @@ class SignInViewModelTest {
 
         viewModel.onConsentLaunched()
         viewModel.onConsentResult(
-            response = ConsentResponse(isGranted = true, data = "intent"),
+            response =
+                ConsentResponse(
+                    isGranted = true,
+                    data = "intent",
+                ),
         )
 
         assertEquals(
@@ -106,13 +122,23 @@ class SignInViewModelTest {
 
     @Test
     fun reportsACancelledConsentWithoutCallingTheDomain() {
-        auth.signInResult = SignInResult.ConsentRequired(request = ConsentRequest(handle = Any()))
+        auth.signInResult =
+            SignInResult.ConsentRequired(
+                request =
+                    ConsentRequest(
+                        handle = Any(),
+                    ),
+            )
         val viewModel = viewModel()
         viewModel.onSignInClicked()
         viewModel.onConsentLaunched()
 
         viewModel.onConsentResult(
-            response = ConsentResponse(isGranted = false, data = null),
+            response =
+                ConsentResponse(
+                    isGranted = false,
+                    data = null,
+                ),
         )
 
         assertEquals(
@@ -126,7 +152,11 @@ class SignInViewModelTest {
 
     @Test
     fun showsTheFailureAndAllowsANewAttempt() {
-        auth.signInResult = SignInResult.Failed(error = DomainSignInError.CONFIGURATION, detail = "10")
+        auth.signInResult =
+            SignInResult.Failed(
+                error = DomainSignInError.CONFIGURATION,
+                detail = "10",
+            )
         val viewModel = viewModel()
 
         viewModel.onSignInClicked()

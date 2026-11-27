@@ -55,7 +55,10 @@ class SignInViewModel(
     ) {
         if (!response.isGranted) {
             apply(
-                result = SignInResult.Failed(error = DomainSignInError.CANCELLED),
+                result =
+                    SignInResult.Failed(
+                        error = DomainSignInError.CANCELLED,
+                    ),
             )
             return
         }

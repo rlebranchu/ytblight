@@ -59,7 +59,10 @@ class SessionUseCasesTest {
                     sessionIsValid = false,
                 )
 
-            val result = SignInUseCase(authRepository = repository)()
+            val result =
+                SignInUseCase(
+                    authRepository = repository,
+                )()
 
             assertEquals(SignInResult.SignedIn, result)
             assertEquals(AuthState.SIGNED_IN, repository.state.value)
@@ -74,8 +77,14 @@ class SessionUseCasesTest {
                 )
 
             val result =
-                CompleteConsentUseCase(authRepository = repository)(
-                    response = ConsentResponse(isGranted = true, data = null),
+                CompleteConsentUseCase(
+                    authRepository = repository,
+                )(
+                    response =
+                        ConsentResponse(
+                            isGranted = true,
+                            data = null,
+                        ),
                 )
 
             assertEquals(SignInResult.SignedIn, result)

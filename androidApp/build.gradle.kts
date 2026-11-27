@@ -1,5 +1,6 @@
 plugins {
     id("ytblight.android-application")
+    id("ytblight.serialization")
 }
 
 android {
@@ -27,6 +28,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
     implementation(libs.koin.compose.viewmodel)

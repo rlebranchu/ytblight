@@ -120,7 +120,10 @@ class AuthRepositoryImplTest {
                 AuthRepositoryImpl(
                     platformAuth =
                         FakePlatformAuth(
-                            signInOutcome = PlatformSignInOutcome.ConsentRequired(request = handle),
+                            signInOutcome =
+                                PlatformSignInOutcome.ConsentRequired(
+                                    request = handle,
+                                ),
                         ),
                 )
 
@@ -142,7 +145,11 @@ class AuthRepositoryImplTest {
 
             val result =
                 repository.completeConsent(
-                    response = ConsentResponse(isGranted = true, data = data),
+                    response =
+                        ConsentResponse(
+                            isGranted = true,
+                            data = data,
+                        ),
                 )
 
             assertEquals(SignInResult.SignedIn, result)
@@ -167,7 +174,13 @@ class AuthRepositoryImplTest {
 
             val result = repository.signIn()
 
-            assertEquals(SignInResult.Failed(error = SignInError.CONFIGURATION, detail = "10"), result)
+            assertEquals(
+                SignInResult.Failed(
+                    error = SignInError.CONFIGURATION,
+                    detail = "10",
+                ),
+                result,
+            )
             assertEquals(AuthState.CHECKING, repository.state.value)
         }
 
