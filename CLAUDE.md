@@ -51,6 +51,8 @@ Client YouTube perso (Android, iOS, Web). Logique métier en Kotlin Multiplatfor
 - **Connexion Google** : le flux est piloté par `SignInViewModel` → `SignInUseCase` / `CompleteConsentUseCase` → `AuthRepository` → `PlatformAuth` (implémenté par la plateforme : `GmsPlatformAuth` sur Android, qui traduit aussi les exceptions Play Services en échecs). L'interface n'a qu'un rôle : afficher la fenêtre de consentement quand `SignInUiState.consentRequest` est renseigné et renvoyer son résultat brut (`ConsentResponse`). Jamais d'appel direct à `GmsPlatformAuth` depuis l'interface.
 - **Koin** (comme dans la documentation) : un module top-level par couche, `val xxxModule = module { ... }` dans le package `di` de la couche : `externalModule` (API YouTube), `dataModule` (repositories + use cases), `presentationModule` (`viewModel {}`), et un `platformModule` par plateforme (Android : `GmsPlatformAuth`, lié à `PlatformAuth`). Koin est démarré par `startKoin` dans l'`Application`. Arguments nommés (`repository = get()`). Les tests d'interface surchargent les repositories avec `loadKoinModules(fakeModule)`.
 - Navigation type-safe : les destinations sont dans `ui/NavRoute.kt` (`@Serializable`), jamais de route en `String`. Après connexion ou déconnexion, retirer la page quittée de la pile (`popUpTo ... inclusive`).
+- Pas de logique d'affichage dans SwiftUI/React/Compose : formatage dans `shared/presentation`.
+
 ## Dépendances entre modules
 
 ```mermaid
@@ -83,7 +85,6 @@ graph TD
 - Le câblage se fait par Koin (`externalModule`, `dataModule`, `presentationModule`, `platformModule`) ; les use cases sont déclarés dans `dataModule`, car `domain` ne dépend pas de Koin.
 - `umbrella` ne sert qu'à exporter le framework iOS et la librairie JS ; Android ne passe pas par lui.
 - Tests : le dossier de sources `shared/test-fixtures/kotlin` (pas un module) est ajouté aux sources de test de `domain`, `data`, `presentation`, `umbrella` et `androidApp` (`androidTest`).
-- Pas de logique d'affichage dans SwiftUI/React/Compose : formatage dans `shared/presentation`.
 
 ## Tests et vérification
 - `./gradlew build` (ktlint, lint, tests Android hôte et JS), `./gradlew iosSimulatorArm64Test` (macOS).
