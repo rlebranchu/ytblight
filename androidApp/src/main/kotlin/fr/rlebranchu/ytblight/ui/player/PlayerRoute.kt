@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -32,6 +33,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+import fr.rlebranchu.ytblight.R
 import fr.rlebranchu.ytblight.presentation.player.PlayerViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -94,7 +96,10 @@ private fun PlayerScreen(
 
     Column(Modifier.fillMaxSize().background(Color.Black)) {
         if (!isLandscape) {
-            TextButton(onClick = onClose, modifier = Modifier.statusBarsPadding()) { Text("← Retour") }
+            TextButton(
+                onClick = onClose,
+                modifier = Modifier.statusBarsPadding(),
+            ) { Text(stringResource(R.string.player_back)) }
         }
         AndroidView(
             factory = { context ->

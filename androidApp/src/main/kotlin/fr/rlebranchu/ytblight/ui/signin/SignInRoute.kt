@@ -19,9 +19,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import fr.rlebranchu.ytblight.R
 import fr.rlebranchu.ytblight.domain.auth.ConsentResponse
 import fr.rlebranchu.ytblight.presentation.signin.SignInError
 import fr.rlebranchu.ytblight.presentation.signin.SignInUiState
@@ -34,6 +36,7 @@ fun SignInRoute(
 ) {
     val viewModel: SignInViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
+
     // Seul rôle Android : afficher la fenêtre de consentement de Play Services et rendre son résultat brut.
     val consentLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
@@ -73,16 +76,16 @@ private fun SignInScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text("ytblight", style = MaterialTheme.typography.headlineLarge)
+            Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineLarge)
             Text(
-                "Connecte-toi avec ton compte Google pour voir le fil de tes abonnements.",
+                stringResource(R.string.signin_message),
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
             )
             if (state.inProgress) {
                 CircularProgressIndicator()
             } else {
-                Button(onClick = onSignIn) { Text("Se connecter avec Google") }
+                Button(onClick = onSignIn) { Text(stringResource(R.string.signin_button)) }
             }
             state.error?.let {
                 Text(
@@ -95,13 +98,18 @@ private fun SignInScreen(
     }
 }
 
+@Composable
 private fun SignInError.message(
     detail: String?,
 ): String =
     when (this) {
-        SignInError.CANCELLED -> "Connexion annulée."
-        SignInError.CONFIGURATION ->
-            "Configuration Google incorrecte (code 10) : vérifie le package et l'empreinte SHA-1 du client Android."
-        SignInError.FAILED -> "La connexion a échoué."
-        SignInError.UNAVAILABLE -> "Connexion impossible${detail?.let { " ($it)" }.orEmpty()}."
+        SignInError.CANCELLED -> stringResource(R.string.signin_error_cancelled)
+        SignInError.CONFIGURATION -> stringResource(R.string.signin_error_configuration)
+        SignInError.FAILED -> stringResource(R.string.signin_error_failed)
+        SignInError.UNAVAILABLE ->
+            if (detail == null) {
+                stringResource(R.string.signin_error_unavailable)
+            } else {
+                stringResource(R.string.signin_error_unavailable_detail, detail)
+            }
     }

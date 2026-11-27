@@ -29,11 +29,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import fr.rlebranchu.ytblight.R
 import fr.rlebranchu.ytblight.presentation.feed.FeedError
 import fr.rlebranchu.ytblight.presentation.feed.FeedItemUi
 import fr.rlebranchu.ytblight.presentation.feed.FeedUiState
@@ -75,8 +77,8 @@ private fun FeedScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Abonnements") },
-                actions = { TextButton(onClick = onSignOut) { Text("Se déconnecter") } },
+                title = { Text(stringResource(R.string.feed_title)) },
+                actions = { TextButton(onClick = onSignOut) { Text(stringResource(R.string.feed_sign_out)) } },
             )
         },
     ) { padding ->
@@ -130,7 +132,13 @@ private fun Loading() {
 @Composable
 private fun EmptyPanel() {
     LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(32.dp)) {
-        item { Text("Aucune vidéo récente.", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()) }
+        item {
+            Text(
+                stringResource(R.string.feed_empty),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     }
 }
 
@@ -180,18 +188,19 @@ private fun ErrorAction(
     onReconnect: () -> Unit,
 ) {
     when (error) {
-        FeedError.NOT_SIGNED_IN -> Button(onClick = onReconnect) { Text("Se reconnecter") }
+        FeedError.NOT_SIGNED_IN -> Button(onClick = onReconnect) { Text(stringResource(R.string.feed_reconnect)) }
         FeedError.QUOTA_EXCEEDED -> Unit
-        FeedError.NETWORK, FeedError.UNKNOWN -> Button(onClick = onRetry) { Text("Réessayer") }
+        FeedError.NETWORK, FeedError.UNKNOWN -> Button(onClick = onRetry) { Text(stringResource(R.string.feed_retry)) }
     }
 }
 
+@Composable
 private fun FeedError.message(): String =
     when (this) {
-        FeedError.NOT_SIGNED_IN -> "Ta session a expiré."
-        FeedError.QUOTA_EXCEEDED -> "Le quota quotidien de YouTube est atteint. Réessaie demain."
-        FeedError.NETWORK -> "Pas de connexion. Vérifie ton réseau."
-        FeedError.UNKNOWN -> "Une erreur est survenue."
+        FeedError.NOT_SIGNED_IN -> stringResource(R.string.feed_error_not_signed_in)
+        FeedError.QUOTA_EXCEEDED -> stringResource(R.string.feed_error_quota_exceeded)
+        FeedError.NETWORK -> stringResource(R.string.feed_error_network)
+        FeedError.UNKNOWN -> stringResource(R.string.feed_error_unknown)
     }
 
 @Composable
@@ -235,7 +244,7 @@ private fun VideoRow(
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp),
         )
         Text(
-            "${video.channelTitle} · ${video.publishedLabel}",
+            stringResource(R.string.feed_video_subtitle, video.channelTitle, video.publishedLabel),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 16.dp),

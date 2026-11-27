@@ -5,6 +5,7 @@ Client YouTube perso (Android, iOS, Web). Logique métier en Kotlin Multiplatfor
 ## Langue
 - Interface de l'app, commentaires, KDoc, commits et PR : **français**.
 - Identifiants de code : anglais.
+- **Android : aucun texte en dur dans les composables.** Tous les textes affichés sont dans `androidApp/src/main/res/values/strings.xml` et lus avec `stringResource(R.string...)`.
 
 ## Contraintes produit (ne pas contourner)
 - Mode sombre uniquement, français uniquement, navigation en portrait (paysage seulement sur l'écran du lecteur).
