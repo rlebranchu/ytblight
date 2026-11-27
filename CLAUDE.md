@@ -53,7 +53,7 @@ Client YouTube perso (Android, iOS, Web). Logique métier en Kotlin Multiplatfor
 
 ## Tests et vérification
 - `./gradlew build` (ktlint, lint, tests Android hôte et JS), `./gradlew iosSimulatorArm64Test` (macOS).
-- Tests d'interface sur données factices (`SharedDependencies.fake`), jamais sur le vrai Google.
+- Tests d'interface sur données factices (`fakeModule`), jamais sur le vrai Google.
 - Ne pas lancer `ktlintFormat` sur `build-logic` sans relire le diff.
 
 ## Git

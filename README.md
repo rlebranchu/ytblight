@@ -20,7 +20,7 @@ ytblight/
 │  ├─ external/          # client Ktor, API YouTube, DTO
 │  ├─ local/             # stockage sécurisé du jeton OAuth
 │  ├─ presentation/      # ViewModels + UiState partagés
-│  └─ umbrella/          # câblage Koin, framework iOS « Shared », librairie JS
+│  └─ umbrella/          # framework iOS « Shared » et librairie JS (exports) ; tests d'assemblage Koin
 ├─ androidApp/
 ├─ iosApp/
 └─ webApp/
@@ -28,7 +28,7 @@ ytblight/
 
 Sens des dépendances : `presentation -> domain <- data -> external, local`.
 `domain` ne dépend de rien d'autre que des coroutines et de kotlinx-datetime.
-Seul `umbrella` connaît tous les modules.
+Seuls `umbrella` et `androidApp` connaissent tous les modules.
 
 ## Prérequis
 
