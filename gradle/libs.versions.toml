@@ -27,6 +27,7 @@ ktor = "3.6.1"
 koin = "4.2.2"
 kermit = "2.2.0"
 androidx-lifecycle = "2.11.1"
+androidx-savedstate = "1.4.0"
 
 # Tests
 turbine = "1.2.1"
