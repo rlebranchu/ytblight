@@ -86,6 +86,15 @@ graph TD
 - `umbrella` ne sert qu'à exporter le framework iOS et la librairie JS ; Android ne passe pas par lui.
 - Tests : le dossier de sources `shared/test-fixtures/kotlin` (pas un module) est ajouté aux sources de test de `domain`, `data`, `presentation`, `umbrella` et `androidApp` (`androidTest`).
 
+## Web (React + TypeScript)
+- **Même architecture que Android** : une page = un dossier `webApp/src/pages/<page>/` avec `<Page>Route.tsx` (obtient le ViewModel partagé, souscrit à son état, gère la navigation, puis rend `<Page>Screen`) et `<Page>Screen.tsx` (composant purement visuel : il reçoit uniquement l'état et des fonctions, jamais le ViewModel). Les ViewModels sont ceux de `shared/presentation`, créés à l'affichage de la page et libérés (`clear()`) à son démontage.
+- **Équivalent des arguments nommés** : toute fonction ou composant de plus d'un paramètre, et tout appel à une fonction du projet, prend **un objet** `{ champ: valeur }`, un champ par ligne, virgule finale. Appliqué par ESLint et Prettier (`npm run lint`).
+- **Textes** : aucun texte en dur dans les composants ; tout est dans `webApp/src/strings.ts` (français uniquement), l'équivalent de `strings.xml`.
+- **Interface** : shadcn/ui, mode sombre uniquement (appliqué à la racine, non basculable), `lang="fr"`, `HashRouter`, `base` Vite prêt pour `/ytblight/`.
+- **Pont Kotlin/JS** : l'interface JS n'utilise que la façade exportée par `shared/umbrella` (`jsMain`) ; pas de `@JsExport` sur les classes partagées. Une façade expose pour chaque ViewModel `subscribe(callback): () => void`.
+- **Jeton Google (web)** : conservé dans le stockage du navigateur avec sa date d'expiration (seule donnée stockée, nécessaire à la connexion), réutilisé tant qu'il est valide, puis renouvelé en silence auprès de Google ; sinon retour à la page de connexion. Il n'existe pas de jeton de rafraîchissement sans backend : la session survit donc à un rechargement, pas au-delà de l'expiration sans que Google redonne un jeton.
+- **Tests** : Playwright sur données factices en interceptant le réseau (`page.route` pour `googleapis.com`, faux script Google Identity Services injecté) ; aucun mode factice dans le code livré.
+
 ## Tests et vérification
 - `./gradlew build` (ktlint, lint, tests Android hôte et JS), `./gradlew iosSimulatorArm64Test` (macOS).
 - Tests d'interface sur données factices (`fakeModule`), jamais sur le vrai Google.
