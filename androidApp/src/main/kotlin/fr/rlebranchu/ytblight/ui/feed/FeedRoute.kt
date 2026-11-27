@@ -196,12 +196,14 @@ private fun ErrorAction(
 
 @Composable
 private fun FeedError.message(): String =
-    when (this) {
-        FeedError.NOT_SIGNED_IN -> stringResource(R.string.feed_error_not_signed_in)
-        FeedError.QUOTA_EXCEEDED -> stringResource(R.string.feed_error_quota_exceeded)
-        FeedError.NETWORK -> stringResource(R.string.feed_error_network)
-        FeedError.UNKNOWN -> stringResource(R.string.feed_error_unknown)
-    }
+    stringResource(
+        when (this) {
+            FeedError.NOT_SIGNED_IN -> R.string.feed_error_not_signed_in
+            FeedError.QUOTA_EXCEEDED -> R.string.feed_error_quota_exceeded
+            FeedError.NETWORK -> R.string.feed_error_network
+            FeedError.UNKNOWN -> R.string.feed_error_unknown
+        },
+    )
 
 @Composable
 private fun VideoRow(

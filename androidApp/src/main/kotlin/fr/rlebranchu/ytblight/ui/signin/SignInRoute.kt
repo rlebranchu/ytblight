@@ -102,14 +102,18 @@ private fun SignInScreen(
 private fun SignInError.message(
     detail: String?,
 ): String =
-    when (this) {
-        SignInError.CANCELLED -> stringResource(R.string.signin_error_cancelled)
-        SignInError.CONFIGURATION -> stringResource(R.string.signin_error_configuration)
-        SignInError.FAILED -> stringResource(R.string.signin_error_failed)
-        SignInError.UNAVAILABLE ->
-            if (detail == null) {
-                stringResource(R.string.signin_error_unavailable)
-            } else {
-                stringResource(R.string.signin_error_unavailable_detail, detail)
-            }
-    }
+    stringResource(
+        when (this) {
+            SignInError.CANCELLED -> R.string.signin_error_cancelled
+            SignInError.CONFIGURATION -> R.string.signin_error_configuration
+            SignInError.FAILED -> R.string.signin_error_failed
+            SignInError.UNAVAILABLE ->
+                if (detail == null) {
+                    R.string.signin_error_unavailable
+                } else {
+                    R.string.signin_error_unavailable_detail
+                }
+        },
+        // Ignoré par les textes sans emplacement (%1$s).
+        detail.orEmpty(),
+    )
