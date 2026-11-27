@@ -37,3 +37,39 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Tests iOS (simulateur) et framework Shared
         run: ./gradlew iosSimulatorArm64Test :shared:umbrella:linkDebugFrameworkIosSimulatorArm64
+
+  # Application web : librairie Kotlin/JS, lint, build et tests Playwright (Chromium, Firefox, WebKit).
+  web:
+    name: Web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: webApp/package-lock.json
+      - name: Librairie Kotlin/JS
+        run: ./gradlew :shared:umbrella:jsBrowserProductionLibraryDistribution
+      - name: Dépendances
+        run: npm ci
+        working-directory: webApp
+      - name: Lint et types
+        run: npm run lint && npx tsc --noEmit
+        working-directory: webApp
+      - name: Navigateurs Playwright
+        run: npx playwright install --with-deps
+        working-directory: webApp
+      - name: Tests Playwright
+        run: npm test
+        working-directory: webApp
+      - uses: actions/upload-artifact@v5
+        if: failure()
+        with:
+          name: playwright-report
+          path: webApp/test-results

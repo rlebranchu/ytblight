@@ -21,6 +21,7 @@ kotlin {
         browser {
             testTask { enabled = false }
         }
+        useEsModules()
         binaries.library()
         generateTypeScriptDefinitions()
     }
@@ -37,6 +38,10 @@ kotlin {
         }
         commonTest {
             kotlin.srcDir(rootProject.file("shared/test-fixtures/kotlin"))
+        }
+        jsMain.dependencies {
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.androidx.lifecycle.viewmodel)
         }
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)
