@@ -46,12 +46,43 @@ Client YouTube perso (Android, iOS, Web). Logique métier en Kotlin Multiplatfor
 ## Architecture
 - **Un ViewModel par page** (jamais de ViewModel global). Pages : `splash`, `signin`, `feed`, `player`. Un package par page dans chaque module : `shared/presentation/.../<page>/<Page>ViewModel.kt` (+ `<Page>UiState`) et `androidApp/.../ui/<page>/<Page>Route.kt`. Les ViewModels restent dans `shared` pour servir aussi SwiftUI et React.
 - **Fichier `<Page>Route.kt`** : toujours deux fonctions `@Composable`. La première, publique (`<Page>Route`), obtient le ViewModel via Koin (`val viewModel: XViewModel = koinViewModel()`), collecte l'état, gère la navigation, puis appelle la seconde. La seconde, privée (`<Page>Screen`), ne contient que l'interface : elle ne reçoit ni ViewModel ni Koin, seulement un état et des lambdas.
-- **Un ViewModel ne parle jamais à un repository** : il passe toujours par un use case du `domain` (`GetFeedUseCase`, `CheckSessionUseCase`, `CompleteSignInUseCase`, `SignOutUseCase`…), même quand il se limite à déléguer.
+- **Un ViewModel ne parle jamais à un repository** : il passe toujours par un use case du `domain` (`GetFeedUseCase`, `CheckSessionUseCase`, `SignInUseCase`, `CompleteConsentUseCase`, `SignOutUseCase`…), même quand il se limite à déléguer.
 - **Aucun faux code dans le code de production**, et **une seule version de chaque fake** : les fausses données partagées (`FakeAuthRepository`, `FakeFeedRepository`, `testVideo`) sont dans `shared/test-fixtures/kotlin`, un dossier de sources (pas un module) ajouté aux sources de test de chaque module (`commonTest`, `androidTest`) par leur `build.gradle.kts`. Elles ne sont compilées que dans les tests. Un fake propre à un seul test (par exemple `ScriptedRepository`) reste dans ce test. Côté Android, `fakeModule` (Koin) remplace les repositories réels.
 - **Connexion Google** : le flux est piloté par `SignInViewModel` → `SignInUseCase` / `CompleteConsentUseCase` → `AuthRepository` → `PlatformAuth` (implémenté par la plateforme : `GmsPlatformAuth` sur Android, qui traduit aussi les exceptions Play Services en échecs). L'interface n'a qu'un rôle : afficher la fenêtre de consentement quand `SignInUiState.consentRequest` est renseigné et renvoyer son résultat brut (`ConsentResponse`). Jamais d'appel direct à `GmsPlatformAuth` depuis l'interface.
 - **Koin** (comme dans la documentation) : un module top-level par couche, `val xxxModule = module { ... }` dans le package `di` de la couche : `externalModule` (API YouTube), `dataModule` (repositories + use cases), `presentationModule` (`viewModel {}`), et un `platformModule` par plateforme (Android : `GmsPlatformAuth`, lié à `PlatformAuth`). Koin est démarré par `startKoin` dans l'`Application`. Arguments nommés (`repository = get()`). Les tests d'interface surchargent les repositories avec `loadKoinModules(fakeModule)`.
 - Navigation type-safe : les destinations sont dans `ui/NavRoute.kt` (`@Serializable`), jamais de route en `String`. Après connexion ou déconnexion, retirer la page quittée de la pile (`popUpTo ... inclusive`).
-- Modules : `domain` ← `data` → `external`, `local` ; `presentation` dépend de `domain` ; `umbrella` ne sert qu'à exporter le framework iOS et la librairie JS.
+## Dépendances entre modules
+
+```mermaid
+graph TD
+    androidApp["androidApp<br/>Compose, Koin (startKoin), GmsPlatformAuth"]
+    umbrella["shared:umbrella<br/>framework iOS « Shared » + librairie JS"]
+    presentation["shared:presentation<br/>ViewModels, UiState, formatage"]
+    data["shared:data<br/>repositories, mappers, use cases (Koin)"]
+    domain["shared:domain<br/>modèles, interfaces, use cases"]
+    external["shared:external<br/>API YouTube (Ktor), PlatformAuth"]
+    local["shared:local<br/>stockage local (vide pour l'instant)"]
+
+    androidApp --> presentation
+    androidApp --> domain
+    androidApp --> data
+    androidApp --> external
+    umbrella --> presentation
+    umbrella --> domain
+    umbrella --> data
+    umbrella --> external
+    umbrella --> local
+    data --> domain
+    data --> external
+    data --> local
+    presentation --> domain
+```
+
+- `domain`, `external` et `local` ne dépendent d'aucun autre module du projet. Ne jamais faire pointer `domain` vers `data`, `external` ou `local`.
+- `presentation` ne connaît ni `data` ni `external` : elle ne voit que les use cases du `domain`.
+- Le câblage se fait par Koin (`externalModule`, `dataModule`, `presentationModule`, `platformModule`) ; les use cases sont déclarés dans `dataModule`, car `domain` ne dépend pas de Koin.
+- `umbrella` ne sert qu'à exporter le framework iOS et la librairie JS ; Android ne passe pas par lui.
+- Tests : le dossier de sources `shared/test-fixtures/kotlin` (pas un module) est ajouté aux sources de test de `domain`, `data`, `presentation`, `umbrella` et `androidApp` (`androidTest`).
 - Pas de logique d'affichage dans SwiftUI/React/Compose : formatage dans `shared/presentation`.
 
 ## Tests et vérification
