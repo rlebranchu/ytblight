@@ -29,16 +29,11 @@ kotlin {
         commonMain.dependencies {
             api(projects.shared.presentation)
             api(projects.shared.domain)
-            implementation(projects.shared.data)
+            api(projects.shared.data)
             api(projects.shared.external)
             implementation(projects.shared.local)
             implementation(libs.koin.core)
-            implementation(libs.koin.core.viewmodel)
             implementation(libs.kermit)
-        }
-        // Android : le conteneur Koin est exposé à Compose (koinViewModel). Pas sur iOS ni sur le web.
-        androidMain.dependencies {
-            api(libs.koin.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)

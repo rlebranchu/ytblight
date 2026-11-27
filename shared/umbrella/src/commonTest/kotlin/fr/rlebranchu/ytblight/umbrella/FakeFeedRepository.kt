@@ -16,9 +16,21 @@ class FakeFeedRepository : FeedRepository {
         DomainResult.Success(
             value =
                 listOf(
-                    video(id = "old", duration = 10.minutes, publishedAtSeconds = 1_000),
-                    video(id = "short", duration = 30.seconds, publishedAtSeconds = 3_000),
-                    video(id = "new", duration = 10.minutes, publishedAtSeconds = 2_000),
+                    video(
+                        id = "old",
+                        duration = 10.minutes,
+                        publishedAtSeconds = 1_000,
+                    ),
+                    video(
+                        id = "short",
+                        duration = 30.seconds,
+                        publishedAtSeconds = 3_000,
+                    ),
+                    video(
+                        id = "new",
+                        duration = 10.minutes,
+                        publishedAtSeconds = 2_000,
+                    ),
                 ),
         )
 

@@ -10,10 +10,14 @@ import fr.rlebranchu.ytblight.presentation.signin.SignInViewModel
 import fr.rlebranchu.ytblight.ui.YtblightApp
 import fr.rlebranchu.ytblight.ui.YtblightTheme
 import fr.rlebranchu.ytblight.ui.signin.SignInStarter
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.loadKoinModules
+import org.koin.core.context.unloadKoinModules
+import org.koin.core.module.Module
 
 /** Tests de l'interface sur données factices : aucun appel à Google, aucun quota consommé. */
 @RunWith(AndroidJUnit4::class)
@@ -32,17 +36,25 @@ class YtblightAppTest {
         }
     }
 
+    private var fakeModule: Module? = null
+
+    @After
+    fun removeFakeModule() {
+        fakeModule?.let(::unloadKoinModules)
+    }
+
     private fun launch(
         signedIn: Boolean,
     ): List<FakeSignInStarter> {
+        // Koin est démarré par YtblightApplication : on y surcharge les repositories par des fakes.
+        fakeModule =
+            fakeModule(
+                signedIn = signedIn,
+            ).also(::loadKoinModules)
         val starters = mutableListOf<FakeSignInStarter>()
         composeRule.setContent {
             YtblightTheme {
                 YtblightApp(
-                    dependencies =
-                        fakeDependencies(
-                            signedIn = signedIn,
-                        ),
                     signInStarter = { viewModel ->
                         remember {
                             FakeSignInStarter(

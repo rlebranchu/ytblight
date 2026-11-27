@@ -27,8 +27,20 @@ class SessionUseCasesTest {
     @Test
     fun checkSessionReturnsTheStateOnceVerified() =
         runTest {
-            val valid = CheckSessionUseCase(authRepository = FakeAuthRepository(sessionIsValid = true))
-            val missing = CheckSessionUseCase(authRepository = FakeAuthRepository(sessionIsValid = false))
+            val valid =
+                CheckSessionUseCase(
+                    authRepository =
+                        FakeAuthRepository(
+                            sessionIsValid = true,
+                        ),
+                )
+            val missing =
+                CheckSessionUseCase(
+                    authRepository =
+                        FakeAuthRepository(
+                            sessionIsValid = false,
+                        ),
+                )
 
             assertEquals(AuthState.SIGNED_IN, valid())
             assertEquals(AuthState.SIGNED_OUT, missing())
@@ -36,9 +48,14 @@ class SessionUseCasesTest {
 
     @Test
     fun completeSignInMarksTheSessionAsSignedIn() {
-        val repository = FakeAuthRepository(sessionIsValid = false)
+        val repository =
+            FakeAuthRepository(
+                sessionIsValid = false,
+            )
 
-        CompleteSignInUseCase(authRepository = repository)()
+        CompleteSignInUseCase(
+            authRepository = repository,
+        )()
 
         assertEquals(AuthState.SIGNED_IN, repository.state.value)
     }

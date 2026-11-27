@@ -8,6 +8,8 @@ kotlin {
             api(projects.shared.domain)
             api(libs.androidx.lifecycle.viewmodel)
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.koin.core)
+            implementation(libs.koin.core.viewmodel)
         }
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)

@@ -14,7 +14,10 @@ android {
 }
 
 dependencies {
-    implementation(projects.shared.umbrella)
+    implementation(projects.shared.presentation)
+    implementation(projects.shared.domain)
+    implementation(projects.shared.data)
+    implementation(projects.shared.external)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
@@ -24,6 +27,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.koin.android)
     implementation(libs.koin.compose)
     implementation(libs.koin.compose.viewmodel)
     implementation(libs.play.services.auth)
