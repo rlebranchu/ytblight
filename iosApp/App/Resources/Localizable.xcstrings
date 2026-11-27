@@ -1,0 +1,196 @@
+{
+  "sourceLanguage": "fr",
+  "strings": {
+    "app.name": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ytblight"
+          }
+        }
+      }
+    },
+    "loading": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chargement…"
+          }
+        }
+      }
+    },
+    "signin.message": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecte-toi avec ton compte Google pour voir le fil de tes abonnements."
+          }
+        }
+      }
+    },
+    "signin.button": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se connecter avec Google"
+          }
+        }
+      }
+    },
+    "signin.error.cancelled": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connexion annulée."
+          }
+        }
+      }
+    },
+    "signin.error.configuration": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configuration Google incorrecte : vérifie l'identifiant client iOS et son identifiant de bundle."
+          }
+        }
+      }
+    },
+    "signin.error.failed": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La connexion a échoué."
+          }
+        }
+      }
+    },
+    "signin.error.unavailable": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connexion impossible."
+          }
+        }
+      }
+    },
+    "signin.error.unavailable.detail %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connexion impossible (%@)."
+          }
+        }
+      }
+    },
+    "feed.title": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abonnements"
+          }
+        }
+      }
+    },
+    "feed.signout": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se déconnecter"
+          }
+        }
+      }
+    },
+    "feed.empty": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune vidéo récente."
+          }
+        }
+      }
+    },
+    "feed.reconnect": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se reconnecter"
+          }
+        }
+      }
+    },
+    "feed.retry": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réessayer"
+          }
+        }
+      }
+    },
+    "feed.video.subtitle %@ %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "feed.error.notSignedIn": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ta session a expiré."
+          }
+        }
+      }
+    },
+    "feed.error.quotaExceeded": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le quota quotidien de YouTube est atteint. Réessaie demain."
+          }
+        }
+      }
+    },
+    "feed.error.network": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas de connexion. Vérifie ton réseau."
+          }
+        }
+      }
+    },
+    "feed.error.unknown": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une erreur est survenue."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

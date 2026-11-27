@@ -4,7 +4,7 @@ import fr.rlebranchu.ytblight.domain.auth.ConsentRequest
 
 data class SignInUiState(
     val inProgress: Boolean = false,
-    val error: SignInError? = null,
+    val error: SignInUiError? = null,
     /** Précision technique à afficher avec l'erreur (code, message), le cas échéant. */
     val errorDetail: String? = null,
     /** La connexion a réussi : l'interface peut passer au fil. */
@@ -13,7 +13,7 @@ data class SignInUiState(
     val consentRequest: ConsentRequest? = null,
 )
 
-enum class SignInError {
+enum class SignInUiError {
     CANCELLED,
 
     /** Google refuse l'application : package ou empreinte SHA-1 du client OAuth incorrects. */

@@ -13,6 +13,7 @@ kotlin {
             export(projects.shared.presentation)
             export(projects.shared.domain)
             export(projects.shared.external)
+            export(projects.shared.local)
         }
     }
 

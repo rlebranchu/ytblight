@@ -2,8 +2,8 @@ package fr.rlebranchu.ytblight.umbrella
 
 import fr.rlebranchu.ytblight.external.auth.PlatformSignInFailure
 import fr.rlebranchu.ytblight.external.auth.TokenGrant
-import fr.rlebranchu.ytblight.external.auth.TokenRequestException
 import fr.rlebranchu.ytblight.external.auth.TokenRequester
+import fr.rlebranchu.ytblight.external.auth.TokenResult
 import kotlinx.coroutines.await
 
 /** Demande les jetons à Google Identity Services, par l'intermédiaire du pont TypeScript. */
@@ -12,7 +12,7 @@ internal class GoogleTokenRequester(
 ) : TokenRequester {
     override suspend fun request(
         interactive: Boolean,
-    ): TokenGrant {
+    ): TokenResult {
         val response =
             bridge
                 .requestToken(
@@ -20,14 +20,17 @@ internal class GoogleTokenRequester(
                 ).await()
         val token = response.accessToken
         if (response.error != null || token == null) {
-            throw TokenRequestException(
+            return TokenResult.Denied(
                 reason = response.error.toFailure(),
                 detail = response.error,
             )
         }
-        return TokenGrant(
-            accessToken = token,
-            expiresInSeconds = response.expiresInSeconds?.toLong() ?: DEFAULT_EXPIRES_IN_SECONDS,
+        return TokenResult.Granted(
+            grant =
+                TokenGrant(
+                    accessToken = token,
+                    expiresInSeconds = response.expiresInSeconds?.toLong() ?: DEFAULT_EXPIRES_IN_SECONDS,
+                ),
         )
     }
 

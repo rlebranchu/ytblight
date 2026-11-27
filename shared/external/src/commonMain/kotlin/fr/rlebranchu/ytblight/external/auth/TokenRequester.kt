@@ -1,8 +1,8 @@
 package fr.rlebranchu.ytblight.external.auth
 
 /**
- * Demande un jeton d'accès à Google. Implémenté par la plateforme (sur le web : Google Identity
- * Services). Lève [TokenRequestException] si Google n'en accorde pas.
+ * Demande un jeton d'accès à Google. Implémenté par la plateforme (web : Google Identity Services,
+ * iOS : AppAuth). Ne lève pas d'exception : un refus est rapporté par [TokenResult.Denied].
  */
 interface TokenRequester {
     /**
@@ -11,9 +11,9 @@ interface TokenRequester {
      */
     suspend fun request(
         interactive: Boolean,
-    ): TokenGrant
+    ): TokenResult
 
-    /** Retire l'autorisation donnée à l'application. */
+    /** Retire l'autorisation donnée à l'application (sans échec si le réseau est coupé). */
     suspend fun revoke(
         accessToken: String,
     )
@@ -25,7 +25,14 @@ data class TokenGrant(
     val expiresInSeconds: Long,
 )
 
-class TokenRequestException(
-    val reason: PlatformSignInFailure,
-    val detail: String? = null,
-) : Exception(detail)
+/** Réponse de Google à une demande de jeton : un échec est un résultat, pas une exception. */
+sealed interface TokenResult {
+    data class Granted(
+        val grant: TokenGrant,
+    ) : TokenResult
+
+    data class Denied(
+        val reason: PlatformSignInFailure,
+        val detail: String? = null,
+    ) : TokenResult
+}

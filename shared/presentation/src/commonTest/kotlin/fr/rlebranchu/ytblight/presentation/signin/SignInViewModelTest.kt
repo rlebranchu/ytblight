@@ -123,7 +123,7 @@ class SignInViewModelTest {
 
         assertEquals(
             SignInUiState(
-                error = SignInError.CANCELLED,
+                error = SignInUiError.CANCELLED,
             ),
             viewModel.state.value,
         )
@@ -143,7 +143,7 @@ class SignInViewModelTest {
 
         assertEquals(
             SignInUiState(
-                error = SignInError.CONFIGURATION,
+                error = SignInUiError.CONFIGURATION,
                 errorDetail = "10",
             ),
             viewModel.state.value,
