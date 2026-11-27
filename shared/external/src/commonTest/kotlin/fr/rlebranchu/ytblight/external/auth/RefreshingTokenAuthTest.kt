@@ -29,14 +29,15 @@ class RefreshingTokenAuthTest {
     private class FakeRequester : TokenRequester {
         val requests = mutableListOf<Boolean>()
         val revoked = mutableListOf<String>()
-        var next: Result<TokenGrant> = Result.success(TokenGrant(accessToken = "neuf", expiresInSeconds = 3_600))
+        var next: TokenResult =
+            TokenResult.Granted(grant = TokenGrant(accessToken = "neuf", expiresInSeconds = 3_600))
         var revokeFails = false
 
         override suspend fun request(
             interactive: Boolean,
-        ): TokenGrant {
+        ): TokenResult {
             requests += interactive
-            return next.getOrThrow()
+            return next
         }
 
         override suspend fun revoke(
@@ -96,7 +97,7 @@ class RefreshingTokenAuthTest {
     fun endsTheSessionWhenGoogleRefusesTheSilentRenewal() =
         runTest {
             storage.token = stored(token = "ancien", expiresInMillis = -1)
-            requester.next = Result.failure(TokenRequestException(reason = PlatformSignInFailure.UNAVAILABLE))
+            requester.next = TokenResult.Denied(reason = PlatformSignInFailure.UNAVAILABLE)
 
             assertNull(auth.currentToken())
             assertNull(storage.token)
@@ -125,10 +126,7 @@ class RefreshingTokenAuthTest {
     @Test
     fun signInReportsTheFailureWithoutStoringAnything() =
         runTest {
-            requester.next =
-                Result.failure(
-                    TokenRequestException(reason = PlatformSignInFailure.CANCELLED, detail = "popup_closed"),
-                )
+            requester.next = TokenResult.Denied(reason = PlatformSignInFailure.CANCELLED, detail = "popup_closed")
 
             val outcome = auth.signIn()
 

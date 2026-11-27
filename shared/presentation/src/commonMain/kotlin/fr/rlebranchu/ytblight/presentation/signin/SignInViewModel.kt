@@ -97,10 +97,10 @@ class SignInViewModel(
     }
 }
 
-private fun DomainSignInError.toUi(): SignInError =
+private fun DomainSignInError.toUi(): SignInUiError =
     when (this) {
-        DomainSignInError.CANCELLED -> SignInError.CANCELLED
-        DomainSignInError.CONFIGURATION -> SignInError.CONFIGURATION
-        DomainSignInError.FAILED -> SignInError.FAILED
-        DomainSignInError.UNAVAILABLE -> SignInError.UNAVAILABLE
+        DomainSignInError.CANCELLED -> SignInUiError.CANCELLED
+        DomainSignInError.CONFIGURATION -> SignInUiError.CONFIGURATION
+        DomainSignInError.FAILED -> SignInUiError.FAILED
+        DomainSignInError.UNAVAILABLE -> SignInUiError.UNAVAILABLE
     }

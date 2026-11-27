@@ -36,19 +36,23 @@ class RefreshingTokenAuth(
 
     override suspend fun signIn(): PlatformSignInOutcome =
         mutex.withLock {
-            try {
-                store(
-                    grant =
-                        requester.request(
-                            interactive = true,
-                        ),
-                )
-                PlatformSignInOutcome.Authorized
-            } catch (e: TokenRequestException) {
-                PlatformSignInOutcome.Failed(
-                    reason = e.reason,
-                    detail = e.detail,
-                )
+            when (
+                val result =
+                    requester.request(
+                        interactive = true,
+                    )
+            ) {
+                is TokenResult.Granted -> {
+                    store(
+                        grant = result.grant,
+                    )
+                    PlatformSignInOutcome.Authorized
+                }
+                is TokenResult.Denied ->
+                    PlatformSignInOutcome.Failed(
+                        reason = result.reason,
+                        detail = result.detail,
+                    )
             }
         }
 
@@ -84,16 +88,20 @@ class RefreshingTokenAuth(
             ?.accessToken
 
     private suspend fun silentlyRenewedToken(): String? =
-        try {
-            store(
-                grant =
-                    requester.request(
-                        interactive = false,
-                    ),
-            )
-        } catch (e: TokenRequestException) {
-            storage.clear()
-            null
+        when (
+            val result =
+                requester.request(
+                    interactive = false,
+                )
+        ) {
+            is TokenResult.Granted ->
+                store(
+                    grant = result.grant,
+                )
+            is TokenResult.Denied -> {
+                storage.clear()
+                null
+            }
         }
 
     private fun store(

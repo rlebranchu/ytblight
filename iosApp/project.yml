@@ -1,0 +1,118 @@
+name: ytblight
+options:
+  bundleIdPrefix: fr.rlebranchu
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+  developmentLanguage: fr
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    # Le build Gradle du framework Kotlin écrit dans le dossier du projet.
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+    # Le framework Kotlin n'est produit que pour arm64 (appareils et simulateur sur Mac Apple Silicon).
+    ARCHS: arm64
+    # À renseigner dans Xcode (Signing & Capabilities) pour installer sur un appareil.
+    DEVELOPMENT_TEAM: ""
+
+packages:
+  AppAuth:
+    url: https://github.com/openid/AppAuth-iOS
+    exactVersion: 3.0.0
+  YouTubePlayerKit:
+    url: https://github.com/SvenTiigi/YouTubePlayerKit
+    exactVersion: 2.0.5
+
+# Cible de base : tout ce que partagent l'application livrée et l'hôte des tests d'interface.
+targetTemplates:
+  YtblightApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+    dependencies:
+      - package: AppAuth
+        product: AppAuth
+      - package: YouTubePlayerKit
+    preBuildScripts:
+      - name: Framework Kotlin (Gradle)
+        basedOnDependencyAnalysis: false
+        script: |
+          cd "$SRCROOT/.."
+          ./gradlew :shared:umbrella:embedAndSignAppleFrameworkForXcode
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIUserInterfaceStyle: Dark
+        INFOPLIST_KEY_CFBundleDisplayName: ytblight
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        FRAMEWORK_SEARCH_PATHS: "$(inherited) $(SRCROOT)/../shared/umbrella/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)"
+        OTHER_LDFLAGS: "$(inherited) -framework Shared"
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/Frameworks"
+
+targets:
+  ytblight:
+    templates: [YtblightApp]
+    sources:
+      - path: Entry/Production
+    info:
+      path: Entry/Production/Info.plist
+      properties:
+        CFBundleLocalizations: [fr]
+        CFBundleURLTypes:
+          - CFBundleURLSchemes:
+              - com.googleusercontent.apps.122414469789-pq47lbn92sqimp3eo0aefvctm9719sgp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: fr.rlebranchu.ytblight
+
+  # Hôte des tests d'interface : même application, mais avec des données factices écrites en Swift.
+  # Jamais livré : seul le scheme « ytblight » produit l'application.
+  ytblightFakes:
+    templates: [YtblightApp]
+    sources:
+      - path: Entry/UITests
+    info:
+      path: Entry/UITests/Info.plist
+      properties:
+        CFBundleLocalizations: [fr]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: fr.rlebranchu.ytblight.fakes
+        PRODUCT_NAME: ytblightFakes
+
+  ytblightUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: UITests
+    dependencies:
+      - target: ytblightFakes
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: fr.rlebranchu.ytblight.uitests
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  ytblight:
+    build:
+      targets:
+        ytblight: all
+    run:
+      config: Debug
+  ytblightUITests:
+    build:
+      targets:
+        ytblightFakes: all
+        ytblightUITests: [test]
+    test:
+      config: Debug
+      targets:
+        - ytblightUITests

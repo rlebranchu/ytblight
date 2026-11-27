@@ -1,0 +1,828 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		025A715979F1FF888E183BBD /* AppRoot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1A95EF6122AD17E1AE2D27 /* AppRoot.swift */; };
+		0BB06C7AA75041255889AA7F /* FeedRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BAA880D0970D33D4DD18854 /* FeedRoute.swift */; };
+		0E24CDCF2D3C3EDF790862F3 /* YouTubePlayerKit in Frameworks */ = {isa = PBXBuildFile; productRef = AD6C49A0493367D02EB49C03 /* YouTubePlayerKit */; };
+		12D15A81041AA73D4C098BE2 /* KeychainTokenStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFCEBD8BF717790EA108F153 /* KeychainTokenStorage.swift */; };
+		1851A839BC0EE7023098AB5C /* SignInRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8382B76FFE8683EC3E948159 /* SignInRoute.swift */; };
+		2450465D62A4DEF34EAD2587 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA3E8DED7884E12CABA867E /* Route.swift */; };
+		277D4CC79171DBB0561C39EB /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B2E5E600846E1D1C1DAA90 /* SplashScreen.swift */; };
+		3561C5B7956B7FD0FAF62842 /* YtblightUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD69BB24A1E611AEA35CF9C7 /* YtblightUITests.swift */; };
+		37B5D4FD4E7B5CC12EC8F7C7 /* RefreshTokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9895807AC5C7DDB9544722 /* RefreshTokenStore.swift */; };
+		3EB5C5C0B415E978DF97F845 /* AppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 023A5ACD6D024AB3618E6A9C /* AppAuth */; };
+		4277447C014CD7FFFEB1789A /* FakeTokenRequester.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4107C46EFDD87662FDC928B /* FakeTokenRequester.swift */; };
+		44A41499C8FA093C484DFB7A /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA3E8DED7884E12CABA867E /* Route.swift */; };
+		4C5BD27A9BD01DC36DF5CCB0 /* RefreshTokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9895807AC5C7DDB9544722 /* RefreshTokenStore.swift */; };
+		547D3D0B2FBFDAF051BC9634 /* KeychainTokenStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFCEBD8BF717790EA108F153 /* KeychainTokenStorage.swift */; };
+		599E7FBFA538240460F0F587 /* YouTubePlayerKit in Frameworks */ = {isa = PBXBuildFile; productRef = AF6CC633D1B12D32B9E88ED8 /* YouTubePlayerKit */; };
+		6ADD2C2AB39E1028339C2749 /* SplashRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BE9432D4641622CBF215B9 /* SplashRoute.swift */; };
+		6CDD0116EBD7DA645A2E89CD /* FakeYouTubeApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = D58BD3E0279206F92FF42CCB /* FakeYouTubeApi.swift */; };
+		6F91EF192112C24BE140B6EC /* SignInScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647318A55F0E5A301250C1DB /* SignInScreen.swift */; };
+		7BAFE1EC601AEB456175DB93 /* FeedScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00119764AD3B3469352B0194 /* FeedScreen.swift */; };
+		831188C3BD3E7AEC6713CDDB /* SplashRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BE9432D4641622CBF215B9 /* SplashRoute.swift */; };
+		8363A81AFD02D1D00226478E /* FeedScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00119764AD3B3469352B0194 /* FeedScreen.swift */; };
+		939390BFBC2C115B5F45F004 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D4CAA3391EED5C928818FAB9 /* Localizable.xcstrings */; };
+		A5E4E418EC49925A0C75826C /* AppAuthTokenRequester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E277D9C3672FFD1D50EEE86 /* AppAuthTokenRequester.swift */; };
+		AA4A5E0DB554AE70B08F8899 /* SignInRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8382B76FFE8683EC3E948159 /* SignInRoute.swift */; };
+		B0323628E890AEE91C0DA62F /* PlayerRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = A223F03BA928D4CFDC49C056 /* PlayerRoute.swift */; };
+		B4B8BA92F5670D2F4FAA4DC1 /* AppOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D1E02050EEC1B3631D24428 /* AppOrientation.swift */; };
+		B85F74D51A785972BCE84CD5 /* PlayerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFDAAA8AB516676D741B45B6 /* PlayerScreen.swift */; };
+		CE48EA433A0AD98F7B331834 /* AppAuthTokenRequester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E277D9C3672FFD1D50EEE86 /* AppAuthTokenRequester.swift */; };
+		CFB3DB75E54409F182A7F50C /* FeedRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BAA880D0970D33D4DD18854 /* FeedRoute.swift */; };
+		CFC5EE0338C278D5A94AF8E0 /* YtblightApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E63CF24218EE1E5920FF676 /* YtblightApp.swift */; };
+		D4D92B884171526ECD6F1E3A /* YtblightFakeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA6783C1895BDCBA85A717A /* YtblightFakeApp.swift */; };
+		D93312E7C2D4AD6F73954D5A /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D4CAA3391EED5C928818FAB9 /* Localizable.xcstrings */; };
+		DBC1FF96D1822C630FE49CD2 /* AppOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D1E02050EEC1B3631D24428 /* AppOrientation.swift */; };
+		DCD889719A32FFDE452400A3 /* AppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D7D5D9BC2911AC147206D614 /* AppAuth */; };
+		DF6882B9C588F05142336CD6 /* PlayerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFDAAA8AB516676D741B45B6 /* PlayerScreen.swift */; };
+		E000EFF9F7A4EB4716026701 /* AppRoot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1A95EF6122AD17E1AE2D27 /* AppRoot.swift */; };
+		EB06B2684DF0008BF517DC57 /* PlayerRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = A223F03BA928D4CFDC49C056 /* PlayerRoute.swift */; };
+		EE3054DDC1260062BA676105 /* SignInScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647318A55F0E5A301250C1DB /* SignInScreen.swift */; };
+		F9EFDCB6E31EB05CE4739000 /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B2E5E600846E1D1C1DAA90 /* SplashScreen.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		18E5A8BD307388DD8B71717E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CA4C61D4F424B9F702EBD7E8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FDB50F3C71C94D0705FA5B41;
+			remoteInfo = ytblightFakes;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		00119764AD3B3469352B0194 /* FeedScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedScreen.swift; sourceTree = "<group>"; };
+		1826C8D7C706F13604C74C6D /* ytblightFakes.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ytblightFakes.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1E277D9C3672FFD1D50EEE86 /* AppAuthTokenRequester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAuthTokenRequester.swift; sourceTree = "<group>"; };
+		1E63CF24218EE1E5920FF676 /* YtblightApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YtblightApp.swift; sourceTree = "<group>"; };
+		4A1A95EF6122AD17E1AE2D27 /* AppRoot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRoot.swift; sourceTree = "<group>"; };
+		55BE9432D4641622CBF215B9 /* SplashRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashRoute.swift; sourceTree = "<group>"; };
+		5BAA880D0970D33D4DD18854 /* FeedRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedRoute.swift; sourceTree = "<group>"; };
+		63DCA6BF7D161DBC1449B6AE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		647318A55F0E5A301250C1DB /* SignInScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInScreen.swift; sourceTree = "<group>"; };
+		6D1E02050EEC1B3631D24428 /* AppOrientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOrientation.swift; sourceTree = "<group>"; };
+		795EF61897C9CE23D7A4EBDB /* ytblightUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ytblightUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8382B76FFE8683EC3E948159 /* SignInRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInRoute.swift; sourceTree = "<group>"; };
+		A223F03BA928D4CFDC49C056 /* PlayerRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerRoute.swift; sourceTree = "<group>"; };
+		A4107C46EFDD87662FDC928B /* FakeTokenRequester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeTokenRequester.swift; sourceTree = "<group>"; };
+		AEA3E8DED7884E12CABA867E /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
+		CFCEBD8BF717790EA108F153 /* KeychainTokenStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainTokenStorage.swift; sourceTree = "<group>"; };
+		D4CAA3391EED5C928818FAB9 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		D58BD3E0279206F92FF42CCB /* FakeYouTubeApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeYouTubeApi.swift; sourceTree = "<group>"; };
+		D7B2E5E600846E1D1C1DAA90 /* SplashScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
+		DD69BB24A1E611AEA35CF9C7 /* YtblightUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YtblightUITests.swift; sourceTree = "<group>"; };
+		DF6BD0C17624D775DAECFEE5 /* ytblight.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ytblight.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC1B56C2A5F707802E4879AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		EF9895807AC5C7DDB9544722 /* RefreshTokenStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshTokenStore.swift; sourceTree = "<group>"; };
+		EFDAAA8AB516676D741B45B6 /* PlayerScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerScreen.swift; sourceTree = "<group>"; };
+		FAA6783C1895BDCBA85A717A /* YtblightFakeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YtblightFakeApp.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7301BC06AA87C0853BC15E21 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DCD889719A32FFDE452400A3 /* AppAuth in Frameworks */,
+				0E24CDCF2D3C3EDF790862F3 /* YouTubePlayerKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A4EB9A1421180F568D9187A4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3EB5C5C0B415E978DF97F845 /* AppAuth in Frameworks */,
+				599E7FBFA538240460F0F587 /* YouTubePlayerKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		03D0226D618FD602E8B5E2B8 /* Production */ = {
+			isa = PBXGroup;
+			children = (
+				63DCA6BF7D161DBC1449B6AE /* Info.plist */,
+				1E63CF24218EE1E5920FF676 /* YtblightApp.swift */,
+			);
+			path = Production;
+			sourceTree = "<group>";
+		};
+		0AB9C6E3E6DBB8ADEF0E8A9F /* Splash */ = {
+			isa = PBXGroup;
+			children = (
+				55BE9432D4641622CBF215B9 /* SplashRoute.swift */,
+				D7B2E5E600846E1D1C1DAA90 /* SplashScreen.swift */,
+			);
+			path = Splash;
+			sourceTree = "<group>";
+		};
+		1E5FDA02DAC02DD48483ABA9 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				D4CAA3391EED5C928818FAB9 /* Localizable.xcstrings */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		2D749C25AF69EA0F2E9F7DB3 = {
+			isa = PBXGroup;
+			children = (
+				3897E25ED5DE6EAAE21C91CE /* App */,
+				DDD20C2E247866CDB708656B /* Entry */,
+				B827E7CD367E325DC2DC1B4F /* UITests */,
+				D94B33D27C6E7BF7A8BDD085 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3897E25ED5DE6EAAE21C91CE /* App */ = {
+			isa = PBXGroup;
+			children = (
+				41B9E38EF020BD05634D825A /* Bridge */,
+				BDCFE0733330D691C8D4D27E /* Navigation */,
+				F159918E71D461599A59C821 /* Pages */,
+				1E5FDA02DAC02DD48483ABA9 /* Resources */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		41B9E38EF020BD05634D825A /* Bridge */ = {
+			isa = PBXGroup;
+			children = (
+				1E277D9C3672FFD1D50EEE86 /* AppAuthTokenRequester.swift */,
+				CFCEBD8BF717790EA108F153 /* KeychainTokenStorage.swift */,
+				EF9895807AC5C7DDB9544722 /* RefreshTokenStore.swift */,
+			);
+			path = Bridge;
+			sourceTree = "<group>";
+		};
+		667102EA68964D816D326353 /* UITests */ = {
+			isa = PBXGroup;
+			children = (
+				A4107C46EFDD87662FDC928B /* FakeTokenRequester.swift */,
+				D58BD3E0279206F92FF42CCB /* FakeYouTubeApi.swift */,
+				EC1B56C2A5F707802E4879AC /* Info.plist */,
+				FAA6783C1895BDCBA85A717A /* YtblightFakeApp.swift */,
+			);
+			path = UITests;
+			sourceTree = "<group>";
+		};
+		A21036558C6A875744F1634E /* Feed */ = {
+			isa = PBXGroup;
+			children = (
+				5BAA880D0970D33D4DD18854 /* FeedRoute.swift */,
+				00119764AD3B3469352B0194 /* FeedScreen.swift */,
+			);
+			path = Feed;
+			sourceTree = "<group>";
+		};
+		B2C3825456DA1EE3485C0F02 /* Player */ = {
+			isa = PBXGroup;
+			children = (
+				A223F03BA928D4CFDC49C056 /* PlayerRoute.swift */,
+				EFDAAA8AB516676D741B45B6 /* PlayerScreen.swift */,
+			);
+			path = Player;
+			sourceTree = "<group>";
+		};
+		B827E7CD367E325DC2DC1B4F /* UITests */ = {
+			isa = PBXGroup;
+			children = (
+				DD69BB24A1E611AEA35CF9C7 /* YtblightUITests.swift */,
+			);
+			path = UITests;
+			sourceTree = "<group>";
+		};
+		BDCFE0733330D691C8D4D27E /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				6D1E02050EEC1B3631D24428 /* AppOrientation.swift */,
+				4A1A95EF6122AD17E1AE2D27 /* AppRoot.swift */,
+				AEA3E8DED7884E12CABA867E /* Route.swift */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
+		D94B33D27C6E7BF7A8BDD085 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DF6BD0C17624D775DAECFEE5 /* ytblight.app */,
+				1826C8D7C706F13604C74C6D /* ytblightFakes.app */,
+				795EF61897C9CE23D7A4EBDB /* ytblightUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DDD20C2E247866CDB708656B /* Entry */ = {
+			isa = PBXGroup;
+			children = (
+				03D0226D618FD602E8B5E2B8 /* Production */,
+				667102EA68964D816D326353 /* UITests */,
+			);
+			path = Entry;
+			sourceTree = "<group>";
+		};
+		EFA6A03709AB72928F1C71DA /* SignIn */ = {
+			isa = PBXGroup;
+			children = (
+				8382B76FFE8683EC3E948159 /* SignInRoute.swift */,
+				647318A55F0E5A301250C1DB /* SignInScreen.swift */,
+			);
+			path = SignIn;
+			sourceTree = "<group>";
+		};
+		F159918E71D461599A59C821 /* Pages */ = {
+			isa = PBXGroup;
+			children = (
+				A21036558C6A875744F1634E /* Feed */,
+				B2C3825456DA1EE3485C0F02 /* Player */,
+				EFA6A03709AB72928F1C71DA /* SignIn */,
+				0AB9C6E3E6DBB8ADEF0E8A9F /* Splash */,
+			);
+			path = Pages;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7C7DA6788D35548190F8631C /* ytblightUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 75F073C1F07FD57CB55C9BF1 /* Build configuration list for PBXNativeTarget "ytblightUITests" */;
+			buildPhases = (
+				6E6853D533BDBFA203A15707 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				41CBD4BA912B501A42B6ACB8 /* PBXTargetDependency */,
+			);
+			name = ytblightUITests;
+			packageProductDependencies = (
+			);
+			productName = ytblightUITests;
+			productReference = 795EF61897C9CE23D7A4EBDB /* ytblightUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		985E3BE5929F2185A1148BCB /* ytblight */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6AC71616B083AEC106CBDBA5 /* Build configuration list for PBXNativeTarget "ytblight" */;
+			buildPhases = (
+				6E35EB4E80AA904FBF5F557E /* Framework Kotlin (Gradle) */,
+				3BD1194FF004F879F10A7287 /* Sources */,
+				EAA4581BD9E4C13D88A1C434 /* Resources */,
+				A4EB9A1421180F568D9187A4 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ytblight;
+			packageProductDependencies = (
+				023A5ACD6D024AB3618E6A9C /* AppAuth */,
+				AF6CC633D1B12D32B9E88ED8 /* YouTubePlayerKit */,
+			);
+			productName = ytblight;
+			productReference = DF6BD0C17624D775DAECFEE5 /* ytblight.app */;
+			productType = "com.apple.product-type.application";
+		};
+		FDB50F3C71C94D0705FA5B41 /* ytblightFakes */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 44C0D112A1018B84AAA9E22A /* Build configuration list for PBXNativeTarget "ytblightFakes" */;
+			buildPhases = (
+				1CCD6BA7955D098D446990FA /* Framework Kotlin (Gradle) */,
+				BD9D7E09370E2CD36C361B2A /* Sources */,
+				4E51C23A09BEDFADD1F5ECAE /* Resources */,
+				7301BC06AA87C0853BC15E21 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ytblightFakes;
+			packageProductDependencies = (
+				D7D5D9BC2911AC147206D614 /* AppAuth */,
+				AD6C49A0493367D02EB49C03 /* YouTubePlayerKit */,
+			);
+			productName = ytblightFakes;
+			productReference = 1826C8D7C706F13604C74C6D /* ytblightFakes.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		CA4C61D4F424B9F702EBD7E8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					7C7DA6788D35548190F8631C = {
+						DevelopmentTeam = "";
+						TestTargetID = FDB50F3C71C94D0705FA5B41;
+					};
+					985E3BE5929F2185A1148BCB = {
+						DevelopmentTeam = "";
+					};
+					FDB50F3C71C94D0705FA5B41 = {
+						DevelopmentTeam = "";
+					};
+				};
+			};
+			buildConfigurationList = 683A91F3E041B0A4FDCE8225 /* Build configuration list for PBXProject "ytblight" */;
+			developmentRegion = fr;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				fr,
+			);
+			mainGroup = 2D749C25AF69EA0F2E9F7DB3;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				C96F5CAB466A6A4EF67095BC /* XCRemoteSwiftPackageReference "AppAuth-iOS" */,
+				15F2F20E6696F211C81D31D2 /* XCRemoteSwiftPackageReference "YouTubePlayerKit" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = D94B33D27C6E7BF7A8BDD085 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				985E3BE5929F2185A1148BCB /* ytblight */,
+				FDB50F3C71C94D0705FA5B41 /* ytblightFakes */,
+				7C7DA6788D35548190F8631C /* ytblightUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4E51C23A09BEDFADD1F5ECAE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D93312E7C2D4AD6F73954D5A /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EAA4581BD9E4C13D88A1C434 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				939390BFBC2C115B5F45F004 /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		1CCD6BA7955D098D446990FA /* Framework Kotlin (Gradle) */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Framework Kotlin (Gradle)";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :shared:umbrella:embedAndSignAppleFrameworkForXcode\n";
+		};
+		6E35EB4E80AA904FBF5F557E /* Framework Kotlin (Gradle) */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Framework Kotlin (Gradle)";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :shared:umbrella:embedAndSignAppleFrameworkForXcode\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3BD1194FF004F879F10A7287 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A5E4E418EC49925A0C75826C /* AppAuthTokenRequester.swift in Sources */,
+				B4B8BA92F5670D2F4FAA4DC1 /* AppOrientation.swift in Sources */,
+				E000EFF9F7A4EB4716026701 /* AppRoot.swift in Sources */,
+				0BB06C7AA75041255889AA7F /* FeedRoute.swift in Sources */,
+				8363A81AFD02D1D00226478E /* FeedScreen.swift in Sources */,
+				547D3D0B2FBFDAF051BC9634 /* KeychainTokenStorage.swift in Sources */,
+				EB06B2684DF0008BF517DC57 /* PlayerRoute.swift in Sources */,
+				DF6882B9C588F05142336CD6 /* PlayerScreen.swift in Sources */,
+				37B5D4FD4E7B5CC12EC8F7C7 /* RefreshTokenStore.swift in Sources */,
+				2450465D62A4DEF34EAD2587 /* Route.swift in Sources */,
+				1851A839BC0EE7023098AB5C /* SignInRoute.swift in Sources */,
+				EE3054DDC1260062BA676105 /* SignInScreen.swift in Sources */,
+				831188C3BD3E7AEC6713CDDB /* SplashRoute.swift in Sources */,
+				277D4CC79171DBB0561C39EB /* SplashScreen.swift in Sources */,
+				CFC5EE0338C278D5A94AF8E0 /* YtblightApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6E6853D533BDBFA203A15707 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3561C5B7956B7FD0FAF62842 /* YtblightUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BD9D7E09370E2CD36C361B2A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE48EA433A0AD98F7B331834 /* AppAuthTokenRequester.swift in Sources */,
+				DBC1FF96D1822C630FE49CD2 /* AppOrientation.swift in Sources */,
+				025A715979F1FF888E183BBD /* AppRoot.swift in Sources */,
+				4277447C014CD7FFFEB1789A /* FakeTokenRequester.swift in Sources */,
+				6CDD0116EBD7DA645A2E89CD /* FakeYouTubeApi.swift in Sources */,
+				CFB3DB75E54409F182A7F50C /* FeedRoute.swift in Sources */,
+				7BAFE1EC601AEB456175DB93 /* FeedScreen.swift in Sources */,
+				12D15A81041AA73D4C098BE2 /* KeychainTokenStorage.swift in Sources */,
+				B0323628E890AEE91C0DA62F /* PlayerRoute.swift in Sources */,
+				B85F74D51A785972BCE84CD5 /* PlayerScreen.swift in Sources */,
+				4C5BD27A9BD01DC36DF5CCB0 /* RefreshTokenStore.swift in Sources */,
+				44A41499C8FA093C484DFB7A /* Route.swift in Sources */,
+				AA4A5E0DB554AE70B08F8899 /* SignInRoute.swift in Sources */,
+				6F91EF192112C24BE140B6EC /* SignInScreen.swift in Sources */,
+				6ADD2C2AB39E1028339C2749 /* SplashRoute.swift in Sources */,
+				F9EFDCB6E31EB05CE4739000 /* SplashScreen.swift in Sources */,
+				D4D92B884171526ECD6F1E3A /* YtblightFakeApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		41CBD4BA912B501A42B6ACB8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FDB50F3C71C94D0705FA5B41 /* ytblightFakes */;
+			targetProxy = 18E5A8BD307388DD8B71717E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2110D73E573A8D0DC53758F1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		30703AC3222288CD932C3E6D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../shared/umbrella/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Entry/Production/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ytblight;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = "$(inherited) -framework Shared";
+				PRODUCT_BUNDLE_IDENTIFIER = fr.rlebranchu.ytblight;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		78A8F46BB05D7F54E9F42A24 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../shared/umbrella/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Entry/Production/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ytblight;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = "$(inherited) -framework Shared";
+				PRODUCT_BUNDLE_IDENTIFIER = fr.rlebranchu.ytblight;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		7F432B0A059C566B828646BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = fr.rlebranchu.ytblight.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ytblightFakes;
+			};
+			name = Debug;
+		};
+		A335B5BDB86BE4C1A1E45CC0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = fr.rlebranchu.ytblight.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ytblightFakes;
+			};
+			name = Release;
+		};
+		A677122F2B9882E6954AF19F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		D42D2734A9C77B914A6F5578 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../shared/umbrella/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Entry/UITests/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ytblight;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = "$(inherited) -framework Shared";
+				PRODUCT_BUNDLE_IDENTIFIER = fr.rlebranchu.ytblight.fakes;
+				PRODUCT_NAME = ytblightFakes;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		DD05BEC8DC80B9263AB689A2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../shared/umbrella/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Entry/UITests/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ytblight;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = "$(inherited) -framework Shared";
+				PRODUCT_BUNDLE_IDENTIFIER = fr.rlebranchu.ytblight.fakes;
+				PRODUCT_NAME = ytblightFakes;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		44C0D112A1018B84AAA9E22A /* Build configuration list for PBXNativeTarget "ytblightFakes" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DD05BEC8DC80B9263AB689A2 /* Debug */,
+				D42D2734A9C77B914A6F5578 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		683A91F3E041B0A4FDCE8225 /* Build configuration list for PBXProject "ytblight" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2110D73E573A8D0DC53758F1 /* Debug */,
+				A677122F2B9882E6954AF19F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6AC71616B083AEC106CBDBA5 /* Build configuration list for PBXNativeTarget "ytblight" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				30703AC3222288CD932C3E6D /* Debug */,
+				78A8F46BB05D7F54E9F42A24 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		75F073C1F07FD57CB55C9BF1 /* Build configuration list for PBXNativeTarget "ytblightUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7F432B0A059C566B828646BD /* Debug */,
+				A335B5BDB86BE4C1A1E45CC0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		15F2F20E6696F211C81D31D2 /* XCRemoteSwiftPackageReference "YouTubePlayerKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SvenTiigi/YouTubePlayerKit";
+			requirement = {
+				kind = exactVersion;
+				version = 2.0.5;
+			};
+		};
+		C96F5CAB466A6A4EF67095BC /* XCRemoteSwiftPackageReference "AppAuth-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/openid/AppAuth-iOS";
+			requirement = {
+				kind = exactVersion;
+				version = 3.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		023A5ACD6D024AB3618E6A9C /* AppAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C96F5CAB466A6A4EF67095BC /* XCRemoteSwiftPackageReference "AppAuth-iOS" */;
+			productName = AppAuth;
+		};
+		AD6C49A0493367D02EB49C03 /* YouTubePlayerKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 15F2F20E6696F211C81D31D2 /* XCRemoteSwiftPackageReference "YouTubePlayerKit" */;
+			productName = YouTubePlayerKit;
+		};
+		AF6CC633D1B12D32B9E88ED8 /* YouTubePlayerKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 15F2F20E6696F211C81D31D2 /* XCRemoteSwiftPackageReference "YouTubePlayerKit" */;
+			productName = YouTubePlayerKit;
+		};
+		D7D5D9BC2911AC147206D614 /* AppAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C96F5CAB466A6A4EF67095BC /* XCRemoteSwiftPackageReference "AppAuth-iOS" */;
+			productName = AppAuth;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = CA4C61D4F424B9F702EBD7E8 /* Project object */;
+}

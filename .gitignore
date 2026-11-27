@@ -18,3 +18,8 @@ DerivedData/
 # Web
 node_modules/
 dist/
+
+# Xcode
+iosApp/**/xcuserdata/
+iosApp/build/
+*.xcuserstate

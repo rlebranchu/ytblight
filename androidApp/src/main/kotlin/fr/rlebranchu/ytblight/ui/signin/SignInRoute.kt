@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fr.rlebranchu.ytblight.R
 import fr.rlebranchu.ytblight.domain.auth.ConsentResponse
-import fr.rlebranchu.ytblight.presentation.signin.SignInError
+import fr.rlebranchu.ytblight.presentation.signin.SignInUiError
 import fr.rlebranchu.ytblight.presentation.signin.SignInUiState
 import fr.rlebranchu.ytblight.presentation.signin.SignInViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -101,15 +101,15 @@ private fun SignInScreen(
 }
 
 @Composable
-private fun SignInError.message(
+private fun SignInUiError.message(
     detail: String?,
 ): String =
     stringResource(
         when (this) {
-            SignInError.CANCELLED -> R.string.signin_error_cancelled
-            SignInError.CONFIGURATION -> R.string.signin_error_configuration
-            SignInError.FAILED -> R.string.signin_error_failed
-            SignInError.UNAVAILABLE ->
+            SignInUiError.CANCELLED -> R.string.signin_error_cancelled
+            SignInUiError.CONFIGURATION -> R.string.signin_error_configuration
+            SignInUiError.FAILED -> R.string.signin_error_failed
+            SignInUiError.UNAVAILABLE ->
                 if (detail == null) {
                     R.string.signin_error_unavailable
                 } else {

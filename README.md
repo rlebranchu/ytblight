@@ -52,6 +52,6 @@ Seuls `umbrella` et `androidApp` connaissent tous les modules.
 2. [x] Fil d'abonnements en code partagé
 3. [x] Android de bout en bout (connexion Google réelle validée sur émulateur, tests d'interface Compose)
 4. [x] Prototype web (connexion Google réelle validée dans les navigateurs, tests Playwright)
-5. [ ] iOS de bout en bout
+5. [ ] iOS de bout en bout (code et tests XCUITest prêts, connexion à valider avec un compte Google)
 6. [ ] Web complet et déployé sur GitHub Pages
 7. [ ] Ouverture aux autres utilisateurs

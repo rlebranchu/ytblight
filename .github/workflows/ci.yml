@@ -37,6 +37,12 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Tests iOS (simulateur) et framework Shared
         run: ./gradlew iosSimulatorArm64Test :shared:umbrella:linkDebugFrameworkIosSimulatorArm64
+      - name: Application iOS (build et tests XCUITest sur données factices)
+        working-directory: iosApp
+        run: |
+          DEVICE=$(xcrun simctl list devices available | grep -m1 -oE "iPhone [0-9]+[A-Za-z ]*" | sed 's/ *$//')
+          xcodebuild -project ytblight.xcodeproj -scheme ytblight -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+          xcodebuild -project ytblight.xcodeproj -scheme ytblightUITests -destination "platform=iOS Simulator,name=$DEVICE" CODE_SIGNING_ALLOWED=NO test
 
   # Application web : librairie Kotlin/JS, lint, build et tests Playwright (Chromium, Firefox, WebKit).
   web:
