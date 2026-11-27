@@ -36,3 +36,20 @@ kotlin {
         }
     }
 }
+
+// Koin dépend des copies JetBrains (Compose Multiplatform) de lifecycle et savedstate, alors que
+// nous utilisons celles d'androidx : sur le web, les deux versions se retrouvaient dans le bundle
+// (classes en double). On impose partout la version androidx, qui existe maintenant sur toutes
+// les cibles (Android, iOS, JS).
+configurations.configureEach {
+    resolutionStrategy.dependencySubstitution {
+        val lifecycle = versionOf("androidx-lifecycle")
+        val savedState = versionOf("androidx-savedstate")
+        listOf("lifecycle-common", "lifecycle-viewmodel", "lifecycle-viewmodel-savedstate").forEach { artifact ->
+            substitute(module("org.jetbrains.androidx.lifecycle:$artifact"))
+                .using(module("androidx.lifecycle:$artifact:$lifecycle"))
+        }
+        substitute(module("org.jetbrains.androidx.savedstate:savedstate"))
+            .using(module("androidx.savedstate:savedstate:$savedState"))
+    }
+}
