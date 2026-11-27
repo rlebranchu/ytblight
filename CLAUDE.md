@@ -40,6 +40,7 @@ Client YouTube perso (Android, iOS, Web). Logique métier en Kotlin Multiplatfor
   ```
 
   Non appliqué à la bibliothèque standard ni aux bibliothèques tierces (`assertEquals`, `listOf`, `Modifier.padding`…) ni à l'appel d'un paramètre de type fonction (`onClick()`). Non vérifié par ktlint : à respecter à la main.
+- **Références de fonction plutôt que lambda de simple transfert** : `onClose = navController::popBackStack` et non `onClose = { navController.popBackStack() }` ; de même `.also(list::add)`, `.mapNotNull(VideoDto::toDomainOrNull)`. Les accès à une propriété (`map { it.id }`) restent en lambda.
 - Indentation de 4 espaces, lignes ≤ 120 caractères.
 
 ## Architecture

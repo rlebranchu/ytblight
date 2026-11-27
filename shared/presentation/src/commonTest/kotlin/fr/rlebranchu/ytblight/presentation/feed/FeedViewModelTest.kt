@@ -36,7 +36,7 @@ class FeedViewModelTest {
         val requests = mutableListOf<Boolean>()
 
         fun enqueue(): CompletableDeferred<DomainResult<List<Video>>> =
-            CompletableDeferred<DomainResult<List<Video>>>().also { responses.addLast(it) }
+            CompletableDeferred<DomainResult<List<Video>>>().also(responses::addLast)
 
         override suspend fun loadFeed(
             forceRefresh: Boolean,

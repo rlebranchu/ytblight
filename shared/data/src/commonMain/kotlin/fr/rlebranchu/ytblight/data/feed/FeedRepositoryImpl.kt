@@ -5,6 +5,7 @@ import fr.rlebranchu.ytblight.domain.feed.FeedRepository
 import fr.rlebranchu.ytblight.domain.model.Video
 import fr.rlebranchu.ytblight.external.YouTubeApi
 import fr.rlebranchu.ytblight.external.YouTubeHttpException
+import fr.rlebranchu.ytblight.external.dto.VideoDto
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -143,7 +144,7 @@ class FeedRepositoryImpl(
                     .videos(
                         videoIds = batch,
                     ).items
-            }.mapNotNull { it.toDomainOrNull() }
+            }.mapNotNull(VideoDto::toDomainOrNull)
 
     companion object {
         const val DEFAULT_VIDEOS_PER_CHANNEL = 5

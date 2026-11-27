@@ -131,7 +131,7 @@ private fun PlayerScreen(
                     )
                 }
             },
-            onRelease = { it.release() },
+            onRelease = YouTubePlayerView::release,
             modifier =
                 if (isLandscape) {
                     Modifier.fillMaxSize()

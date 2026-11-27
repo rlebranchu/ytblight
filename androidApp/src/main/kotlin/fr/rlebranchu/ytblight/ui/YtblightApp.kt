@@ -30,7 +30,11 @@ fun YtblightApp() {
             SplashRoute(
                 onNavigate = { destination ->
                     navController.navigateClearing(
-                        route = destination.route(),
+                        route =
+                            when (destination) {
+                                SplashDestination.SIGN_IN -> NavRoute.SignIn
+                                SplashDestination.FEED -> NavRoute.Feed
+                            },
                         clearing = NavRoute.Splash,
                     )
                 },
@@ -60,17 +64,11 @@ fun YtblightApp() {
         composable<NavRoute.Player> { entry ->
             PlayerRoute(
                 videoId = entry.toRoute<NavRoute.Player>().videoId,
-                onClose = { navController.popBackStack() },
+                onClose = navController::popBackStack,
             )
         }
     }
 }
-
-private fun SplashDestination.route(): NavRoute =
-    when (this) {
-        SplashDestination.SIGN_IN -> NavRoute.SignIn
-        SplashDestination.FEED -> NavRoute.Feed
-    }
 
 /** Va à [route] en retirant [clearing] de la pile : le bouton Retour ne revient pas en arrière. */
 private fun NavController.navigateClearing(
