@@ -29,10 +29,19 @@ internal fun relativeTimeLabel(
         minutes < 1 -> "à l'instant"
         minutes < MINUTES_PER_HOUR -> "il y a $minutes min"
         hours < HOURS_PER_DAY -> "il y a $hours h"
-        days < DAYS_PER_WEEK -> "il y a ${plural(days, "jour")}"
-        days < DAYS_PER_MONTH -> "il y a ${plural(days / DAYS_PER_WEEK, "semaine")}"
+        days < DAYS_PER_WEEK -> "il y a ${plural(
+            count = days,
+            unit = "jour",
+        )}"
+        days < DAYS_PER_MONTH -> "il y a ${plural(
+            count = days / DAYS_PER_WEEK,
+            unit = "semaine",
+        )}"
         days < DAYS_PER_YEAR -> "il y a ${days / DAYS_PER_MONTH} mois"
-        else -> "il y a ${plural(days / DAYS_PER_YEAR, "an")}"
+        else -> "il y a ${plural(
+            count = days / DAYS_PER_YEAR,
+            unit = "an",
+        )}"
     }
 }
 

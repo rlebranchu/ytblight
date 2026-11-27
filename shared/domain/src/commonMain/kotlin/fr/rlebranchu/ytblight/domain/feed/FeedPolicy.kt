@@ -14,10 +14,14 @@ import kotlin.time.Duration.Companion.minutes
 data class FeedPolicy(
     val maxShortDuration: Duration = DEFAULT_MAX_SHORT_DURATION,
 ) {
-    fun isShort(video: Video): Boolean = video.duration <= maxShortDuration
+    fun isShort(
+        video: Video,
+    ): Boolean = video.duration <= maxShortDuration
 
     /** Retire les Shorts et classe du plus récent au plus ancien. */
-    fun apply(videos: List<Video>): List<Video> =
+    fun apply(
+        videos: List<Video>,
+    ): List<Video> =
         videos
             .filterNot(::isShort)
             .sortedByDescending { it.publishedAt }

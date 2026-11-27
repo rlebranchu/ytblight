@@ -2,7 +2,13 @@ package fr.rlebranchu.ytblight.data.auth
 
 import fr.rlebranchu.ytblight.domain.auth.AuthRepository
 import fr.rlebranchu.ytblight.domain.auth.AuthState
+import fr.rlebranchu.ytblight.domain.auth.ConsentRequest
+import fr.rlebranchu.ytblight.domain.auth.ConsentResponse
+import fr.rlebranchu.ytblight.domain.auth.SignInError
+import fr.rlebranchu.ytblight.domain.auth.SignInResult
 import fr.rlebranchu.ytblight.external.auth.PlatformAuth
+import fr.rlebranchu.ytblight.external.auth.PlatformSignInFailure
+import fr.rlebranchu.ytblight.external.auth.PlatformSignInOutcome
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,7 +17,10 @@ import kotlinx.coroutines.flow.asStateFlow
 class AuthRepositoryImpl(
     private val platformAuth: PlatformAuth,
 ) : AuthRepository {
-    private val mutableState = MutableStateFlow(AuthState.CHECKING)
+    private val mutableState =
+        MutableStateFlow(
+            value = AuthState.CHECKING,
+        )
     override val state: StateFlow<AuthState> = mutableState.asStateFlow()
 
     override suspend fun checkSession() {
@@ -29,9 +38,47 @@ class AuthRepositoryImpl(
         mutableState.value = if (hasToken) AuthState.SIGNED_IN else AuthState.SIGNED_OUT
     }
 
-    override fun onSignedIn() {
-        mutableState.value = AuthState.SIGNED_IN
-    }
+    override suspend fun signIn(): SignInResult =
+        platformAuth
+            .signIn()
+            .toSignInResult()
+
+    override suspend fun completeConsent(
+        response: ConsentResponse,
+    ): SignInResult =
+        platformAuth
+            .completeConsent(
+                response = response.data,
+                isGranted = response.isGranted,
+            ).toSignInResult()
+
+    private fun PlatformSignInOutcome.toSignInResult(): SignInResult =
+        when (this) {
+            PlatformSignInOutcome.Authorized -> {
+                mutableState.value = AuthState.SIGNED_IN
+                SignInResult.SignedIn
+            }
+            is PlatformSignInOutcome.ConsentRequired ->
+                SignInResult.ConsentRequired(
+                    request =
+                        ConsentRequest(
+                            handle = request,
+                        ),
+                )
+            is PlatformSignInOutcome.Failed ->
+                SignInResult.Failed(
+                    error = reason.toSignInError(),
+                    detail = detail,
+                )
+        }
+
+    private fun PlatformSignInFailure.toSignInError(): SignInError =
+        when (this) {
+            PlatformSignInFailure.CANCELLED -> SignInError.CANCELLED
+            PlatformSignInFailure.CONFIGURATION -> SignInError.CONFIGURATION
+            PlatformSignInFailure.FAILED -> SignInError.FAILED
+            PlatformSignInFailure.UNAVAILABLE -> SignInError.UNAVAILABLE
+        }
 
     override suspend fun signOut() {
         try {

@@ -29,11 +29,14 @@ kotlin {
         commonMain.dependencies {
             api(projects.shared.presentation)
             api(projects.shared.domain)
-            implementation(projects.shared.data)
+            api(projects.shared.data)
             api(projects.shared.external)
             implementation(projects.shared.local)
             implementation(libs.koin.core)
             implementation(libs.kermit)
+        }
+        commonTest {
+            kotlin.srcDir(rootProject.file("shared/test-fixtures/kotlin"))
         }
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)

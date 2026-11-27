@@ -5,6 +5,7 @@ import fr.rlebranchu.ytblight.domain.feed.FeedRepository
 import fr.rlebranchu.ytblight.domain.model.Video
 import fr.rlebranchu.ytblight.external.YouTubeApi
 import fr.rlebranchu.ytblight.external.YouTubeHttpException
+import fr.rlebranchu.ytblight.external.dto.VideoDto
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -29,18 +30,28 @@ class FeedRepositoryImpl(
     private val mutex = Mutex()
     private var cache: List<Video>? = null
 
-    override suspend fun loadFeed(forceRefresh: Boolean): DomainResult<List<Video>> =
+    override suspend fun loadFeed(
+        forceRefresh: Boolean,
+    ): DomainResult<List<Video>> =
         mutex.withLock {
             val cached = cache
-            if (!forceRefresh && cached != null) return DomainResult.Success(cached)
+            if (!forceRefresh && cached != null) {
+                return DomainResult.Success(
+                    value = cached,
+                )
+            }
             try {
                 val videos = fetchFeed()
                 cache = videos
-                DomainResult.Success(videos)
+                DomainResult.Success(
+                    value = videos,
+                )
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                DomainResult.Failure(e.toDomainError())
+                DomainResult.Failure(
+                    error = e.toDomainError(),
+                )
             }
         }
 
@@ -48,53 +59,97 @@ class FeedRepositoryImpl(
         mutex.withLock { cache = null }
     }
 
-    private suspend fun fetchFeed(): List<Video> {
-        val channelIds = fetchSubscribedChannelIds()
-        val playlistIds = fetchUploadsPlaylistIds(channelIds)
-        val videoIds = fetchRecentVideoIds(playlistIds)
-        return fetchVideos(videoIds)
-    }
+    private suspend fun fetchFeed(): List<Video> =
+        fetchVideos(
+            videoIds =
+                fetchRecentVideoIds(
+                    playlistIds =
+                        fetchUploadsPlaylistIds(
+                            channelIds = fetchSubscribedChannelIds(),
+                        ),
+                ),
+        )
 
     private suspend fun fetchSubscribedChannelIds(): List<String> {
         val channelIds = mutableListOf<String>()
         var pageToken: String? = null
         do {
-            val page = api.subscriptions(pageToken)
+            val page =
+                api.subscriptions(
+                    pageToken = pageToken,
+                )
             channelIds += page.items.map { it.snippet.resourceId.channelId }
             pageToken = page.nextPageToken
         } while (pageToken != null)
         return channelIds.distinct()
     }
 
-    private suspend fun fetchUploadsPlaylistIds(channelIds: List<String>): List<String> =
+    private suspend fun fetchUploadsPlaylistIds(
+        channelIds: List<String>,
+    ): List<String> =
         channelIds
-            .chunked(YouTubeApi.MAX_BATCH_SIZE)
-            .flatMap { batch -> api.channels(batch).items }
-            .mapNotNull { it.contentDetails.relatedPlaylists.uploads }
+            .chunked(
+                size = YouTubeApi.MAX_BATCH_SIZE,
+            ).flatMap { batch ->
+                api
+                    .channels(
+                        channelIds = batch,
+                    ).items
+            }.mapNotNull { it.contentDetails.relatedPlaylists.uploads }
 
-    private suspend fun fetchRecentVideoIds(playlistIds: List<String>): List<String> =
+    private suspend fun fetchRecentVideoIds(
+        playlistIds: List<String>,
+    ): List<String> =
         coroutineScope {
-            val permits = Semaphore(maxParallelRequests)
+            // Un seul sémaphore pour toutes les requêtes : c'est lui qui borne le parallélisme.
+            val permits =
+                Semaphore(
+                    permits = maxParallelRequests,
+                )
             playlistIds
-                .map { playlistId -> async { permits.withPermit { recentVideoIds(playlistId) } } }
-                .awaitAll()
+                .map { playlistId ->
+                    async {
+                        permits.withPermit {
+                            recentVideoIds(
+                                playlistId = playlistId,
+                            )
+                        }
+                    }
+                }.awaitAll()
                 .flatten()
                 .distinct()
         }
 
     /** Une playlist introuvable (chaîne sans vidéo) ne doit pas faire échouer tout le fil. */
-    private suspend fun recentVideoIds(playlistId: String): List<String> =
+    private suspend fun recentVideoIds(
+        playlistId: String,
+    ): List<String> =
         try {
-            api.playlistItems(playlistId, videosPerChannel).items.map { it.contentDetails.videoId }
+            api
+                .playlistItems(
+                    playlistId = playlistId,
+                    maxResults = videosPerChannel,
+                ).items
+                .map { it.contentDetails.videoId }
         } catch (e: YouTubeHttpException) {
-            if (e.statusCode == HTTP_NOT_FOUND) emptyList() else throw e
+            if (e.statusCode == HTTP_NOT_FOUND) {
+                emptyList()
+            } else {
+                throw e
+            }
         }
 
-    private suspend fun fetchVideos(videoIds: List<String>): List<Video> =
+    private suspend fun fetchVideos(
+        videoIds: List<String>,
+    ): List<Video> =
         videoIds
             .chunked(YouTubeApi.MAX_BATCH_SIZE)
-            .flatMap { batch -> api.videos(batch).items }
-            .mapNotNull { it.toDomainOrNull() }
+            .flatMap { batch ->
+                api
+                    .videos(
+                        videoIds = batch,
+                    ).items
+            }.mapNotNull(VideoDto::toDomainOrNull)
 
     companion object {
         const val DEFAULT_VIDEOS_PER_CHANNEL = 5

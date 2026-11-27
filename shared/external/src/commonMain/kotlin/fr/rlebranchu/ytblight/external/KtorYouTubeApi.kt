@@ -18,16 +18,24 @@ import kotlinx.io.IOException
 class KtorYouTubeApi(
     private val client: HttpClient,
 ) : YouTubeApi {
-    override suspend fun subscriptions(pageToken: String?): SubscriptionListResponseDto =
-        get("subscriptions") {
+    override suspend fun subscriptions(
+        pageToken: String?,
+    ): SubscriptionListResponseDto =
+        get(
+            path = "subscriptions",
+        ) {
             parameter("part", "snippet")
             parameter("mine", "true")
             parameter("maxResults", YouTubeApi.MAX_BATCH_SIZE)
             parameter("pageToken", pageToken)
         }
 
-    override suspend fun channels(channelIds: List<String>): ChannelListResponseDto =
-        get("channels") {
+    override suspend fun channels(
+        channelIds: List<String>,
+    ): ChannelListResponseDto =
+        get(
+            path = "channels",
+        ) {
             parameter("part", "contentDetails")
             parameter("id", channelIds.joinToString(","))
             parameter("maxResults", YouTubeApi.MAX_BATCH_SIZE)
@@ -37,14 +45,20 @@ class KtorYouTubeApi(
         playlistId: String,
         maxResults: Int,
     ): PlaylistItemListResponseDto =
-        get("playlistItems") {
+        get(
+            path = "playlistItems",
+        ) {
             parameter("part", "contentDetails")
             parameter("playlistId", playlistId)
             parameter("maxResults", maxResults)
         }
 
-    override suspend fun videos(videoIds: List<String>): VideoListResponseDto =
-        get("videos") {
+    override suspend fun videos(
+        videoIds: List<String>,
+    ): VideoListResponseDto =
+        get(
+            path = "videos",
+        ) {
             parameter("part", "snippet,contentDetails")
             parameter("id", videoIds.joinToString(","))
             parameter("maxResults", YouTubeApi.MAX_BATCH_SIZE)
@@ -58,7 +72,9 @@ class KtorYouTubeApi(
             try {
                 client.get(path, block)
             } catch (e: IOException) {
-                throw YouTubeNetworkException(e)
+                throw YouTubeNetworkException(
+                    cause = e,
+                )
             }
         if (!response.status.isSuccess()) throw response.toException()
         return response.body()

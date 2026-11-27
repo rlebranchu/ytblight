@@ -11,8 +11,13 @@ sealed interface DomainResult<out T> {
     ) : DomainResult<Nothing>
 }
 
-inline fun <T, R> DomainResult<T>.map(transform: (T) -> R): DomainResult<R> =
+inline fun <T, R> DomainResult<T>.map(
+    transform: (T) -> R,
+): DomainResult<R> =
     when (this) {
-        is DomainResult.Success -> DomainResult.Success(transform(value))
+        is DomainResult.Success ->
+            DomainResult.Success(
+                value = transform(value),
+            )
         is DomainResult.Failure -> this
     }

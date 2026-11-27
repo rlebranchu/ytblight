@@ -37,22 +37,51 @@ class FakeYouTubeApi(
         private set
     val requestedVideoBatches = mutableListOf<List<String>>()
 
-    override suspend fun subscriptions(pageToken: String?): SubscriptionListResponseDto {
+    override suspend fun subscriptions(
+        pageToken: String?,
+    ): SubscriptionListResponseDto {
         subscriptionCalls++
         val index = pageToken?.removePrefix("page-")?.toInt() ?: 0
         val items = subscriptionPages.getOrElse(index) { emptyList() }
         return SubscriptionListResponseDto(
-            items = items.map { SubscriptionDto(SubscriptionSnippetDto(ResourceIdDto(it))) },
-            nextPageToken = if (index + 1 < subscriptionPages.size) "page-${index + 1}" else null,
+            items =
+                items.map {
+                    SubscriptionDto(
+                        snippet =
+                            SubscriptionSnippetDto(
+                                resourceId =
+                                    ResourceIdDto(
+                                        channelId = it,
+                                    ),
+                            ),
+                    )
+                },
+            nextPageToken =
+                if (index + 1 < subscriptionPages.size) {
+                    "page-${index + 1}"
+                } else {
+                    null
+                },
         )
     }
 
-    override suspend fun channels(channelIds: List<String>): ChannelListResponseDto {
+    override suspend fun channels(
+        channelIds: List<String>,
+    ): ChannelListResponseDto {
         channelCalls++
         return ChannelListResponseDto(
             items =
                 channelIds.map { id ->
-                    ChannelDto(id, ChannelContentDetailsDto(RelatedPlaylistsDto(uploadsByChannel[id])))
+                    ChannelDto(
+                        id = id,
+                        contentDetails =
+                            ChannelContentDetailsDto(
+                                relatedPlaylists =
+                                    RelatedPlaylistsDto(
+                                        uploads = uploadsByChannel[id],
+                                    ),
+                            ),
+                    )
                 },
         )
     }
@@ -64,13 +93,27 @@ class FakeYouTubeApi(
         playlistItemCalls++
         onPlaylistItems(playlistId)
         val ids = videoIdsByPlaylist.getValue(playlistId).take(maxResults)
-        return PlaylistItemListResponseDto(ids.map { PlaylistItemDto(PlaylistItemContentDetailsDto(it)) })
+        return PlaylistItemListResponseDto(
+            items =
+                ids.map {
+                    PlaylistItemDto(
+                        contentDetails =
+                            PlaylistItemContentDetailsDto(
+                                videoId = it,
+                            ),
+                    )
+                },
+        )
     }
 
-    override suspend fun videos(videoIds: List<String>): VideoListResponseDto {
+    override suspend fun videos(
+        videoIds: List<String>,
+    ): VideoListResponseDto {
         videoCalls++
         requestedVideoBatches += videoIds
-        return VideoListResponseDto(videoIds.mapNotNull { videos[it] })
+        return VideoListResponseDto(
+            items = videoIds.mapNotNull { videos[it] },
+        )
     }
 
     companion object {
@@ -87,9 +130,18 @@ class FakeYouTubeApi(
                     channelId = channelId,
                     channelTitle = "Chaîne $channelId",
                     publishedAt = publishedAt,
-                    thumbnails = ThumbnailsDto(medium = ThumbnailDto("https://img/$id.jpg")),
+                    thumbnails =
+                        ThumbnailsDto(
+                            medium =
+                                ThumbnailDto(
+                                    url = "https://img/$id.jpg",
+                                ),
+                        ),
                 ),
-            contentDetails = VideoContentDetailsDto(duration),
+            contentDetails =
+                VideoContentDetailsDto(
+                    duration = duration,
+                ),
         )
     }
 }

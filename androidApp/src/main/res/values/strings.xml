@@ -1,4 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ytblight</string>
+
+    <!-- Connexion -->
+    <string name="signin_message">Connecte-toi avec ton compte Google pour voir le fil de tes abonnements.</string>
+    <string name="signin_button">Se connecter avec Google</string>
+    <string name="signin_error_cancelled">Connexion annulée.</string>
+    <string name="signin_error_configuration">Configuration Google incorrecte (code 10) : vérifie le package et l\'empreinte SHA-1 du client Android.</string>
+    <string name="signin_error_failed">La connexion a échoué.</string>
+    <string name="signin_error_unavailable">Connexion impossible.</string>
+    <string name="signin_error_unavailable_detail">Connexion impossible (%1$s).</string>
+
+    <!-- Fil -->
+    <string name="feed_title">Abonnements</string>
+    <string name="feed_sign_out">Se déconnecter</string>
+    <string name="feed_empty">Aucune vidéo récente.</string>
+    <string name="feed_reconnect">Se reconnecter</string>
+    <string name="feed_retry">Réessayer</string>
+    <string name="feed_video_subtitle">%1$s · %2$s</string>
+    <string name="feed_error_not_signed_in">Ta session a expiré.</string>
+    <string name="feed_error_quota_exceeded">Le quota quotidien de YouTube est atteint. Réessaie demain.</string>
+    <string name="feed_error_network">Pas de connexion. Vérifie ton réseau.</string>
+    <string name="feed_error_unknown">Une erreur est survenue.</string>
+
+    <!-- Lecteur -->
+    <string name="player_back">← Retour</string>
 </resources>

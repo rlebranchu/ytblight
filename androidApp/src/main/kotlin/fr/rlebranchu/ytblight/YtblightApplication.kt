@@ -1,10 +1,24 @@
 package fr.rlebranchu.ytblight
 
 import android.app.Application
-import fr.rlebranchu.ytblight.auth.GmsPlatformAuth
-import fr.rlebranchu.ytblight.umbrella.SharedDependencies
+import fr.rlebranchu.ytblight.data.di.dataModule
+import fr.rlebranchu.ytblight.di.platformModule
+import fr.rlebranchu.ytblight.external.di.externalModule
+import fr.rlebranchu.ytblight.presentation.di.presentationModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 class YtblightApplication : Application() {
-    val platformAuth: GmsPlatformAuth by lazy { GmsPlatformAuth(this) }
-    val dependencies: SharedDependencies by lazy { SharedDependencies.create(platformAuth) }
+    override fun onCreate() {
+        super.onCreate()
+        startKoin {
+            androidContext(this@YtblightApplication)
+            modules(
+                platformModule,
+                externalModule,
+                dataModule,
+                presentationModule,
+            )
+        }
+    }
 }

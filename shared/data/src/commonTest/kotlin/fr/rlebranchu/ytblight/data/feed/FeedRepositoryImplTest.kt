@@ -24,11 +24,36 @@ class FeedRepositoryImplTest {
             videoIdsByPlaylist = mapOf("UU1" to listOf("V1", "V2"), "UU2" to listOf("V3")),
             videos =
                 mapOf(
-                    "V1" to videoDto("V1", "UC1", "PT4M13S"),
-                    "V2" to videoDto("V2", "UC1", "PT1H2M3S"),
-                    "V3" to videoDto("V3", "UC2", "PT45S"),
+                    "V1" to
+                        videoDto(
+                            id = "V1",
+                            channelId = "UC1",
+                            duration = "PT4M13S",
+                        ),
+                    "V2" to
+                        videoDto(
+                            id = "V2",
+                            channelId = "UC1",
+                            duration = "PT1H2M3S",
+                        ),
+                    "V3" to
+                        videoDto(
+                            id = "V3",
+                            channelId = "UC2",
+                            duration = "PT45S",
+                        ),
                 ),
         )
+
+    private fun repositoryOf(
+        api: YouTubeApi,
+        videosPerChannel: Int = FeedRepositoryImpl.DEFAULT_VIDEOS_PER_CHANNEL,
+        maxParallelRequests: Int = FeedRepositoryImpl.DEFAULT_MAX_PARALLEL_REQUESTS,
+    ) = FeedRepositoryImpl(
+        api = api,
+        videosPerChannel = videosPerChannel,
+        maxParallelRequests = maxParallelRequests,
+    )
 
     private fun DomainResult<List<Video>>.videos(): List<Video> = (this as DomainResult.Success).value
 
@@ -37,7 +62,12 @@ class FeedRepositoryImplTest {
         runTest {
             val api = twoChannelsApi()
 
-            val videos = FeedRepositoryImpl(api).loadFeed(forceRefresh = false).videos()
+            val videos =
+                repositoryOf(
+                    api = api,
+                ).loadFeed(
+                    forceRefresh = false,
+                ).videos()
 
             assertEquals(setOf("V1", "V2", "V3"), videos.map { it.id }.toSet())
             assertEquals(2, api.subscriptionCalls)
@@ -49,7 +79,13 @@ class FeedRepositoryImplTest {
     @Test
     fun mapsDurationsDatesAndThumbnails() =
         runTest {
-            val videos = FeedRepositoryImpl(twoChannelsApi()).loadFeed(false).videos().associateBy { it.id }
+            val videos =
+                repositoryOf(
+                    api = twoChannelsApi(),
+                ).loadFeed(
+                    forceRefresh = false,
+                ).videos()
+                    .associateBy { it.id }
 
             assertEquals(4.minutes + 13.seconds, videos.getValue("V1").duration)
             assertEquals(45.seconds, videos.getValue("V3").duration)
@@ -70,13 +106,22 @@ class FeedRepositoryImplTest {
     fun servesTheCacheUntilARefreshIsForced() =
         runTest {
             val api = twoChannelsApi()
-            val repository = FeedRepositoryImpl(api)
+            val repository =
+                repositoryOf(
+                    api = api,
+                )
 
-            repository.loadFeed(forceRefresh = false)
-            repository.loadFeed(forceRefresh = false)
+            repository.loadFeed(
+                forceRefresh = false,
+            )
+            repository.loadFeed(
+                forceRefresh = false,
+            )
             assertEquals(1, api.videoCalls)
 
-            repository.loadFeed(forceRefresh = true)
+            repository.loadFeed(
+                forceRefresh = true,
+            )
             assertEquals(2, api.videoCalls)
             assertEquals(4, api.playlistItemCalls)
         }
@@ -85,11 +130,18 @@ class FeedRepositoryImplTest {
     fun forgetsTheCachedFeedOnClear() =
         runTest {
             val api = twoChannelsApi()
-            val repository = FeedRepositoryImpl(api)
-            repository.loadFeed(forceRefresh = false)
+            val repository =
+                repositoryOf(
+                    api = api,
+                )
+            repository.loadFeed(
+                forceRefresh = false,
+            )
 
             repository.clear()
-            repository.loadFeed(forceRefresh = false)
+            repository.loadFeed(
+                forceRefresh = false,
+            )
 
             assertEquals(2, api.videoCalls)
         }
@@ -97,11 +149,18 @@ class FeedRepositoryImplTest {
     @Test
     fun asksForTheConfiguredNumberOfVideosPerChannel() =
         runTest {
-            val api = twoChannelsApi()
-
-            val videos = FeedRepositoryImpl(api, videosPerChannel = 1).loadFeed(false).videos()
-
-            assertEquals(setOf("V1", "V3"), videos.map { it.id }.toSet())
+            assertEquals(
+                expected = setOf("V1", "V3"),
+                actual =
+                    repositoryOf(
+                        api = twoChannelsApi(),
+                        videosPerChannel = 1,
+                    ).loadFeed(
+                        forceRefresh = false,
+                    ).videos()
+                        .map { it.id }
+                        .toSet(),
+            )
         }
 
     @Test
@@ -113,10 +172,21 @@ class FeedRepositoryImplTest {
                     subscriptionPages = listOf(listOf("UC1")),
                     uploadsByChannel = mapOf("UC1" to "UU1"),
                     videoIdsByPlaylist = mapOf("UU1" to ids),
-                    videos = ids.associateWith { videoDto(it) },
+                    videos =
+                        ids.associateWith {
+                            videoDto(
+                                id = it,
+                            )
+                        },
                 )
 
-            val videos = FeedRepositoryImpl(api, videosPerChannel = 120).loadFeed(false).videos()
+            val videos =
+                repositoryOf(
+                    api = api,
+                    videosPerChannel = 120,
+                ).loadFeed(
+                    forceRefresh = false,
+                ).videos()
 
             assertEquals(120, videos.size)
             assertEquals(listOf(50, 50, 20), api.requestedVideoBatches.map { it.size })
@@ -132,13 +202,29 @@ class FeedRepositoryImplTest {
                     videoIdsByPlaylist = mapOf("UU1" to listOf("V1", "DELETED", "BAD-DURATION", "BAD-DATE")),
                     videos =
                         mapOf(
-                            "V1" to videoDto("V1"),
-                            "BAD-DURATION" to videoDto("BAD-DURATION", duration = "nimporte quoi"),
-                            "BAD-DATE" to videoDto("BAD-DATE", publishedAt = "hier"),
+                            "V1" to
+                                videoDto(
+                                    id = "V1",
+                                ),
+                            "BAD-DURATION" to
+                                videoDto(
+                                    id = "BAD-DURATION",
+                                    duration = "nimporte quoi",
+                                ),
+                            "BAD-DATE" to
+                                videoDto(
+                                    id = "BAD-DATE",
+                                    publishedAt = "hier",
+                                ),
                         ),
                 )
 
-            val videos = FeedRepositoryImpl(api).loadFeed(false).videos()
+            val videos =
+                repositoryOf(
+                    api = api,
+                ).loadFeed(
+                    forceRefresh = false,
+                ).videos()
 
             assertEquals(listOf("V1"), videos.map { it.id })
         }
@@ -151,10 +237,21 @@ class FeedRepositoryImplTest {
                     subscriptionPages = listOf(listOf("UC1", "UC-NO-UPLOADS")),
                     uploadsByChannel = mapOf("UC1" to "UU1"),
                     videoIdsByPlaylist = mapOf("UU1" to listOf("V1")),
-                    videos = mapOf("V1" to videoDto("V1")),
+                    videos =
+                        mapOf(
+                            "V1" to
+                                videoDto(
+                                    id = "V1",
+                                ),
+                        ),
                 )
 
-            val videos = FeedRepositoryImpl(api).loadFeed(false).videos()
+            val videos =
+                repositoryOf(
+                    api = api,
+                ).loadFeed(
+                    forceRefresh = false,
+                ).videos()
 
             assertEquals(listOf("V1"), videos.map { it.id })
             assertEquals(1, api.playlistItemCalls)
@@ -170,13 +267,25 @@ class FeedRepositoryImplTest {
                         maxResults: Int,
                     ): PlaylistItemListResponseDto =
                         if (playlistId == "UU1") {
-                            throw YouTubeHttpException(404, "playlistNotFound", null)
+                            throw YouTubeHttpException(
+                                statusCode = 404,
+                                reason = "playlistNotFound",
+                                message = null,
+                            )
                         } else {
-                            twoChannelsApi().playlistItems(playlistId, maxResults)
+                            twoChannelsApi().playlistItems(
+                                playlistId = playlistId,
+                                maxResults = maxResults,
+                            )
                         }
                 }
 
-            val videos = FeedRepositoryImpl(api).loadFeed(false).videos()
+            val videos =
+                repositoryOf(
+                    api = api,
+                ).loadFeed(
+                    forceRefresh = false,
+                ).videos()
 
             assertEquals(listOf("V3"), videos.map { it.id })
         }
@@ -184,31 +293,72 @@ class FeedRepositoryImplTest {
     @Test
     fun mapsQuotaErrors() =
         runTest {
-            val result = failingWith(YouTubeHttpException(403, "quotaExceeded", "Quota"))
+            val result =
+                failingWith(
+                    YouTubeHttpException(
+                        statusCode = 403,
+                        reason = "quotaExceeded",
+                        message = "Quota",
+                    ),
+                )
 
-            assertEquals(DomainResult.Failure(DomainError.QuotaExceeded), result)
+            assertEquals(
+                DomainResult.Failure(
+                    error = DomainError.QuotaExceeded,
+                ),
+                result,
+            )
         }
 
     @Test
     fun mapsUnauthorizedToNotSignedIn() =
         runTest {
-            val result = failingWith(YouTubeHttpException(401, null, null))
+            val result =
+                failingWith(
+                    YouTubeHttpException(
+                        statusCode = 401,
+                        reason = null,
+                        message = null,
+                    ),
+                )
 
-            assertEquals(DomainResult.Failure(DomainError.NotSignedIn), result)
+            assertEquals(
+                DomainResult.Failure(
+                    error = DomainError.NotSignedIn,
+                ),
+                result,
+            )
         }
 
     @Test
     fun mapsNetworkFailures() =
         runTest {
-            val result = failingWith(YouTubeNetworkException(RuntimeException("hors ligne")))
+            val result =
+                failingWith(
+                    YouTubeNetworkException(
+                        cause = RuntimeException("hors ligne"),
+                    ),
+                )
 
-            assertEquals(DomainResult.Failure(DomainError.Network), result)
+            assertEquals(
+                DomainResult.Failure(
+                    error = DomainError.Network,
+                ),
+                result,
+            )
         }
 
     @Test
     fun keepsOtherForbiddenErrorsAsUnknown() =
         runTest {
-            val result = failingWith(YouTubeHttpException(403, "forbidden", "Interdit"))
+            val result =
+                failingWith(
+                    YouTubeHttpException(
+                        statusCode = 403,
+                        reason = "forbidden",
+                        message = "Interdit",
+                    ),
+                )
 
             val error = assertIs<DomainResult.Failure>(result).error
             assertIs<DomainError.Unknown>(error)
@@ -221,21 +371,38 @@ class FeedRepositoryImplTest {
             val healthy = twoChannelsApi()
             val api =
                 object : YouTubeApi by healthy {
-                    override suspend fun subscriptions(pageToken: String?) =
-                        if (failing) {
-                            throw YouTubeNetworkException(
-                                RuntimeException("x"),
-                            )
-                        } else {
-                            healthy.subscriptions(pageToken)
-                        }
+                    override suspend fun subscriptions(
+                        pageToken: String?,
+                    ) = if (failing) {
+                        throw YouTubeNetworkException(
+                            cause = RuntimeException("x"),
+                        )
+                    } else {
+                        healthy.subscriptions(
+                            pageToken = pageToken,
+                        )
+                    }
                 }
-            val repository = FeedRepositoryImpl(api)
+            val repository =
+                repositoryOf(
+                    api = api,
+                )
 
-            assertIs<DomainResult.Failure>(repository.loadFeed(false))
+            assertIs<DomainResult.Failure>(
+                repository.loadFeed(
+                    forceRefresh = false,
+                ),
+            )
             failing = false
 
-            assertEquals(3, repository.loadFeed(false).videos().size)
+            assertEquals(
+                3,
+                repository
+                    .loadFeed(
+                        forceRefresh = false,
+                    ).videos()
+                    .size,
+            )
         }
 
     @Test
@@ -249,7 +416,13 @@ class FeedRepositoryImplTest {
                     subscriptionPages = listOf(channels),
                     uploadsByChannel = channels.associateWith { "UU$it" },
                     videoIdsByPlaylist = channels.associate { "UU$it" to listOf("V$it") },
-                    videos = channels.associate { "V$it" to videoDto("V$it") },
+                    videos =
+                        channels.associate {
+                            "V$it" to
+                                videoDto(
+                                    id = "V$it",
+                                )
+                        },
                     onPlaylistItems = {
                         running++
                         peak = maxOf(peak, running)
@@ -258,17 +431,31 @@ class FeedRepositoryImplTest {
                     },
                 )
 
-            val videos = FeedRepositoryImpl(api, maxParallelRequests = 3).loadFeed(false).videos()
+            val videos =
+                repositoryOf(
+                    api = api,
+                    maxParallelRequests = 3,
+                ).loadFeed(
+                    forceRefresh = false,
+                ).videos()
 
             assertEquals(20, videos.size)
             assertEquals(3, peak)
         }
 
-    private suspend fun failingWith(error: Exception): DomainResult<List<Video>> {
+    private suspend fun failingWith(
+        error: Exception,
+    ): DomainResult<List<Video>> {
         val api =
             object : YouTubeApi by FakeYouTubeApi() {
-                override suspend fun subscriptions(pageToken: String?) = throw error
+                override suspend fun subscriptions(
+                    pageToken: String?,
+                ) = throw error
             }
-        return FeedRepositoryImpl(api).loadFeed(false)
+        return repositoryOf(
+            api = api,
+        ).loadFeed(
+            forceRefresh = false,
+        )
     }
 }

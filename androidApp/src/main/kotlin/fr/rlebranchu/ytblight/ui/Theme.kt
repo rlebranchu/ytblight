@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 
 /** Thème sombre uniquement, sans couleurs dynamiques. */
 @Composable
-fun YtblightTheme(content: @Composable () -> Unit) {
+fun YtblightTheme(
+    content: @Composable () -> Unit,
+) {
     MaterialTheme(colorScheme = darkColorScheme(), content = content)
 }

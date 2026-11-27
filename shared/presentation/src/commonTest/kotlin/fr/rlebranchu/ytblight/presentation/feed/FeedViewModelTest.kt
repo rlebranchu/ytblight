@@ -1,11 +1,14 @@
 package fr.rlebranchu.ytblight.presentation.feed
 
 import app.cash.turbine.test
+import fr.rlebranchu.ytblight.domain.auth.SignOutUseCase
 import fr.rlebranchu.ytblight.domain.error.DomainError
 import fr.rlebranchu.ytblight.domain.error.DomainResult
 import fr.rlebranchu.ytblight.domain.feed.FeedRepository
 import fr.rlebranchu.ytblight.domain.feed.GetFeedUseCase
 import fr.rlebranchu.ytblight.domain.model.Video
+import fr.rlebranchu.ytblight.fixtures.FakeAuthRepository
+import fr.rlebranchu.ytblight.fixtures.testVideo
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,7 +22,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -29,9 +31,11 @@ class FeedViewModelTest {
         val requests = mutableListOf<Boolean>()
 
         fun enqueue(): CompletableDeferred<DomainResult<List<Video>>> =
-            CompletableDeferred<DomainResult<List<Video>>>().also { responses.addLast(it) }
+            CompletableDeferred<DomainResult<List<Video>>>().also(responses::addLast)
 
-        override suspend fun loadFeed(forceRefresh: Boolean): DomainResult<List<Video>> {
+        override suspend fun loadFeed(
+            forceRefresh: Boolean,
+        ): DomainResult<List<Video>> {
             requests += forceRefresh
             return responses.removeFirst().await()
         }
@@ -46,11 +50,16 @@ class FeedViewModelTest {
             override fun now(): Instant = Instant.fromEpochMilliseconds(0) + 3.days
         }
 
-    private fun item(id: String) =
-        FeedItemUi(id, "Titre $id", "Chaîne", null, durationLabel = "10:00", publishedLabel = "il y a 3 jours")
-
-    private fun video(id: String) =
-        Video(id, "Titre $id", "UC1", "Chaîne", null, Instant.fromEpochMilliseconds(0), 10.minutes)
+    private fun item(
+        id: String,
+    ) = FeedItemUi(
+        id = id,
+        title = "Titre $id",
+        channelTitle = "Chaîne",
+        thumbnailUrl = null,
+        durationLabel = "10:00",
+        publishedLabel = "il y a 3 jours",
+    )
 
     @BeforeTest
     fun setUp() {
@@ -62,7 +71,22 @@ class FeedViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun viewModel() = FeedViewModel(GetFeedUseCase(repository), fixedClock)
+    private val auth = FakeAuthRepository()
+
+    private fun viewModel(
+        feedRepository: FeedRepository = repository,
+    ) = FeedViewModel(
+        getFeed =
+            GetFeedUseCase(
+                repository = feedRepository,
+            ),
+        signOutUseCase =
+            SignOutUseCase(
+                authRepository = auth,
+                feedRepository = feedRepository,
+            ),
+        clock = fixedClock,
+    )
 
     @Test
     fun startsLoadingThenShowsTheVideos() =
@@ -71,20 +95,53 @@ class FeedViewModelTest {
             val viewModel = viewModel()
 
             viewModel.state.test {
-                assertEquals(FeedUiState(isLoading = true), awaitItem())
-                response.complete(DomainResult.Success(listOf(video("V1"))))
-                assertEquals(FeedUiState(videos = listOf(item("V1"))), awaitItem())
+                assertEquals(
+                    FeedUiState(
+                        isLoading = true,
+                    ),
+                    awaitItem(),
+                )
+                response.complete(
+                    DomainResult.Success(
+                        value =
+                            listOf(
+                                testVideo(
+                                    id = "V1",
+                                ),
+                            ),
+                    ),
+                )
+                assertEquals(
+                    FeedUiState(
+                        videos =
+                            listOf(
+                                item(
+                                    id = "V1",
+                                ),
+                            ),
+                    ),
+                    awaitItem(),
+                )
             }
         }
 
     @Test
     fun showsAnErrorWhenTheFirstLoadFails() =
         runTest {
-            repository.enqueue().complete(DomainResult.Failure(DomainError.QuotaExceeded))
+            repository.enqueue().complete(
+                DomainResult.Failure(
+                    error = DomainError.QuotaExceeded,
+                ),
+            )
 
             val state = viewModel().state.value
 
-            assertEquals(FeedUiState(error = FeedError.QUOTA_EXCEEDED), state)
+            assertEquals(
+                FeedUiState(
+                    error = FeedError.QUOTA_EXCEEDED,
+                ),
+                state,
+            )
         }
 
     @Test
@@ -94,45 +151,119 @@ class FeedViewModelTest {
                 mapOf(
                     DomainError.NotSignedIn to FeedError.NOT_SIGNED_IN,
                     DomainError.Network to FeedError.NETWORK,
-                    DomainError.Unknown("x") to FeedError.UNKNOWN,
+                    DomainError.Unknown(
+                        message = "x",
+                    ) to FeedError.UNKNOWN,
                 )
             expected.forEach { (domainError, feedError) ->
                 val scripted = ScriptedRepository()
-                scripted.enqueue().complete(DomainResult.Failure(domainError))
+                scripted.enqueue().complete(
+                    DomainResult.Failure(
+                        error = domainError,
+                    ),
+                )
 
-                assertEquals(feedError, FeedViewModel(GetFeedUseCase(scripted), fixedClock).state.value.error)
+                assertEquals(
+                    feedError,
+                    viewModel(
+                        feedRepository = scripted,
+                    ).state.value.error,
+                )
             }
         }
 
     @Test
     fun keepsTheListVisibleWhileRefreshing() =
         runTest {
-            repository.enqueue().complete(DomainResult.Success(listOf(video("V1"))))
+            repository.enqueue().complete(
+                DomainResult.Success(
+                    value =
+                        listOf(
+                            testVideo(
+                                id = "V1",
+                            ),
+                        ),
+                ),
+            )
             val viewModel = viewModel()
             val refreshed = repository.enqueue()
 
             viewModel.refresh()
 
             assertEquals(
-                FeedUiState(videos = listOf(item("V1")), isRefreshing = true),
+                FeedUiState(
+                    videos =
+                        listOf(
+                            item(
+                                id = "V1",
+                            ),
+                        ),
+                    isRefreshing = true,
+                ),
                 viewModel.state.value,
             )
-            refreshed.complete(DomainResult.Success(listOf(video("V2"), video("V1"))))
-            assertEquals(FeedUiState(videos = listOf(item("V2"), item("V1"))), viewModel.state.value)
+            refreshed.complete(
+                DomainResult.Success(
+                    value =
+                        listOf(
+                            testVideo(
+                                id = "V2",
+                            ),
+                            testVideo(
+                                id = "V1",
+                            ),
+                        ),
+                ),
+            )
+            assertEquals(
+                FeedUiState(
+                    videos =
+                        listOf(
+                            item(
+                                id = "V2",
+                            ),
+                            item(
+                                id = "V1",
+                            ),
+                        ),
+                ),
+                viewModel.state.value,
+            )
             assertEquals(listOf(false, true), repository.requests)
         }
 
     @Test
     fun keepsTheListWhenARefreshFails() =
         runTest {
-            repository.enqueue().complete(DomainResult.Success(listOf(video("V1"))))
+            repository.enqueue().complete(
+                DomainResult.Success(
+                    value =
+                        listOf(
+                            testVideo(
+                                id = "V1",
+                            ),
+                        ),
+                ),
+            )
             val viewModel = viewModel()
-            repository.enqueue().complete(DomainResult.Failure(DomainError.Network))
+            repository.enqueue().complete(
+                DomainResult.Failure(
+                    error = DomainError.Network,
+                ),
+            )
 
             viewModel.refresh()
 
             assertEquals(
-                FeedUiState(videos = listOf(item("V1")), error = FeedError.NETWORK),
+                FeedUiState(
+                    videos =
+                        listOf(
+                            item(
+                                id = "V1",
+                            ),
+                        ),
+                    error = FeedError.NETWORK,
+                ),
                 viewModel.state.value,
             )
         }
@@ -140,14 +271,37 @@ class FeedViewModelTest {
     @Test
     fun retryAsksTheRepositoryWithoutForcingARefresh() =
         runTest {
-            repository.enqueue().complete(DomainResult.Failure(DomainError.Network))
+            repository.enqueue().complete(
+                DomainResult.Failure(
+                    error = DomainError.Network,
+                ),
+            )
             val viewModel = viewModel()
-            repository.enqueue().complete(DomainResult.Success(listOf(video("V1"))))
+            repository.enqueue().complete(
+                DomainResult.Success(
+                    value =
+                        listOf(
+                            testVideo(
+                                id = "V1",
+                            ),
+                        ),
+                ),
+            )
 
             viewModel.retry()
 
             assertEquals(listOf(false, false), repository.requests)
-            assertEquals(FeedUiState(videos = listOf(item("V1"))), viewModel.state.value)
+            assertEquals(
+                FeedUiState(
+                    videos =
+                        listOf(
+                            item(
+                                id = "V1",
+                            ),
+                        ),
+                ),
+                viewModel.state.value,
+            )
         }
 
     @Test
@@ -155,15 +309,59 @@ class FeedViewModelTest {
         runTest {
             val slow = repository.enqueue()
             val viewModel = viewModel()
-            repository.enqueue().complete(DomainResult.Success(listOf(video("NEW"))))
+            repository.enqueue().complete(
+                DomainResult.Success(
+                    value =
+                        listOf(
+                            testVideo(
+                                id = "NEW",
+                            ),
+                        ),
+                ),
+            )
 
             viewModel.refresh()
-            slow.complete(DomainResult.Success(listOf(video("OLD"))))
+            slow.complete(
+                DomainResult.Success(
+                    value =
+                        listOf(
+                            testVideo(
+                                id = "OLD",
+                            ),
+                        ),
+                ),
+            )
 
             assertEquals(
                 listOf("NEW"),
                 viewModel.state.value.videos
                     .map { it.id },
+            )
+        }
+
+    @Test
+    fun signOutClearsTheFeedAndAsksToLeaveThePage() =
+        runTest {
+            repository.enqueue().complete(
+                DomainResult.Success(
+                    value =
+                        listOf(
+                            testVideo(
+                                id = "V1",
+                            ),
+                        ),
+                ),
+            )
+            val viewModel = viewModel()
+
+            viewModel.signOut()
+
+            assertEquals(1, auth.signOutCalls)
+            assertEquals(
+                FeedUiState(
+                    isSignedOut = true,
+                ),
+                viewModel.state.value,
             )
         }
 }

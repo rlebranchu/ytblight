@@ -12,9 +12,14 @@ class YouTubeHttpException(
     /** Raison fournie par Google, par exemple `quotaExceeded`. */
     val reason: String?,
     message: String?,
-) : YouTubeException("HTTP $statusCode${reason?.let { " ($it)" }.orEmpty()} ${message.orEmpty()}".trim())
+) : YouTubeException(
+        message = "HTTP $statusCode${reason?.let { " ($it)" }.orEmpty()} ${message.orEmpty()}".trim(),
+    )
 
 /** Le réseau a échoué avant d'obtenir une réponse. */
 class YouTubeNetworkException(
     cause: Throwable,
-) : YouTubeException(cause.message, cause)
+) : YouTubeException(
+        message = cause.message,
+        cause = cause,
+    )

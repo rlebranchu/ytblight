@@ -15,12 +15,17 @@ data class FeedItemUi(
     val publishedLabel: String,
 )
 
-internal fun Video.toItemUi(now: Instant) =
-    FeedItemUi(
-        id = id,
-        title = title,
-        channelTitle = channelTitle,
-        thumbnailUrl = thumbnailUrl,
-        durationLabel = duration.toClockLabel(),
-        publishedLabel = relativeTimeLabel(publishedAt, now),
-    )
+internal fun Video.toItemUi(
+    now: Instant,
+) = FeedItemUi(
+    id = id,
+    title = title,
+    channelTitle = channelTitle,
+    thumbnailUrl = thumbnailUrl,
+    durationLabel = duration.toClockLabel(),
+    publishedLabel =
+        relativeTimeLabel(
+            publishedAt = publishedAt,
+            now = now,
+        ),
+)

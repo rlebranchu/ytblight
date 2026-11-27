@@ -1,19 +1,21 @@
 package fr.rlebranchu.ytblight
 
-import androidx.compose.runtime.remember
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import fr.rlebranchu.ytblight.ui.SignInController
+import fr.rlebranchu.ytblight.fixtures.FakeAuthRepository
 import fr.rlebranchu.ytblight.ui.YtblightApp
 import fr.rlebranchu.ytblight.ui.YtblightTheme
-import fr.rlebranchu.ytblight.umbrella.SharedDependencies
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.loadKoinModules
+import org.koin.core.context.unloadKoinModules
+import org.koin.core.module.Module
 
 /** Tests de l'interface sur données factices : aucun appel à Google, aucun quota consommé. */
 @RunWith(AndroidJUnit4::class)
@@ -21,34 +23,38 @@ class YtblightAppTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    private class FakeSignInController(
-        private val onSignedIn: () -> Unit,
-    ) : SignInController {
-        var starts = 0
-        override val inProgress = false
-        override val errorMessage: String? = null
+    private var fakeModule: Module? = null
 
-        override fun start() {
-            starts++
-            onSignedIn()
-        }
+    @After
+    fun removeFakeModule() {
+        fakeModule?.let(::unloadKoinModules)
     }
 
-    private fun launch(signedIn: Boolean): List<FakeSignInController> {
-        val controllers = mutableListOf<FakeSignInController>()
+    private fun launch(
+        signedIn: Boolean,
+    ): FakeAuthRepository {
+        // Koin est démarré par YtblightApplication : on y surcharge les repositories par des fakes.
+        val auth =
+            FakeAuthRepository(
+                signedIn = signedIn,
+            )
+        fakeModule =
+            fakeModule(
+                auth = auth,
+            ).also(::loadKoinModules)
         composeRule.setContent {
             YtblightTheme {
-                YtblightApp(SharedDependencies.fake(signedIn)) { onSignedIn ->
-                    remember { FakeSignInController(onSignedIn).also(controllers::add) }
-                }
+                YtblightApp()
             }
         }
-        return controllers
+        return auth
     }
 
     @Test
     fun signedInUserSeesTheFeedWithoutShorts() {
-        launch(signedIn = true)
+        launch(
+            signedIn = true,
+        )
 
         composeRule.onNodeWithText("Un long format sur Kotlin Multiplatform").assertIsDisplayed()
         composeRule.onNodeWithText("24:10").assertIsDisplayed()
@@ -59,7 +65,9 @@ class YtblightAppTest {
 
     @Test
     fun feedIsSortedFromNewestToOldest() {
-        launch(signedIn = true)
+        launch(
+            signedIn = true,
+        )
 
         val titles =
             listOf("Conférence d'une heure", "Visite guidée d'un atelier", "Un long format sur Kotlin Multiplatform")
@@ -75,7 +83,10 @@ class YtblightAppTest {
 
     @Test
     fun signedOutUserSeesTheSignInScreenThenTheFeed() {
-        val controllers = launch(signedIn = false)
+        val auth =
+            launch(
+                signedIn = false,
+            )
 
         composeRule.onNodeWithText("Connecte-toi avec ton compte Google", substring = true).assertIsDisplayed()
         composeRule.onNodeWithText("Un long format sur Kotlin Multiplatform").assertDoesNotExist()
@@ -83,12 +94,14 @@ class YtblightAppTest {
         composeRule.onNodeWithText("Se connecter avec Google").performClick()
 
         composeRule.onNodeWithText("Un long format sur Kotlin Multiplatform").assertIsDisplayed()
-        assertEquals(1, controllers.sumOf { it.starts })
+        assertEquals(1, auth.signInCalls)
     }
 
     @Test
     fun signingOutReturnsToTheSignInScreen() {
-        launch(signedIn = true)
+        launch(
+            signedIn = true,
+        )
 
         composeRule.onNodeWithText("Se déconnecter").performClick()
 

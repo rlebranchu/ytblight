@@ -1,9 +1,15 @@
 plugins {
     id("ytblight.android-application")
+    id("ytblight.serialization")
 }
 
 android {
     namespace = "fr.rlebranchu.ytblight"
+
+    sourceSets {
+        // Données factices partagées avec les tests des modules `shared` (jamais dans le code livré).
+        getByName("androidTest").kotlin.directories.add(rootProject.file("shared/test-fixtures/kotlin").path)
+    }
 
     defaultConfig {
         applicationId = "fr.rlebranchu.ytblight"
@@ -14,7 +20,10 @@ android {
 }
 
 dependencies {
-    implementation(projects.shared.umbrella)
+    implementation(projects.shared.presentation)
+    implementation(projects.shared.domain)
+    implementation(projects.shared.data)
+    implementation(projects.shared.external)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
@@ -24,6 +33,10 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
+    implementation(libs.koin.compose.viewmodel)
     implementation(libs.play.services.auth)
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.coil.compose)

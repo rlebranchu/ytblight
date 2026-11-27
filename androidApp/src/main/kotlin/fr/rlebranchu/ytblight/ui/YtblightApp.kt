@@ -1,80 +1,87 @@
 package fr.rlebranchu.ytblight.ui
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import androidx.navigation.NavType
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import fr.rlebranchu.ytblight.domain.auth.AuthState
-import fr.rlebranchu.ytblight.presentation.feed.FeedViewModel
-import fr.rlebranchu.ytblight.presentation.session.SessionViewModel
-import fr.rlebranchu.ytblight.umbrella.SharedDependencies
-
-private const val ROUTE_FEED = "feed"
-private const val ROUTE_PLAYER = "player/{videoId}"
-private const val ARG_VIDEO_ID = "videoId"
+import androidx.navigation.toRoute
+import fr.rlebranchu.ytblight.presentation.splash.SplashDestination
+import fr.rlebranchu.ytblight.ui.feed.FeedRoute
+import fr.rlebranchu.ytblight.ui.player.PlayerRoute
+import fr.rlebranchu.ytblight.ui.signin.SignInRoute
+import fr.rlebranchu.ytblight.ui.splash.SplashRoute
 
 /**
- * @param signInController fabrique du contrôleur de connexion : Play Services en production,
- * une fausse version dans les tests d'interface.
+ * Navigation de l'application (type-safe, voir [NavRoute]). Chaque page a son
+ * [androidx.lifecycle.ViewModel], obtenu via Koin.
+ *
+ * Koin est démarré dans `YtblightApplication`. Les tests d'interface y surchargent les repositories
+ * par des données factices (`loadKoinModules`), sans jamais passer par Google.
  */
 @Composable
-fun YtblightApp(
-    dependencies: SharedDependencies,
-    signInController: @Composable (onSignedIn: () -> Unit) -> SignInController,
-) {
-    val session: SessionViewModel =
-        viewModel(factory = viewModelFactory { initializer { dependencies.sessionViewModel() } })
-    val authState by session.state.collectAsStateWithLifecycle()
-    val signIn = signInController(session::onSignedIn)
-
-    when (authState) {
-        AuthState.CHECKING ->
-            Surface(Modifier.fillMaxSize()) {
-                Box(contentAlignment = Alignment.Center) { CircularProgressIndicator() }
-            }
-        AuthState.SIGNED_OUT -> SignInScreen(signIn)
-        AuthState.SIGNED_IN -> SignedInNavigation(dependencies, onSignOut = session::signOut)
+fun YtblightApp() {
+    val navController = rememberNavController()
+    NavHost(
+        navController = navController,
+        startDestination = NavRoute.Splash,
+    ) {
+        composable<NavRoute.Splash> {
+            SplashRoute(
+                onNavigate = { destination ->
+                    navController.navigateClearing(
+                        route =
+                            when (destination) {
+                                SplashDestination.SIGN_IN -> NavRoute.SignIn
+                                SplashDestination.FEED -> NavRoute.Feed
+                            },
+                        clearing = NavRoute.Splash,
+                    )
+                },
+            )
+        }
+        composable<NavRoute.SignIn> {
+            SignInRoute(
+                onSignedIn = {
+                    navController.navigateClearing(
+                        route = NavRoute.Feed,
+                        clearing = NavRoute.SignIn,
+                    )
+                },
+            )
+        }
+        composable<NavRoute.Feed> {
+            FeedRoute(
+                onOpenVideo = { videoId ->
+                    navController.navigate(
+                        NavRoute.Player(
+                            videoId = videoId,
+                        ),
+                    )
+                },
+                onSignedOut = {
+                    navController.navigateClearing(
+                        route = NavRoute.SignIn,
+                        clearing = NavRoute.Feed,
+                    )
+                },
+            )
+        }
+        composable<NavRoute.Player> { entry ->
+            PlayerRoute(
+                videoId = entry.toRoute<NavRoute.Player>().videoId,
+                onClose = navController::popBackStack,
+            )
+        }
     }
 }
 
-@Composable
-private fun SignedInNavigation(
-    dependencies: SharedDependencies,
-    onSignOut: () -> Unit,
+/** Va à [route] en retirant [clearing] de la pile : le bouton Retour ne revient pas en arrière. */
+private fun NavController.navigateClearing(
+    route: NavRoute,
+    clearing: NavRoute,
 ) {
-    val navController = rememberNavController()
-    NavHost(navController, startDestination = ROUTE_FEED) {
-        composable(ROUTE_FEED) {
-            val viewModel: FeedViewModel =
-                viewModel(factory = viewModelFactory { initializer { dependencies.feedViewModel() } })
-            val state by viewModel.state.collectAsStateWithLifecycle()
-            FeedScreen(
-                state = state,
-                onRefresh = viewModel::refresh,
-                onRetry = viewModel::retry,
-                onOpenVideo = { videoId -> navController.navigate("player/$videoId") },
-                onSignOut = onSignOut,
-                onReconnect = onSignOut,
-            )
-        }
-        composable(ROUTE_PLAYER, arguments = listOf(navArgument(ARG_VIDEO_ID) { type = NavType.StringType })) { entry ->
-            PlayerScreen(
-                videoId = entry.arguments?.getString(ARG_VIDEO_ID).orEmpty(),
-                onClose = { navController.popBackStack() },
-            )
-        }
+    navigate(route) {
+        popUpTo(clearing) { inclusive = true }
     }
 }

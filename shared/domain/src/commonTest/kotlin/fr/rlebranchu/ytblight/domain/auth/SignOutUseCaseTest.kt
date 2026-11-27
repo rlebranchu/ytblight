@@ -18,7 +18,11 @@ class SignOutUseCaseTest {
 
             override suspend fun checkSession() = Unit
 
-            override fun onSignedIn() = Unit
+            override suspend fun signIn(): SignInResult = SignInResult.SignedIn
+
+            override suspend fun completeConsent(
+                response: ConsentResponse,
+            ): SignInResult = SignInResult.SignedIn
 
             override suspend fun signOut() {
                 events += "auth.signOut"
@@ -27,8 +31,12 @@ class SignOutUseCaseTest {
 
     private val feed =
         object : FeedRepository {
-            override suspend fun loadFeed(forceRefresh: Boolean): DomainResult<List<Video>> =
-                DomainResult.Success(emptyList())
+            override suspend fun loadFeed(
+                forceRefresh: Boolean,
+            ): DomainResult<List<Video>> =
+                DomainResult.Success(
+                    value = emptyList(),
+                )
 
             override suspend fun clear() {
                 events += "feed.clear"
@@ -38,7 +46,10 @@ class SignOutUseCaseTest {
     @Test
     fun signsOutThenForgetsTheFeed() =
         runTest {
-            SignOutUseCase(auth, feed)()
+            SignOutUseCase(
+                authRepository = auth,
+                feedRepository = feed,
+            )()
 
             assertEquals(listOf("auth.signOut", "feed.clear"), events)
         }
