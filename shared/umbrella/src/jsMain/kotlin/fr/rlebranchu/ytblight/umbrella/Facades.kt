@@ -56,7 +56,7 @@ class SplashFacade internal constructor(
     fun subscribe(
         listener: (SplashStateJs) -> Unit,
     ): () -> Unit =
-        facade.collect(viewModel.state) {
+        facade.collect(state = viewModel.state) {
             listener(SplashStateJs(destination = it.destination?.name))
         }
 
@@ -83,7 +83,7 @@ class SignInFacade internal constructor(
     fun subscribe(
         listener: (SignInStateJs) -> Unit,
     ): () -> Unit =
-        facade.collect(viewModel.state) {
+        facade.collect(state = viewModel.state) {
             listener(
                 SignInStateJs(
                     inProgress = it.inProgress,
@@ -131,7 +131,7 @@ class FeedFacade internal constructor(
     fun subscribe(
         listener: (FeedStateJs) -> Unit,
     ): () -> Unit =
-        facade.collect(viewModel.state) { state ->
+        facade.collect(state = viewModel.state) { state ->
             listener(
                 FeedStateJs(
                     videos =
@@ -180,7 +180,7 @@ class PlayerFacade internal constructor(
     fun subscribe(
         listener: (PlayerStateJs) -> Unit,
     ): () -> Unit =
-        facade.collect(viewModel.state) {
+        facade.collect(state = viewModel.state) {
             listener(PlayerStateJs(videoId = it.videoId, isEnded = it.isEnded))
         }
 

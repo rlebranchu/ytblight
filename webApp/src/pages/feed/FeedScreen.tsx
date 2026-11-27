@@ -30,14 +30,17 @@ function errorMessage(error: string): string {
   }
 }
 
-function ErrorAction({
-  error,
-  onRetry,
-  onReconnect,
-}: Pick<FeedScreenProps, 'onRetry' | 'onReconnect'> & { error: string }) {
+interface ErrorActionProps {
+  error: string
+  onRetry: () => void
+  onReconnect: () => void
+}
+
+function ErrorAction({ error, onRetry, onReconnect }: ErrorActionProps) {
   if (error === 'QUOTA_EXCEEDED') return null
-  if (error === 'NOT_SIGNED_IN')
+  if (error === 'NOT_SIGNED_IN') {
     return <Button onClick={onReconnect}>{strings.feed.reconnect}</Button>
+  }
   return <Button onClick={onRetry}>{strings.feed.retry}</Button>
 }
 

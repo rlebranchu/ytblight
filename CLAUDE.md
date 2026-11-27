@@ -62,8 +62,8 @@ graph TD
     presentation["shared:presentation<br/>ViewModels, UiState, formatage"]
     data["shared:data<br/>repositories, mappers, use cases (Koin)"]
     domain["shared:domain<br/>modèles, interfaces, use cases"]
-    external["shared:external<br/>API YouTube (Ktor), PlatformAuth"]
-    local["shared:local<br/>stockage local (vide pour l'instant)"]
+    external["shared:external<br/>API YouTube (Ktor), PlatformAuth, jeton rafraîchi"]
+    local["shared:local<br/>stockage du jeton (localStorage sur le web)"]
 
     androidApp --> presentation
     androidApp --> domain
@@ -77,13 +77,14 @@ graph TD
     data --> domain
     data --> external
     data --> local
+    external --> local
     presentation --> domain
 ```
 
-- `domain`, `external` et `local` ne dépendent d'aucun autre module du projet. Ne jamais faire pointer `domain` vers `data`, `external` ou `local`.
+- `domain` et `local` ne dépendent d'aucun autre module du projet ; `external` ne dépend que de `local` (stockage du jeton). Ne jamais faire pointer `domain` vers `data`, `external` ou `local`.
 - `presentation` ne connaît ni `data` ni `external` : elle ne voit que les use cases du `domain`.
 - Le câblage se fait par Koin (`externalModule`, `dataModule`, `presentationModule`, `platformModule`) ; les use cases sont déclarés dans `dataModule`, car `domain` ne dépend pas de Koin.
-- `umbrella` ne sert qu'à exporter le framework iOS et la librairie JS ; Android ne passe pas par lui.
+- `umbrella` ne sert qu'à exporter le framework iOS et la librairie JS (façade `jsMain` pour React) ; Android ne passe pas par lui.
 - Tests : le dossier de sources `shared/test-fixtures/kotlin` (pas un module) est ajouté aux sources de test de `domain`, `data`, `presentation`, `umbrella` et `androidApp` (`androidTest`).
 
 ## Web (React + TypeScript)

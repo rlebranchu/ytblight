@@ -1,10 +1,9 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
 import { useViewModel } from '@/hooks/useViewModel'
 import { createPlayerViewModel, type PlayerFacade, type PlayerStateJs } from '@/kotlin'
 import { PlayerScreen } from './PlayerScreen'
-import { useEffect } from 'react'
 
 export function PlayerRoute() {
   const navigate = useNavigate()
