@@ -12,8 +12,13 @@ interface AuthRepository {
     /** Vérifie, sans rien afficher, si une session valide existe déjà. */
     suspend fun checkSession()
 
-    /** À appeler quand la connexion native vient de réussir. */
-    fun onSignedIn()
+    /** Démarre la connexion. Peut demander l'affichage de la fenêtre de consentement de la plateforme. */
+    suspend fun signIn(): SignInResult
+
+    /** Termine la connexion après la fenêtre de consentement. */
+    suspend fun completeConsent(
+        response: ConsentResponse,
+    ): SignInResult
 
     suspend fun signOut()
 }

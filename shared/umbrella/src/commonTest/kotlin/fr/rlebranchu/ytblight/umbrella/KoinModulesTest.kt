@@ -4,6 +4,7 @@ import fr.rlebranchu.ytblight.data.di.dataModule
 import fr.rlebranchu.ytblight.domain.auth.AuthRepository
 import fr.rlebranchu.ytblight.domain.feed.FeedRepository
 import fr.rlebranchu.ytblight.external.auth.PlatformAuth
+import fr.rlebranchu.ytblight.external.auth.PlatformSignInOutcome
 import fr.rlebranchu.ytblight.external.di.externalModule
 import fr.rlebranchu.ytblight.presentation.di.presentationModule
 import fr.rlebranchu.ytblight.presentation.feed.FeedViewModel
@@ -127,6 +128,13 @@ class KoinModulesTest {
                     override suspend fun currentToken(): String? = "jeton"
 
                     override suspend fun refreshToken(): String? = "jeton"
+
+                    override suspend fun signIn(): PlatformSignInOutcome = PlatformSignInOutcome.Authorized
+
+                    override suspend fun completeConsent(
+                        response: Any?,
+                        isGranted: Boolean,
+                    ): PlatformSignInOutcome = PlatformSignInOutcome.Authorized
 
                     override suspend fun signOut() = Unit
                 }

@@ -3,6 +3,8 @@ package fr.rlebranchu.ytblight.presentation.feed
 import app.cash.turbine.test
 import fr.rlebranchu.ytblight.domain.auth.AuthRepository
 import fr.rlebranchu.ytblight.domain.auth.AuthState
+import fr.rlebranchu.ytblight.domain.auth.ConsentResponse
+import fr.rlebranchu.ytblight.domain.auth.SignInResult
 import fr.rlebranchu.ytblight.domain.auth.SignOutUseCase
 import fr.rlebranchu.ytblight.domain.error.DomainError
 import fr.rlebranchu.ytblight.domain.error.DomainResult
@@ -92,7 +94,11 @@ class FeedViewModelTest {
 
             override suspend fun checkSession() = Unit
 
-            override fun onSignedIn() = Unit
+            override suspend fun signIn(): SignInResult = SignInResult.SignedIn
+
+            override suspend fun completeConsent(
+                response: ConsentResponse,
+            ): SignInResult = SignInResult.SignedIn
 
             override suspend fun signOut() {
                 signOutCalls++

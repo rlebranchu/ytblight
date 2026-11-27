@@ -1,15 +1,12 @@
 package fr.rlebranchu.ytblight
 
-import androidx.compose.runtime.remember
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import fr.rlebranchu.ytblight.presentation.signin.SignInViewModel
 import fr.rlebranchu.ytblight.ui.YtblightApp
 import fr.rlebranchu.ytblight.ui.YtblightTheme
-import fr.rlebranchu.ytblight.ui.signin.SignInStarter
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -25,17 +22,6 @@ class YtblightAppTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    private class FakeSignInStarter(
-        private val viewModel: SignInViewModel,
-    ) : SignInStarter {
-        var starts = 0
-
-        override fun start() {
-            starts++
-            viewModel.onSucceeded()
-        }
-    }
-
     private var fakeModule: Module? = null
 
     @After
@@ -45,27 +31,22 @@ class YtblightAppTest {
 
     private fun launch(
         signedIn: Boolean,
-    ): List<FakeSignInStarter> {
+    ): FakeAuthRepository {
         // Koin est démarré par YtblightApplication : on y surcharge les repositories par des fakes.
+        val auth =
+            FakeAuthRepository(
+                signedIn = signedIn,
+            )
         fakeModule =
             fakeModule(
-                signedIn = signedIn,
+                auth = auth,
             ).also(::loadKoinModules)
-        val starters = mutableListOf<FakeSignInStarter>()
         composeRule.setContent {
             YtblightTheme {
-                YtblightApp(
-                    signInStarter = { viewModel ->
-                        remember {
-                            FakeSignInStarter(
-                                viewModel = viewModel,
-                            ).also(starters::add)
-                        }
-                    },
-                )
+                YtblightApp()
             }
         }
-        return starters
+        return auth
     }
 
     @Test
@@ -101,7 +82,7 @@ class YtblightAppTest {
 
     @Test
     fun signedOutUserSeesTheSignInScreenThenTheFeed() {
-        val starters =
+        val auth =
             launch(
                 signedIn = false,
             )
@@ -112,7 +93,7 @@ class YtblightAppTest {
         composeRule.onNodeWithText("Se connecter avec Google").performClick()
 
         composeRule.onNodeWithText("Un long format sur Kotlin Multiplatform").assertIsDisplayed()
-        assertEquals(1, starters.sumOf { it.starts })
+        assertEquals(1, auth.signInCalls)
     }
 
     @Test

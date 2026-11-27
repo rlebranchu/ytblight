@@ -2,6 +2,8 @@ package fr.rlebranchu.ytblight
 
 import fr.rlebranchu.ytblight.domain.auth.AuthRepository
 import fr.rlebranchu.ytblight.domain.auth.AuthState
+import fr.rlebranchu.ytblight.domain.auth.ConsentResponse
+import fr.rlebranchu.ytblight.domain.auth.SignInResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -10,6 +12,9 @@ import kotlinx.coroutines.flow.asStateFlow
 class FakeAuthRepository(
     private val signedIn: Boolean,
 ) : AuthRepository {
+    var signInCalls = 0
+        private set
+
     private val mutableState = MutableStateFlow(AuthState.CHECKING)
     override val state: StateFlow<AuthState> = mutableState.asStateFlow()
 
@@ -17,9 +22,15 @@ class FakeAuthRepository(
         mutableState.value = if (signedIn) AuthState.SIGNED_IN else AuthState.SIGNED_OUT
     }
 
-    override fun onSignedIn() {
+    override suspend fun signIn(): SignInResult {
+        signInCalls++
         mutableState.value = AuthState.SIGNED_IN
+        return SignInResult.SignedIn
     }
+
+    override suspend fun completeConsent(
+        response: ConsentResponse,
+    ): SignInResult = signIn()
 
     override suspend fun signOut() {
         mutableState.value = AuthState.SIGNED_OUT

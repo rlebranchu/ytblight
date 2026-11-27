@@ -3,6 +3,8 @@ package fr.rlebranchu.ytblight.presentation.splash
 import fr.rlebranchu.ytblight.domain.auth.AuthRepository
 import fr.rlebranchu.ytblight.domain.auth.AuthState
 import fr.rlebranchu.ytblight.domain.auth.CheckSessionUseCase
+import fr.rlebranchu.ytblight.domain.auth.ConsentResponse
+import fr.rlebranchu.ytblight.domain.auth.SignInResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +30,11 @@ class SplashViewModelTest {
             mutableState.value = if (sessionIsValid) AuthState.SIGNED_IN else AuthState.SIGNED_OUT
         }
 
-        override fun onSignedIn() = Unit
+        override suspend fun signIn(): SignInResult = SignInResult.SignedIn
+
+        override suspend fun completeConsent(
+            response: ConsentResponse,
+        ): SignInResult = SignInResult.SignedIn
 
         override suspend fun signOut() = Unit
     }

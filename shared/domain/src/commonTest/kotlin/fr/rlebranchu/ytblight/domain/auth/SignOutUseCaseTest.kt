@@ -18,7 +18,11 @@ class SignOutUseCaseTest {
 
             override suspend fun checkSession() = Unit
 
-            override fun onSignedIn() = Unit
+            override suspend fun signIn(): SignInResult = SignInResult.SignedIn
+
+            override suspend fun completeConsent(
+                response: ConsentResponse,
+            ): SignInResult = SignInResult.SignedIn
 
             override suspend fun signOut() {
                 events += "auth.signOut"

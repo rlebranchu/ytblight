@@ -4,7 +4,8 @@ import fr.rlebranchu.ytblight.data.auth.AuthRepositoryImpl
 import fr.rlebranchu.ytblight.data.feed.FeedRepositoryImpl
 import fr.rlebranchu.ytblight.domain.auth.AuthRepository
 import fr.rlebranchu.ytblight.domain.auth.CheckSessionUseCase
-import fr.rlebranchu.ytblight.domain.auth.CompleteSignInUseCase
+import fr.rlebranchu.ytblight.domain.auth.CompleteConsentUseCase
+import fr.rlebranchu.ytblight.domain.auth.SignInUseCase
 import fr.rlebranchu.ytblight.domain.auth.SignOutUseCase
 import fr.rlebranchu.ytblight.domain.feed.FeedPolicy
 import fr.rlebranchu.ytblight.domain.feed.FeedRepository
@@ -41,7 +42,12 @@ val dataModule =
             )
         }
         factory {
-            CompleteSignInUseCase(
+            SignInUseCase(
+                authRepository = get(),
+            )
+        }
+        factory {
+            CompleteConsentUseCase(
                 authRepository = get(),
             )
         }

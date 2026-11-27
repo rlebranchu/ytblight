@@ -2,53 +2,70 @@ package fr.rlebranchu.ytblight.presentation.signin
 
 import fr.rlebranchu.ytblight.domain.auth.AuthRepository
 import fr.rlebranchu.ytblight.domain.auth.AuthState
-import fr.rlebranchu.ytblight.domain.auth.CompleteSignInUseCase
+import fr.rlebranchu.ytblight.domain.auth.CompleteConsentUseCase
+import fr.rlebranchu.ytblight.domain.auth.ConsentRequest
+import fr.rlebranchu.ytblight.domain.auth.ConsentResponse
+import fr.rlebranchu.ytblight.domain.auth.SignInResult
+import fr.rlebranchu.ytblight.domain.auth.SignInUseCase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import fr.rlebranchu.ytblight.domain.auth.SignInError as DomainSignInError
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SignInViewModelTest {
     private class FakeAuthRepository : AuthRepository {
         override val state: StateFlow<AuthState> = MutableStateFlow(AuthState.SIGNED_OUT)
-        var signedInCalls = 0
+        var signInResult: SignInResult = SignInResult.SignedIn
+        var consentResult: SignInResult = SignInResult.SignedIn
+        val consentResponses = mutableListOf<ConsentResponse>()
 
         override suspend fun checkSession() = Unit
 
-        override fun onSignedIn() {
-            signedInCalls++
+        override suspend fun signIn(): SignInResult = signInResult
+
+        override suspend fun completeConsent(
+            response: ConsentResponse,
+        ): SignInResult {
+            consentResponses += response
+            return consentResult
         }
 
         override suspend fun signOut() = Unit
     }
 
     private val auth = FakeAuthRepository()
-    private val viewModel =
+
+    private fun viewModel() =
         SignInViewModel(
-            completeSignIn =
-                CompleteSignInUseCase(
-                    authRepository = auth,
-                ),
+            signIn = SignInUseCase(authRepository = auth),
+            completeConsent = CompleteConsentUseCase(authRepository = auth),
         )
 
-    @Test
-    fun showsProgressWhileSigningIn() {
-        viewModel.onStarted()
+    @BeforeTest
+    fun setUp() {
+        Dispatchers.setMain(UnconfinedTestDispatcher())
+    }
 
-        assertEquals(
-            SignInUiState(
-                inProgress = true,
-            ),
-            viewModel.state.value,
-        )
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 
     @Test
-    fun notifiesTheSessionAndAsksToLeaveThePageOnSuccess() {
-        viewModel.onStarted()
-        viewModel.onSucceeded()
+    fun leavesThePageWhenSignInSucceedsDirectly() {
+        val viewModel = viewModel()
 
-        assertEquals(1, auth.signedInCalls)
+        viewModel.onSignInClicked()
+
         assertEquals(
             SignInUiState(
                 isSignedIn = true,
@@ -58,12 +75,61 @@ class SignInViewModelTest {
     }
 
     @Test
-    fun keepsTheErrorUntilTheNextAttempt() {
-        viewModel.onStarted()
-        viewModel.onFailed(
-            error = SignInError.CONFIGURATION,
-            detail = "10",
+    fun asksTheInterfaceForTheConsentWindowThenFinishesSignIn() {
+        val request = ConsentRequest(handle = Any())
+        auth.signInResult = SignInResult.ConsentRequired(request = request)
+        val viewModel = viewModel()
+
+        viewModel.onSignInClicked()
+
+        assertEquals(
+            SignInUiState(
+                inProgress = true,
+                consentRequest = request,
+            ),
+            viewModel.state.value,
         )
+
+        viewModel.onConsentLaunched()
+        viewModel.onConsentResult(
+            response = ConsentResponse(isGranted = true, data = "intent"),
+        )
+
+        assertEquals(
+            SignInUiState(
+                isSignedIn = true,
+            ),
+            viewModel.state.value,
+        )
+        assertEquals("intent", auth.consentResponses.single().data)
+    }
+
+    @Test
+    fun reportsACancelledConsentWithoutCallingTheDomain() {
+        auth.signInResult = SignInResult.ConsentRequired(request = ConsentRequest(handle = Any()))
+        val viewModel = viewModel()
+        viewModel.onSignInClicked()
+        viewModel.onConsentLaunched()
+
+        viewModel.onConsentResult(
+            response = ConsentResponse(isGranted = false, data = null),
+        )
+
+        assertEquals(
+            SignInUiState(
+                error = SignInError.CANCELLED,
+            ),
+            viewModel.state.value,
+        )
+        assertEquals(0, auth.consentResponses.size)
+    }
+
+    @Test
+    fun showsTheFailureAndAllowsANewAttempt() {
+        auth.signInResult = SignInResult.Failed(error = DomainSignInError.CONFIGURATION, detail = "10")
+        val viewModel = viewModel()
+
+        viewModel.onSignInClicked()
 
         assertEquals(
             SignInUiState(
@@ -73,14 +139,14 @@ class SignInViewModelTest {
             viewModel.state.value,
         )
 
-        viewModel.onStarted()
+        auth.signInResult = SignInResult.SignedIn
+        viewModel.onSignInClicked()
 
         assertEquals(
             SignInUiState(
-                inProgress = true,
+                isSignedIn = true,
             ),
             viewModel.state.value,
         )
-        assertEquals(0, auth.signedInCalls)
     }
 }

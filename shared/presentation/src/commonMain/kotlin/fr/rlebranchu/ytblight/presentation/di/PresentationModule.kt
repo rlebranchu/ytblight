@@ -7,7 +7,6 @@ import fr.rlebranchu.ytblight.presentation.splash.SplashViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-/** Koin : un ViewModel par page. */
 val presentationModule =
     module {
         viewModel {
@@ -17,7 +16,8 @@ val presentationModule =
         }
         viewModel {
             SignInViewModel(
-                completeSignIn = get(),
+                signIn = get(),
+                completeConsent = get(),
             )
         }
         viewModel {

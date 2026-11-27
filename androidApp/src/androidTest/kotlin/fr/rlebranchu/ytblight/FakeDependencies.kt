@@ -8,16 +8,12 @@ import org.koin.dsl.module
 /**
  * Module Koin de test : remplace les repositories réels par des données factices, pour qu'aucun
  * appel ne parte vers Google et qu'aucun quota ne soit consommé.
- * @param signedIn `false` pour démarrer sur l'écran de connexion.
+ * @param auth session factice : `signedIn = false` démarre sur l'écran de connexion.
  */
 fun fakeModule(
-    signedIn: Boolean = true,
+    auth: FakeAuthRepository,
 ): Module =
     module {
         single<FeedRepository> { FakeFeedRepository() }
-        single<AuthRepository> {
-            FakeAuthRepository(
-                signedIn = signedIn,
-            )
-        }
+        single<AuthRepository> { auth }
     }

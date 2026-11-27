@@ -17,9 +17,14 @@ class SessionUseCasesTest {
             mutableState.value = if (sessionIsValid) AuthState.SIGNED_IN else AuthState.SIGNED_OUT
         }
 
-        override fun onSignedIn() {
+        override suspend fun signIn(): SignInResult {
             mutableState.value = AuthState.SIGNED_IN
+            return SignInResult.SignedIn
         }
+
+        override suspend fun completeConsent(
+            response: ConsentResponse,
+        ): SignInResult = signIn()
 
         override suspend fun signOut() = Unit
     }
@@ -47,16 +52,32 @@ class SessionUseCasesTest {
         }
 
     @Test
-    fun completeSignInMarksTheSessionAsSignedIn() {
-        val repository =
-            FakeAuthRepository(
-                sessionIsValid = false,
-            )
+    fun signInMarksTheSessionAsSignedIn() =
+        runTest {
+            val repository =
+                FakeAuthRepository(
+                    sessionIsValid = false,
+                )
 
-        CompleteSignInUseCase(
-            authRepository = repository,
-        )()
+            val result = SignInUseCase(authRepository = repository)()
 
-        assertEquals(AuthState.SIGNED_IN, repository.state.value)
-    }
+            assertEquals(SignInResult.SignedIn, result)
+            assertEquals(AuthState.SIGNED_IN, repository.state.value)
+        }
+
+    @Test
+    fun completeConsentFinishesTheSignIn() =
+        runTest {
+            val repository =
+                FakeAuthRepository(
+                    sessionIsValid = false,
+                )
+
+            val result =
+                CompleteConsentUseCase(authRepository = repository)(
+                    response = ConsentResponse(isGranted = true, data = null),
+                )
+
+            assertEquals(SignInResult.SignedIn, result)
+        }
 }

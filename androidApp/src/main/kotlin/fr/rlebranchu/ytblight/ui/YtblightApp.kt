@@ -11,7 +11,6 @@ import fr.rlebranchu.ytblight.presentation.splash.SplashDestination
 import fr.rlebranchu.ytblight.ui.feed.FeedRoute
 import fr.rlebranchu.ytblight.ui.player.PlayerRoute
 import fr.rlebranchu.ytblight.ui.signin.SignInRoute
-import fr.rlebranchu.ytblight.ui.signin.SignInStarterFactory
 import fr.rlebranchu.ytblight.ui.splash.SplashRoute
 
 private const val ROUTE_SPLASH = "splash"
@@ -25,14 +24,9 @@ private const val ARG_VIDEO_ID = "videoId"
  *
  * Koin est démarré dans `YtblightApplication`. Les tests d'interface y surchargent les repositories
  * par des données factices (`loadKoinModules`), sans jamais passer par Google.
- *
- * @param signInStarter fabrique du démarreur de connexion : Play Services en production,
- * une fausse version dans les tests d'interface.
  */
 @Composable
-fun YtblightApp(
-    signInStarter: SignInStarterFactory,
-) {
+fun YtblightApp() {
     val navController = rememberNavController()
     NavHost(navController, startDestination = ROUTE_SPLASH) {
         composable(ROUTE_SPLASH) {
@@ -47,7 +41,6 @@ fun YtblightApp(
         }
         composable(ROUTE_SIGN_IN) {
             SignInRoute(
-                signInStarter = signInStarter,
                 onSignedIn = {
                     navController.navigateClearing(
                         route = ROUTE_FEED,

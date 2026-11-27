@@ -1,5 +1,10 @@
 package fr.rlebranchu.ytblight.ui.signin
 
+import android.app.Activity
+import android.content.IntentSender
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import fr.rlebranchu.ytblight.domain.auth.ConsentResponse
 import fr.rlebranchu.ytblight.presentation.signin.SignInError
 import fr.rlebranchu.ytblight.presentation.signin.SignInUiState
 import fr.rlebranchu.ytblight.presentation.signin.SignInViewModel
@@ -24,20 +30,35 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SignInRoute(
-    signInStarter: SignInStarterFactory,
     onSignedIn: () -> Unit,
 ) {
     val viewModel: SignInViewModel = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val starter = signInStarter(viewModel)
+    // Seul rôle Android : afficher la fenêtre de consentement de Play Services et rendre son résultat brut.
+    val consentLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+            viewModel.onConsentResult(
+                response =
+                    ConsentResponse(
+                        isGranted = result.resultCode == Activity.RESULT_OK,
+                        data = result.data,
+                    ),
+            )
+        }
 
+    LaunchedEffect(state.consentRequest) {
+        state.consentRequest?.let { request ->
+            consentLauncher.launch(IntentSenderRequest.Builder(request.handle as IntentSender).build())
+            viewModel.onConsentLaunched()
+        }
+    }
     LaunchedEffect(state.isSignedIn) {
         if (state.isSignedIn) onSignedIn()
     }
 
     SignInScreen(
         state = state,
-        onSignIn = starter::start,
+        onSignIn = viewModel::onSignInClicked,
     )
 }
 

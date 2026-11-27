@@ -8,8 +8,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import fr.rlebranchu.ytblight.ui.YtblightApp
 import fr.rlebranchu.ytblight.ui.YtblightTheme
-import fr.rlebranchu.ytblight.ui.signin.rememberGmsSignInStarter
-import org.koin.compose.koinInject
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(
@@ -29,14 +27,7 @@ class MainActivity : ComponentActivity() {
         )
         setContent {
             YtblightTheme {
-                YtblightApp(
-                    signInStarter = { viewModel ->
-                        rememberGmsSignInStarter(
-                            auth = koinInject(),
-                            viewModel = viewModel,
-                        )
-                    },
-                )
+                YtblightApp()
             }
         }
     }
