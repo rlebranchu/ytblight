@@ -50,7 +50,7 @@ Seuls `umbrella` et `androidApp` connaissent tous les modules.
 
 1. [x] Socle du monorepo (modules, build-logic, catalogue de versions, ktlint, CI)
 2. [x] Fil d'abonnements en code partagé
-3. [ ] Android de bout en bout (code et tests d'interface prêts, connexion à valider sur un appareil avec un compte Google)
+3. [x] Android de bout en bout (connexion Google réelle validée sur émulateur, tests d'interface Compose)
 4. [ ] Prototype web
 5. [ ] iOS de bout en bout
 6. [ ] Web complet et déployé sur GitHub Pages
