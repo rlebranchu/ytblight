@@ -56,7 +56,12 @@ class FakeYouTubeApi(
                             ),
                     )
                 },
-            nextPageToken = if (index + 1 < subscriptionPages.size) "page-${index + 1}" else null,
+            nextPageToken =
+                if (index + 1 < subscriptionPages.size) {
+                    "page-${index + 1}"
+                } else {
+                    null
+                },
         )
     }
 

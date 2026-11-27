@@ -5,7 +5,12 @@ import fr.rlebranchu.ytblight.external.YouTubeHttpException
 import fr.rlebranchu.ytblight.external.YouTubeNetworkException
 
 private val QUOTA_REASONS =
-    setOf("quotaExceeded", "dailyLimitExceeded", "rateLimitExceeded", "userRateLimitExceeded")
+    setOf(
+        "quotaExceeded",
+        "dailyLimitExceeded",
+        "rateLimitExceeded",
+        "userRateLimitExceeded",
+    )
 
 private const val HTTP_UNAUTHORIZED = 401
 private const val HTTP_FORBIDDEN = 403

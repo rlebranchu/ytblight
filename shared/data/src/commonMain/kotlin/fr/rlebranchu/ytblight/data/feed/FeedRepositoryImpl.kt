@@ -59,20 +59,16 @@ class FeedRepositoryImpl(
         mutex.withLock { cache = null }
     }
 
-    private suspend fun fetchFeed(): List<Video> {
-        val channelIds = fetchSubscribedChannelIds()
-        val playlistIds =
-            fetchUploadsPlaylistIds(
-                channelIds = channelIds,
-            )
-        val videoIds =
-            fetchRecentVideoIds(
-                playlistIds = playlistIds,
-            )
-        return fetchVideos(
-            videoIds = videoIds,
+    private suspend fun fetchFeed(): List<Video> =
+        fetchVideos(
+            videoIds =
+                fetchRecentVideoIds(
+                    playlistIds =
+                        fetchUploadsPlaylistIds(
+                            channelIds = fetchSubscribedChannelIds(),
+                        ),
+                ),
         )
-    }
 
     private suspend fun fetchSubscribedChannelIds(): List<String> {
         val channelIds = mutableListOf<String>()
@@ -92,8 +88,9 @@ class FeedRepositoryImpl(
         channelIds: List<String>,
     ): List<String> =
         channelIds
-            .chunked(YouTubeApi.MAX_BATCH_SIZE)
-            .flatMap { batch ->
+            .chunked(
+                size = YouTubeApi.MAX_BATCH_SIZE,
+            ).flatMap { batch ->
                 api
                     .channels(
                         channelIds = batch,
@@ -104,7 +101,11 @@ class FeedRepositoryImpl(
         playlistIds: List<String>,
     ): List<String> =
         coroutineScope {
-            val permits = Semaphore(maxParallelRequests)
+            // Un seul sémaphore pour toutes les requêtes : c'est lui qui borne le parallélisme.
+            val permits =
+                Semaphore(
+                    permits = maxParallelRequests,
+                )
             playlistIds
                 .map { playlistId ->
                     async {
@@ -131,7 +132,11 @@ class FeedRepositoryImpl(
                 ).items
                 .map { it.contentDetails.videoId }
         } catch (e: YouTubeHttpException) {
-            if (e.statusCode == HTTP_NOT_FOUND) emptyList() else throw e
+            if (e.statusCode == HTTP_NOT_FOUND) {
+                emptyList()
+            } else {
+                throw e
+            }
         }
 
     private suspend fun fetchVideos(

@@ -53,135 +53,119 @@ class AuthRepositoryImplTest {
     @Test
     fun isSignedInWhenThePlatformHasAToken() =
         runTest {
-            val repository =
-                AuthRepositoryImpl(
-                    platformAuth =
-                        FakePlatformAuth(
-                            token = "jeton",
-                        ),
-                )
-
-            repository.checkSession()
-
-            assertEquals(AuthState.SIGNED_IN, repository.state.value)
+            AuthRepositoryImpl(
+                platformAuth =
+                    FakePlatformAuth(
+                        token = "jeton",
+                    ),
+            ).apply {
+                checkSession()
+                assertEquals(AuthState.SIGNED_IN, state.value)
+            }
         }
 
     @Test
     fun isSignedOutWhenThereIsNoToken() =
         runTest {
-            val repository =
-                AuthRepositoryImpl(
-                    platformAuth =
-                        FakePlatformAuth(
-                            token = null,
-                        ),
-                )
-
-            repository.checkSession()
-
-            assertEquals(AuthState.SIGNED_OUT, repository.state.value)
+            AuthRepositoryImpl(
+                platformAuth =
+                    FakePlatformAuth(
+                        token = null,
+                    ),
+            ).apply {
+                checkSession()
+                assertEquals(AuthState.SIGNED_OUT, state.value)
+            }
         }
 
     @Test
     fun fallsBackToSignedOutWhenThePlatformFails() =
         runTest {
-            val repository =
-                AuthRepositoryImpl(
-                    platformAuth =
-                        FakePlatformAuth(
-                            tokenError = IllegalStateException("Play Services absent"),
-                        ),
-                )
-
-            repository.checkSession()
-
-            assertEquals(AuthState.SIGNED_OUT, repository.state.value)
+            AuthRepositoryImpl(
+                platformAuth =
+                    FakePlatformAuth(
+                        tokenError = IllegalStateException("Play Services absent"),
+                    ),
+            ).apply {
+                checkSession()
+                assertEquals(AuthState.SIGNED_OUT, state.value)
+            }
         }
 
     @Test
     fun becomesSignedInWhenThePlatformAuthorizes() =
         runTest {
-            val repository =
-                AuthRepositoryImpl(
-                    platformAuth = FakePlatformAuth(),
-                )
-
-            val result = repository.signIn()
-
-            assertEquals(SignInResult.SignedIn, result)
-            assertEquals(AuthState.SIGNED_IN, repository.state.value)
+            AuthRepositoryImpl(
+                platformAuth = FakePlatformAuth(),
+            ).apply {
+                assertEquals(SignInResult.SignedIn, signIn())
+                assertEquals(AuthState.SIGNED_IN, state.value)
+            }
         }
 
     @Test
     fun passesTheConsentRequestToTheInterfaceWithoutSigningIn() =
         runTest {
             val handle = Any()
-            val repository =
-                AuthRepositoryImpl(
-                    platformAuth =
-                        FakePlatformAuth(
-                            signInOutcome =
-                                PlatformSignInOutcome.ConsentRequired(
-                                    request = handle,
-                                ),
-                        ),
-                )
-
-            val result = repository.signIn()
-
-            assertEquals(handle, (result as SignInResult.ConsentRequired).request.handle)
-            assertEquals(AuthState.CHECKING, repository.state.value)
+            AuthRepositoryImpl(
+                platformAuth =
+                    FakePlatformAuth(
+                        signInOutcome =
+                            PlatformSignInOutcome.ConsentRequired(
+                                request = handle,
+                            ),
+                    ),
+            ).apply {
+                assertEquals(handle, (signIn() as SignInResult.ConsentRequired).request.handle)
+                assertEquals(AuthState.CHECKING, state.value)
+            }
         }
 
     @Test
     fun finishesTheSignInAfterTheConsent() =
         runTest {
             val platform = FakePlatformAuth()
-            val repository =
-                AuthRepositoryImpl(
-                    platformAuth = platform,
-                )
             val data = Any()
-
-            val result =
-                repository.completeConsent(
-                    response =
-                        ConsentResponse(
-                            isGranted = true,
-                            data = data,
-                        ),
+            AuthRepositoryImpl(
+                platformAuth = platform,
+            ).apply {
+                assertEquals(
+                    SignInResult.SignedIn,
+                    completeConsent(
+                        response =
+                            ConsentResponse(
+                                isGranted = true,
+                                data = data,
+                            ),
+                    ),
                 )
-
-            assertEquals(SignInResult.SignedIn, result)
-            assertEquals(listOf<Any?>(data), platform.consentResponses)
-            assertEquals(AuthState.SIGNED_IN, repository.state.value)
+                assertEquals(listOf<Any?>(data), platform.consentResponses)
+                assertEquals(AuthState.SIGNED_IN, state.value)
+            }
         }
 
     @Test
     fun translatesPlatformFailures() =
         runTest {
-            val repository =
-                AuthRepositoryImpl(
-                    platformAuth =
-                        FakePlatformAuth(
-                            signInOutcome =
-                                PlatformSignInOutcome.Failed(
-                                    reason = PlatformSignInFailure.CONFIGURATION,
-                                    detail = "10",
-                                ),
-                        ),
+            AuthRepositoryImpl(
+                platformAuth =
+                    FakePlatformAuth(
+                        signInOutcome =
+                            PlatformSignInOutcome.Failed(
+                                reason = PlatformSignInFailure.CONFIGURATION,
+                                detail = "10",
+                            ),
+                    ),
+            ).apply {
+                assertEquals(
+                    SignInResult.Failed(
+                        error = SignInError.CONFIGURATION,
+                        detail = "10",
+                    ),
+                    signIn(),
                 )
-
-            val result = repository.signIn()
-
-            assertEquals(
-                SignInResult.Failed(
-                    error = SignInError.CONFIGURATION,
-                    detail = "10",
-                ),
-                result,
-            )
-            assertEquals(AuthState.CHECKING, repository.state.value)
+                assertEquals(AuthState.CHECKING, state.value)
+            }
         }
 
     @Test
@@ -191,33 +175,31 @@ class AuthRepositoryImplTest {
                 FakePlatformAuth(
                     token = "jeton",
                 )
-            val repository =
-                AuthRepositoryImpl(
-                    platformAuth = platform,
-                )
-            repository.checkSession()
+            AuthRepositoryImpl(
+                platformAuth = platform,
+            ).apply {
+                checkSession()
+                signOut()
 
-            repository.signOut()
-
-            assertEquals(1, platform.signOutCalls)
-            assertEquals(AuthState.SIGNED_OUT, repository.state.value)
+                assertEquals(1, platform.signOutCalls)
+                assertEquals(AuthState.SIGNED_OUT, state.value)
+            }
         }
 
     @Test
     fun signsOutLocallyEvenWhenThePlatformFails() =
         runTest {
-            val repository =
-                AuthRepositoryImpl(
-                    platformAuth =
-                        FakePlatformAuth(
-                            token = "jeton",
-                            signOutError = IllegalStateException("hors ligne"),
-                        ),
-                )
-            repository.signIn()
+            AuthRepositoryImpl(
+                platformAuth =
+                    FakePlatformAuth(
+                        token = "jeton",
+                        signOutError = IllegalStateException("hors ligne"),
+                    ),
+            ).apply {
+                signIn()
+                signOut()
 
-            repository.signOut()
-
-            assertEquals(AuthState.SIGNED_OUT, repository.state.value)
+                assertEquals(AuthState.SIGNED_OUT, state.value)
+            }
         }
 }

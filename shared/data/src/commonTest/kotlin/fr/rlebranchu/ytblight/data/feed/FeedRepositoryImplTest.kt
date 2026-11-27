@@ -149,17 +149,18 @@ class FeedRepositoryImplTest {
     @Test
     fun asksForTheConfiguredNumberOfVideosPerChannel() =
         runTest {
-            val api = twoChannelsApi()
-
-            val videos =
-                repositoryOf(
-                    api = api,
-                    videosPerChannel = 1,
-                ).loadFeed(
-                    forceRefresh = false,
-                ).videos()
-
-            assertEquals(setOf("V1", "V3"), videos.map { it.id }.toSet())
+            assertEquals(
+                expected = setOf("V1", "V3"),
+                actual =
+                    repositoryOf(
+                        api = twoChannelsApi(),
+                        videosPerChannel = 1,
+                    ).loadFeed(
+                        forceRefresh = false,
+                    ).videos()
+                        .map { it.id }
+                        .toSet(),
+            )
         }
 
     @Test

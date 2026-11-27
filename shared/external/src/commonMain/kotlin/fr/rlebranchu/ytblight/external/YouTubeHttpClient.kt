@@ -1,7 +1,6 @@
 package fr.rlebranchu.ytblight.external
 
 import fr.rlebranchu.ytblight.external.auth.AccessTokenProvider
-import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
@@ -28,24 +27,3 @@ fun HttpClientConfig<*>.configureYouTube(
     }
     defaultRequest { url(YOUTUBE_API_BASE_URL) }
 }
-
-/** Client de production : le moteur (OkHttp, Darwin ou Js) est choisi par la plateforme. */
-fun createYouTubeHttpClient(
-    tokens: AccessTokenProvider,
-): HttpClient =
-    HttpClient {
-        configureYouTube(
-            tokens = tokens,
-        )
-    }
-
-/** L'API prête à l'emploi : les autres modules n'ont pas besoin de connaître Ktor. */
-fun createYouTubeApi(
-    tokens: AccessTokenProvider,
-): YouTubeApi =
-    KtorYouTubeApi(
-        client =
-            createYouTubeHttpClient(
-                tokens = tokens,
-            ),
-    )

@@ -17,7 +17,10 @@ import kotlinx.coroutines.flow.asStateFlow
 class AuthRepositoryImpl(
     private val platformAuth: PlatformAuth,
 ) : AuthRepository {
-    private val mutableState = MutableStateFlow(AuthState.CHECKING)
+    private val mutableState =
+        MutableStateFlow(
+            value = AuthState.CHECKING,
+        )
     override val state: StateFlow<AuthState> = mutableState.asStateFlow()
 
     override suspend fun checkSession() {
