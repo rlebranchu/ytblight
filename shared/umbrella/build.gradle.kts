@@ -35,6 +35,9 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.kermit)
         }
+        commonTest {
+            kotlin.srcDir(rootProject.file("shared/test-fixtures/kotlin"))
+        }
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)
         }

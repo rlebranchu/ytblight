@@ -1,16 +1,13 @@
 package fr.rlebranchu.ytblight.presentation.signin
 
-import fr.rlebranchu.ytblight.domain.auth.AuthRepository
-import fr.rlebranchu.ytblight.domain.auth.AuthState
 import fr.rlebranchu.ytblight.domain.auth.CompleteConsentUseCase
 import fr.rlebranchu.ytblight.domain.auth.ConsentRequest
 import fr.rlebranchu.ytblight.domain.auth.ConsentResponse
 import fr.rlebranchu.ytblight.domain.auth.SignInResult
 import fr.rlebranchu.ytblight.domain.auth.SignInUseCase
+import fr.rlebranchu.ytblight.fixtures.FakeAuthRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -22,27 +19,10 @@ import fr.rlebranchu.ytblight.domain.auth.SignInError as DomainSignInError
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SignInViewModelTest {
-    private class FakeAuthRepository : AuthRepository {
-        override val state: StateFlow<AuthState> = MutableStateFlow(AuthState.SIGNED_OUT)
-        var signInResult: SignInResult = SignInResult.SignedIn
-        var consentResult: SignInResult = SignInResult.SignedIn
-        val consentResponses = mutableListOf<ConsentResponse>()
-
-        override suspend fun checkSession() = Unit
-
-        override suspend fun signIn(): SignInResult = signInResult
-
-        override suspend fun completeConsent(
-            response: ConsentResponse,
-        ): SignInResult {
-            consentResponses += response
-            return consentResult
-        }
-
-        override suspend fun signOut() = Unit
-    }
-
-    private val auth = FakeAuthRepository()
+    private val auth =
+        FakeAuthRepository(
+            signedIn = false,
+        )
 
     private fun viewModel() =
         SignInViewModel(

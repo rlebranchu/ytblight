@@ -12,6 +12,9 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.kotlinx.datetime)
         }
+        commonTest {
+            kotlin.srcDir(rootProject.file("shared/test-fixtures/kotlin"))
+        }
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)

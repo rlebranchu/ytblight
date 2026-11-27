@@ -34,19 +34,84 @@ class FeedFormattingTest {
             now = now,
         )
 
-        assertEquals("à l'instant", label(ago = 30.seconds))
-        assertEquals("il y a 5 min", label(ago = 5.minutes))
-        assertEquals("il y a 59 min", label(ago = 59.minutes))
-        assertEquals("il y a 1 h", label(ago = 1.hours))
-        assertEquals("il y a 23 h", label(ago = 23.hours))
-        assertEquals("il y a 1 jour", label(ago = 1.days))
-        assertEquals("il y a 6 jours", label(ago = 6.days))
-        assertEquals("il y a 1 semaine", label(ago = 7.days))
-        assertEquals("il y a 3 semaines", label(ago = 21.days))
-        assertEquals("il y a 1 mois", label(ago = 30.days))
-        assertEquals("il y a 11 mois", label(ago = 340.days))
-        assertEquals("il y a 1 an", label(ago = 365.days))
-        assertEquals("il y a 2 ans", label(ago = 800.days))
+        assertEquals(
+            "à l'instant",
+            label(
+                ago = 30.seconds,
+            ),
+        )
+        assertEquals(
+            "il y a 5 min",
+            label(
+                ago = 5.minutes,
+            ),
+        )
+        assertEquals(
+            "il y a 59 min",
+            label(
+                ago = 59.minutes,
+            ),
+        )
+        assertEquals(
+            "il y a 1 h",
+            label(
+                ago = 1.hours,
+            ),
+        )
+        assertEquals(
+            "il y a 23 h",
+            label(
+                ago = 23.hours,
+            ),
+        )
+        assertEquals(
+            "il y a 1 jour",
+            label(
+                ago = 1.days,
+            ),
+        )
+        assertEquals(
+            "il y a 6 jours",
+            label(
+                ago = 6.days,
+            ),
+        )
+        assertEquals(
+            "il y a 1 semaine",
+            label(
+                ago = 7.days,
+            ),
+        )
+        assertEquals(
+            "il y a 3 semaines",
+            label(
+                ago = 21.days,
+            ),
+        )
+        assertEquals(
+            "il y a 1 mois",
+            label(
+                ago = 30.days,
+            ),
+        )
+        assertEquals(
+            "il y a 11 mois",
+            label(
+                ago = 340.days,
+            ),
+        )
+        assertEquals(
+            "il y a 1 an",
+            label(
+                ago = 365.days,
+            ),
+        )
+        assertEquals(
+            "il y a 2 ans",
+            label(
+                ago = 800.days,
+            ),
+        )
     }
 
     @Test

@@ -2,6 +2,8 @@ package fr.rlebranchu.ytblight
 
 import fr.rlebranchu.ytblight.domain.auth.AuthRepository
 import fr.rlebranchu.ytblight.domain.feed.FeedRepository
+import fr.rlebranchu.ytblight.fixtures.FakeAuthRepository
+import fr.rlebranchu.ytblight.fixtures.FakeFeedRepository
 import org.koin.core.module.Module
 import org.koin.dsl.module
 

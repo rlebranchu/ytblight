@@ -6,6 +6,8 @@ import fr.rlebranchu.ytblight.domain.feed.FeedRepository
 import fr.rlebranchu.ytblight.external.auth.PlatformAuth
 import fr.rlebranchu.ytblight.external.auth.PlatformSignInOutcome
 import fr.rlebranchu.ytblight.external.di.externalModule
+import fr.rlebranchu.ytblight.fixtures.FakeAuthRepository
+import fr.rlebranchu.ytblight.fixtures.FakeFeedRepository
 import fr.rlebranchu.ytblight.presentation.di.presentationModule
 import fr.rlebranchu.ytblight.presentation.feed.FeedViewModel
 import fr.rlebranchu.ytblight.presentation.player.PlayerViewModel
@@ -69,7 +71,7 @@ class KoinModulesTest {
                     .get<FeedViewModel>()
                     .state.value
 
-            assertEquals(listOf("new", "old"), state.videos.map { it.id })
+            assertEquals(listOf("fake-4", "fake-3", "fake-1"), state.videos.map { it.id })
             assertNull(state.error)
             assertEquals(false, state.isLoading)
         }

@@ -6,6 +6,11 @@ plugins {
 android {
     namespace = "fr.rlebranchu.ytblight"
 
+    sourceSets {
+        // Données factices partagées avec les tests des modules `shared` (jamais dans le code livré).
+        getByName("androidTest").kotlin.directories.add(rootProject.file("shared/test-fixtures/kotlin").path)
+    }
+
     defaultConfig {
         applicationId = "fr.rlebranchu.ytblight"
         versionCode = 1

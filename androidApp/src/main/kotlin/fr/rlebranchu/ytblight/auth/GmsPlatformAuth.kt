@@ -100,7 +100,9 @@ class GmsPlatformAuth(
                 PlatformSignInOutcome.ConsentRequired(
                     request = pendingIntent.intentSender,
                 )
-            accept(result = result) != null -> PlatformSignInOutcome.Authorized
+            accept(
+                result = result,
+            ) != null -> PlatformSignInOutcome.Authorized
             else ->
                 PlatformSignInOutcome.Failed(
                     reason = PlatformSignInFailure.FAILED,

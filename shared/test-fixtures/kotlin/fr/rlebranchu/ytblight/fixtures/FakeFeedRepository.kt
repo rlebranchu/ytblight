@@ -1,4 +1,4 @@
-package fr.rlebranchu.ytblight
+package fr.rlebranchu.ytblight.fixtures
 
 import fr.rlebranchu.ytblight.domain.error.DomainResult
 import fr.rlebranchu.ytblight.domain.feed.FeedRepository
@@ -23,6 +23,22 @@ class FakeFeedRepository(
         forceRefresh: Boolean,
     ): DomainResult<List<Video>> {
         val now = clock.now()
+
+        fun video(
+            id: String,
+            title: String,
+            channel: String,
+            duration: Duration,
+            daysAgo: Int,
+        ) = testVideo(
+            id = id,
+            title = title,
+            channelId = "UC-$channel",
+            channelTitle = channel,
+            duration = duration,
+            publishedAt = now - daysAgo.days - 1.minutes,
+        )
+
         return DomainResult.Success(
             value =
                 listOf(
@@ -31,7 +47,6 @@ class FakeFeedRepository(
                         title = "Un long format sur Kotlin Multiplatform",
                         channel = "Chaîne Kotlin",
                         duration = 24.minutes + 10.seconds,
-                        now = now,
                         daysAgo = 5,
                     ),
                     video(
@@ -39,7 +54,6 @@ class FakeFeedRepository(
                         title = "Un court extrait",
                         channel = "Chaîne Kotlin",
                         duration = 45.seconds,
-                        now = now,
                         daysAgo = 4,
                     ),
                     video(
@@ -47,7 +61,6 @@ class FakeFeedRepository(
                         title = "Visite guidée d'un atelier",
                         channel = "Atelier",
                         duration = 12.minutes + 3.seconds,
-                        now = now,
                         daysAgo = 3,
                     ),
                     video(
@@ -55,7 +68,6 @@ class FakeFeedRepository(
                         title = "Conférence d'une heure",
                         channel = "Conférences",
                         duration = 62.minutes,
-                        now = now,
                         daysAgo = 2,
                     ),
                     video(
@@ -63,29 +75,16 @@ class FakeFeedRepository(
                         title = "Un autre Short",
                         channel = "Atelier",
                         duration = 30.seconds,
-                        now = now,
                         daysAgo = 1,
                     ),
                 ),
         )
     }
 
-    override suspend fun clear() = Unit
+    var clearCalls = 0
+        private set
 
-    private fun video(
-        id: String,
-        title: String,
-        channel: String,
-        duration: Duration,
-        now: kotlin.time.Instant,
-        daysAgo: Int,
-    ) = Video(
-        id = id,
-        title = title,
-        channelId = "UC-$channel",
-        channelTitle = channel,
-        thumbnailUrl = null,
-        publishedAt = now - daysAgo.days - 1.minutes,
-        duration = duration,
-    )
+    override suspend fun clear() {
+        clearCalls++
+    }
 }

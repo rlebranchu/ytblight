@@ -1,14 +1,9 @@
 package fr.rlebranchu.ytblight.presentation.splash
 
-import fr.rlebranchu.ytblight.domain.auth.AuthRepository
-import fr.rlebranchu.ytblight.domain.auth.AuthState
 import fr.rlebranchu.ytblight.domain.auth.CheckSessionUseCase
-import fr.rlebranchu.ytblight.domain.auth.ConsentResponse
-import fr.rlebranchu.ytblight.domain.auth.SignInResult
+import fr.rlebranchu.ytblight.fixtures.FakeAuthRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -20,25 +15,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SplashViewModelTest {
-    private class FakeAuthRepository(
-        private val sessionIsValid: Boolean,
-    ) : AuthRepository {
-        private val mutableState = MutableStateFlow(AuthState.CHECKING)
-        override val state: StateFlow<AuthState> = mutableState
-
-        override suspend fun checkSession() {
-            mutableState.value = if (sessionIsValid) AuthState.SIGNED_IN else AuthState.SIGNED_OUT
-        }
-
-        override suspend fun signIn(): SignInResult = SignInResult.SignedIn
-
-        override suspend fun completeConsent(
-            response: ConsentResponse,
-        ): SignInResult = SignInResult.SignedIn
-
-        override suspend fun signOut() = Unit
-    }
-
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
@@ -58,7 +34,7 @@ class SplashViewModelTest {
                         CheckSessionUseCase(
                             authRepository =
                                 FakeAuthRepository(
-                                    sessionIsValid = true,
+                                    signedIn = true,
                                 ),
                         ),
                 )
@@ -75,7 +51,7 @@ class SplashViewModelTest {
                         CheckSessionUseCase(
                             authRepository =
                                 FakeAuthRepository(
-                                    sessionIsValid = false,
+                                    signedIn = false,
                                 ),
                         ),
                 )

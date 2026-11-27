@@ -89,7 +89,9 @@ private fun SignInScreen(
             }
             state.error?.let {
                 Text(
-                    it.message(detail = state.errorDetail),
+                    it.message(
+                        detail = state.errorDetail,
+                    ),
                     color = MaterialTheme.colorScheme.error,
                     textAlign = TextAlign.Center,
                 )

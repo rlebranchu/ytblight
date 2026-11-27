@@ -3,6 +3,7 @@ package fr.rlebranchu.ytblight.domain.feed
 import fr.rlebranchu.ytblight.domain.error.DomainError
 import fr.rlebranchu.ytblight.domain.error.DomainResult
 import fr.rlebranchu.ytblight.domain.model.Video
+import fr.rlebranchu.ytblight.fixtures.testVideo
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -12,7 +13,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 class GetFeedUseCaseTest {
-    private class FakeFeedRepository(
+    private class RecordingFeedRepository(
         private val result: DomainResult<List<Video>>,
     ) : FeedRepository {
         val requests = mutableListOf<Boolean>()
@@ -31,21 +32,17 @@ class GetFeedUseCaseTest {
         id: String,
         duration: Duration,
         publishedAtMillis: Long = 0,
-    ) = Video(
+    ) = testVideo(
         id = id,
-        title = "Titre $id",
-        channelId = "UC1",
-        channelTitle = "Chaîne",
-        thumbnailUrl = null,
-        publishedAt = Instant.fromEpochMilliseconds(publishedAtMillis),
         duration = duration,
+        publishedAt = Instant.fromEpochMilliseconds(publishedAtMillis),
     )
 
     @Test
     fun removesShortsAndKeepsLongerVideos() =
         runTest {
             val repository =
-                FakeFeedRepository(
+                RecordingFeedRepository(
                     result =
                         DomainResult.Success(
                             value =
@@ -83,7 +80,7 @@ class GetFeedUseCaseTest {
     fun dropsLiveAndUpcomingVideosWithZeroDuration() =
         runTest {
             val repository =
-                FakeFeedRepository(
+                RecordingFeedRepository(
                     result =
                         DomainResult.Success(
                             value =
@@ -108,7 +105,7 @@ class GetFeedUseCaseTest {
     fun sortsFromNewestToOldest() =
         runTest {
             val repository =
-                FakeFeedRepository(
+                RecordingFeedRepository(
                     result =
                         DomainResult.Success(
                             value =
@@ -144,7 +141,7 @@ class GetFeedUseCaseTest {
     fun usesTheConfiguredShortThreshold() =
         runTest {
             val repository =
-                FakeFeedRepository(
+                RecordingFeedRepository(
                     result =
                         DomainResult.Success(
                             value =
@@ -173,7 +170,7 @@ class GetFeedUseCaseTest {
     fun propagatesFailures() =
         runTest {
             val repository =
-                FakeFeedRepository(
+                RecordingFeedRepository(
                     result =
                         DomainResult.Failure(
                             error = DomainError.QuotaExceeded,
@@ -197,7 +194,7 @@ class GetFeedUseCaseTest {
     fun forwardsTheRefreshRequestToTheRepository() =
         runTest {
             val repository =
-                FakeFeedRepository(
+                RecordingFeedRepository(
                     result =
                         DomainResult.Success(
                             value = emptyList(),

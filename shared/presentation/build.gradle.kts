@@ -11,6 +11,9 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.core.viewmodel)
         }
+        commonTest {
+            kotlin.srcDir(rootProject.file("shared/test-fixtures/kotlin"))
+        }
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)

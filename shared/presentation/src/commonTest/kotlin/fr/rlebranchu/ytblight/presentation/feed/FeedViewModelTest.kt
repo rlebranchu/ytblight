@@ -1,21 +1,17 @@
 package fr.rlebranchu.ytblight.presentation.feed
 
 import app.cash.turbine.test
-import fr.rlebranchu.ytblight.domain.auth.AuthRepository
-import fr.rlebranchu.ytblight.domain.auth.AuthState
-import fr.rlebranchu.ytblight.domain.auth.ConsentResponse
-import fr.rlebranchu.ytblight.domain.auth.SignInResult
 import fr.rlebranchu.ytblight.domain.auth.SignOutUseCase
 import fr.rlebranchu.ytblight.domain.error.DomainError
 import fr.rlebranchu.ytblight.domain.error.DomainResult
 import fr.rlebranchu.ytblight.domain.feed.FeedRepository
 import fr.rlebranchu.ytblight.domain.feed.GetFeedUseCase
 import fr.rlebranchu.ytblight.domain.model.Video
+import fr.rlebranchu.ytblight.fixtures.FakeAuthRepository
+import fr.rlebranchu.ytblight.fixtures.testVideo
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -26,7 +22,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -66,18 +61,6 @@ class FeedViewModelTest {
         publishedLabel = "il y a 3 jours",
     )
 
-    private fun video(
-        id: String,
-    ) = Video(
-        id = id,
-        title = "Titre $id",
-        channelId = "UC1",
-        channelTitle = "Chaîne",
-        thumbnailUrl = null,
-        publishedAt = Instant.fromEpochMilliseconds(0),
-        duration = 10.minutes,
-    )
-
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
@@ -88,23 +71,7 @@ class FeedViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private val auth =
-        object : AuthRepository {
-            override val state: StateFlow<AuthState> = MutableStateFlow(AuthState.SIGNED_IN)
-
-            override suspend fun checkSession() = Unit
-
-            override suspend fun signIn(): SignInResult = SignInResult.SignedIn
-
-            override suspend fun completeConsent(
-                response: ConsentResponse,
-            ): SignInResult = SignInResult.SignedIn
-
-            override suspend fun signOut() {
-                signOutCalls++
-            }
-        }
-    private var signOutCalls = 0
+    private val auth = FakeAuthRepository()
 
     private fun viewModel(
         feedRepository: FeedRepository = repository,
@@ -138,7 +105,7 @@ class FeedViewModelTest {
                     DomainResult.Success(
                         value =
                             listOf(
-                                video(
+                                testVideo(
                                     id = "V1",
                                 ),
                             ),
@@ -212,7 +179,7 @@ class FeedViewModelTest {
                 DomainResult.Success(
                     value =
                         listOf(
-                            video(
+                            testVideo(
                                 id = "V1",
                             ),
                         ),
@@ -239,10 +206,10 @@ class FeedViewModelTest {
                 DomainResult.Success(
                     value =
                         listOf(
-                            video(
+                            testVideo(
                                 id = "V2",
                             ),
-                            video(
+                            testVideo(
                                 id = "V1",
                             ),
                         ),
@@ -272,7 +239,7 @@ class FeedViewModelTest {
                 DomainResult.Success(
                     value =
                         listOf(
-                            video(
+                            testVideo(
                                 id = "V1",
                             ),
                         ),
@@ -314,7 +281,7 @@ class FeedViewModelTest {
                 DomainResult.Success(
                     value =
                         listOf(
-                            video(
+                            testVideo(
                                 id = "V1",
                             ),
                         ),
@@ -346,7 +313,7 @@ class FeedViewModelTest {
                 DomainResult.Success(
                     value =
                         listOf(
-                            video(
+                            testVideo(
                                 id = "NEW",
                             ),
                         ),
@@ -358,7 +325,7 @@ class FeedViewModelTest {
                 DomainResult.Success(
                     value =
                         listOf(
-                            video(
+                            testVideo(
                                 id = "OLD",
                             ),
                         ),
@@ -379,7 +346,7 @@ class FeedViewModelTest {
                 DomainResult.Success(
                     value =
                         listOf(
-                            video(
+                            testVideo(
                                 id = "V1",
                             ),
                         ),
@@ -389,7 +356,7 @@ class FeedViewModelTest {
 
             viewModel.signOut()
 
-            assertEquals(1, signOutCalls)
+            assertEquals(1, auth.signOutCalls)
             assertEquals(
                 FeedUiState(
                     isSignedOut = true,
